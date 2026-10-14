@@ -127,7 +127,7 @@ A new options instance carrying the scenario's defaults\.
 
 ## Create\.YOLOTrainingRunOptionsFile\(string, string, bool, string, DateTimeOffset, bool\) Method
 
-Writes a tray training run's options into a new file beside the run folder and never overwrites an existing one \- the file is the record of what a run was asked to do \(DiGi-Organization/DiGi\.GIS\.PostgreSQL\.UI\#20\)\.
+Writes a tray training run's options into a new file beside the run folder and never overwrites an existing one \- the file is the record of what a run was asked to do \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#20\)\.
 
 <b>A resume</b> writes `<RunName>.resume-<yyyyMMdd_HHmmss>.YOLOTrainingRunOptions.json`, so the original run's `<RunName>.YOLOTrainingRunOptions.json` is left untouched. Should two resumes start within the same second, `_2`, `_3` ... is appended to the later one.
 
