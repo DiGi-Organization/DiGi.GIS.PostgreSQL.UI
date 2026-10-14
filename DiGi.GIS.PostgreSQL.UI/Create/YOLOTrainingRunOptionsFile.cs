@@ -7,7 +7,7 @@ namespace DiGi.GIS.PostgreSQL.UI
     public static partial class Create
     {
         /// <summary>
-        /// Writes a tray training run's options into a new file beside the run folder and never overwrites an existing one - the file is the record of what a run was asked to do (ZiolkowskiJakub/DiGi.GIS.PostgreSQL.UI#20).
+        /// Writes a tray training run's options into a new file beside the run folder and never overwrites an existing one - the file is the record of what a run was asked to do (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#20).
         /// <para><b>A resume</b> writes <c>&lt;RunName&gt;.resume-&lt;yyyyMMdd_HHmmss&gt;.YOLOTrainingRunOptions.json</c>, so the original run's <c>&lt;RunName&gt;.YOLOTrainingRunOptions.json</c> is left untouched. Should two resumes start within the same second, <c>_2</c>, <c>_3</c> ... is appended to the later one.</para>
         /// <para><b>A run with the Training step</b> writes <c>&lt;RunName&gt;.YOLOTrainingRunOptions.json</c>. The preflight has already refused a taken run name, so that file cannot exist; if it does anyway, the run is refused here, naming the path, rather than written under another name.</para>
         /// <para><b>A run without the Training step</b> always writes <c>yyyyMMdd_HHmmss.YOLOTrainingRunOptions.json</c>, whatever the run name box says, because its run name describes nothing it creates. Should two such runs start within the same second, <c>_2</c>, <c>_3</c> ... is appended to the later one.</para>

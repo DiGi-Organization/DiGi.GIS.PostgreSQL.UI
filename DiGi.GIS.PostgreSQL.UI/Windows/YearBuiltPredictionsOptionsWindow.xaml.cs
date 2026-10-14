@@ -9,8 +9,8 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     /// <summary>
     /// Interaction logic for YearBuiltPredictionsOptionsWindow.xaml
     /// <para>Asks for the scope of one Year Built prediction run and nothing else: the counties, where its imagery goes, which interpreter runs the detector, and how hard the export leans on the server.</para>
-    /// <para><b>A tray run has one shape - the full six step flow - and it writes.</b> The steps are not offered because they are not a choice here: ZiolkowskiJakub/DiGi.GIS.YOLO.UI#8 made export, detector, detection write, score, history write and column write a single run per county precisely so that no step could be left out of sequence, and it decided that the granular flags stay on the options class and the console app for hand-driven diagnostics while the tray driven flow collapses them. Eight checkboxes offered two hundred and fifty six combinations, of which three were real - and the rest failed late, after the half hour of export and the hour and a half of inference had already been paid for. The OK handler writes all six on, so the run the operator gets is the run the standing recipe describes.</para>
-    /// <para><b>What settles the model is deliberately not here either.</b> The weights, the confidence threshold, the year range and the radiuses all decide what the regressor is handed, and a value that disagrees with what it was trained on is, for the year range and the radiuses, checked against the model's stated trained contract before the run reads a county - narrower is refused, wider is warned (ZiolkowskiJakub/DiGi.GIS.ML#6) - while the weights and the confidence threshold still score without failing. They belong to the deployment and to the options file rather than to a dialog opened before every run. The working directory and the two batch sizes are out for a different reason: none of the three is a choice - see the comment in the OK handler.</para>
+    /// <para><b>A tray run has one shape - the full six step flow - and it writes.</b> The steps are not offered because they are not a choice here: DiGi-Organization/DiGi.GIS.YOLO.UI#8 made export, detector, detection write, score, history write and column write a single run per county precisely so that no step could be left out of sequence, and it decided that the granular flags stay on the options class and the console app for hand-driven diagnostics while the tray driven flow collapses them. Eight checkboxes offered two hundred and fifty six combinations, of which three were real - and the rest failed late, after the half hour of export and the hour and a half of inference had already been paid for. The OK handler writes all six on, so the run the operator gets is the run the standing recipe describes.</para>
+    /// <para><b>What settles the model is deliberately not here either.</b> The weights, the confidence threshold, the year range and the radiuses all decide what the regressor is handed, and a value that disagrees with what it was trained on is, for the year range and the radiuses, checked against the model's stated trained contract before the run reads a county - narrower is refused, wider is warned (DiGi-Organization/DiGi.GIS.ML#6) - while the weights and the confidence threshold still score without failing. They belong to the deployment and to the options file rather than to a dialog opened before every run. The working directory and the two batch sizes are out for a different reason: none of the three is a choice - see the comment in the OK handler.</para>
     /// <para>The scratch cleanup is the one flag that survives, because its reason is about this run rather than about the sequence: a cancelled county is cleaned, so a run that is meant to be interrupted has to be able to say so beforehand.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were, and every member the window has no control for carries through untouched.</para>
     /// </summary>
@@ -133,9 +133,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             // is wholly absent. Naming different weights is the same failure through the same path,
             // and a ModelPath typed here would be resolved in the runner's directory rather than in this
             // application's, so the box could not even say whether the file exists
-            // (ZiolkowskiJakub/DiGi.GIS.ML#6). The year range and the radiuses are the two of the four the run itself
+            // (DiGi-Organization/DiGi.GIS.ML#6). The year range and the radiuses are the two of the four the run itself
             // checks: the orchestrator compares them against the model's stated trained contract before it reads a
-            // county, and refuses the run when they narrow it (ZiolkowskiJakub/DiDi.GIS.ML#6). A control for any of
+            // county, and refuses the run when they narrow it (DiGi-Organization/DiGi.GIS.ML#6). A control for any of
             // them still invites the mistake; the check exists for the two the model can state.
             //
             // WorkingDirectory is not a choice: DiGi.YOLO.Modify.Predict writes predict.py and utils.py into it,
@@ -150,7 +150,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             // refusing, and it is the one that is offered.
             //
             // ReferencesFilePath narrows a run to the buildings of a training dataset manifest, which only the
-            // labelled-building detection rewrite before a regressor retrain wants (ZiolkowskiJakub/DiGi.GIS.YOLO.UI#22).
+            // labelled-building detection rewrite before a regressor retrain wants (DiGi-Organization/DiGi.GIS.YOLO.UI#22).
             // The tray's scoring runs cover whole counties, so it is left as the copy carries it.
 
             DialogResult = true;

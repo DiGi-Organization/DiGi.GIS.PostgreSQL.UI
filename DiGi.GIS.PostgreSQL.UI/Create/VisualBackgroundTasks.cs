@@ -110,7 +110,7 @@ namespace DiGi.GIS.PostgreSQL.UI
                     result.Add(Visual(new UIPostgreSQLUpdateOccupancyTask(gISPostgreSQLConverterManager), "Update occupancy from database", "Updates occupancy for AdministrativeAreal2Ds (the roll-up, nationwide) and Building2Ds (each subdivision's figure distributed over its buildings). The sides, the clear and the counties for the building side are asked for when the task is started"));
 
                     // A permanent repair path, in contrast to the temporary county part repair of issue
-                    // ZiolkowskiJakub/DiGi.GIS.PostgreSQL#68, which was deleted once the mismatches it chased
+                    // DiGi-Organization/DiGi.GIS.PostgreSQL#68, which was deleted once the mismatches it chased
                     // were gone: the unique_id-keyed tables stay keyed on (county_id, reference), so a row
                     // filed under the wrong part reads back missing until it is moved. Reports by default.
                     // The scope and the two labels are derived from the options rather than written beside
@@ -128,7 +128,7 @@ namespace DiGi.GIS.PostgreSQL.UI
                     $"Carries the rows of the unique_id-keyed tables - building_model, year_built_data and occupancy_data_building_2d - onto the county part their building sits on. Scope: {(postgreSQLBuilding2DReferencedObjectsCountyPartRefreshTask.PostgreSQLBuilding2DReferencedObjectsCountyPartRefreshOptions.Codes is null ? "every multi-part county code" : $"codes {string.Join(' ', postgreSQLBuilding2DReferencedObjectsCountyPartRefreshTask.PostgreSQLBuilding2DReferencedObjectsCountyPartRefreshOptions.Codes)}")}. {(postgreSQLBuilding2DReferencedObjectsCountyPartRefreshTask.PostgreSQLBuilding2DReferencedObjectsCountyPartRefreshOptions.DryRun ? "Dry run - nothing is written until DryRun is turned off" : "DryRun is OFF - this moves rows between partitions")}"));
 
                     // Orphan cleanup only. The superseded half went with the unique_id migration of issue
-                    // ZiolkowskiJakub/DiGi.GIS.PostgreSQL#5: rows are keyed on the model they hold, so nothing is
+                    // DiGi-Organization/DiGi.GIS.PostgreSQL#5: rows are keyed on the model they hold, so nothing is
                     // keyed on its reference any more and nothing supersedes anything.
                     // What remains answers a different question - whether the building moved. A model whose part no
                     // longer holds its building_2d is what a county part repair run can leave behind,
