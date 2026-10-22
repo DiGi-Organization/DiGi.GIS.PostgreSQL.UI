@@ -119,6 +119,28 @@
     <Reference Include="DiGi.YOLO">
       <HintPath>..\..\DiGi.YOLO\bin\DiGi.YOLO.dll</HintPath>
     </Reference>
+    <!-- DiGi.PRG and DiGi.PRG.Geometry load the PRG address GML for UIAddressPointsFromFilePostTask. Both are
+         netstandard2.0 and reached by HintPath; DiGi.GML is declared here because the PRG classes derive from its
+         types and a HintPath does not carry the assembly reference onward. -->
+    <!-- DiGi.GIS reaches DiGi.BDOT10k and DiGi.BDL by HintPath; overload resolution of Convert.ToDiGi needs their types (CS0012). -->
+    <Reference Include="DiGi.BDL">
+      <HintPath>..\..\DiGi.BDL\bin\DiGi.BDL.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.BDOT10k">
+      <HintPath>..\..\DiGi.BDOT10k\bin\DiGi.BDOT10k.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.GML">
+      <HintPath>..\..\DiGi.GML\bin\DiGi.GML.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Geometry.Visual">
+      <HintPath>..\..\DiGi.Geometry.Visual\bin\DiGi.Geometry.Visual.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.PRG">
+      <HintPath>..\..\DiGi.PRG\bin\DiGi.PRG.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.PRG.Geometry">
+      <HintPath>..\..\DiGi.PRG\bin\DiGi.PRG.Geometry.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.PostgreSQL">
       <HintPath>..\..\DiGi.PostgreSQL\bin\DiGi.PostgreSQL.dll</HintPath>
     </Reference>

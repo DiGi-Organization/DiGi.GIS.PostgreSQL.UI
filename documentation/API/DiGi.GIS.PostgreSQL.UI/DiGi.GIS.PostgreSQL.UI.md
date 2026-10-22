@@ -328,6 +328,29 @@ The file path, absolute or relative to the runner\.
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 The absolute path of the file found, or null when the path is blank or no candidate exists\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.CountyCode(string)'></a>
+
+## Query\.CountyCode\(string\) Method
+
+Returns the four\-digit county code a PRG address point belongs to\.
+
+The code is the first four digits of the seven-digit TERYT commune code (`TERYTGminy`): voivodeship, county, commune and commune type. It is a code, not a key - a county of disconnected territory holds one row per polygon part, so the identifiers are resolved from it with the `idsbycode` endpoint rather than assumed.
+
+```csharp
+public static string? CountyCode(string? TERYTGminy);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.CountyCode(string).TERYTGminy'></a>
+
+`TERYTGminy` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The seven\-digit TERYT commune code of an address point\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The four\-digit county code; null when the input is null, shorter than four characters or its first four characters are not digits\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.FullPath(string)'></a>
 
 ## Query\.FullPath\(string\) Method

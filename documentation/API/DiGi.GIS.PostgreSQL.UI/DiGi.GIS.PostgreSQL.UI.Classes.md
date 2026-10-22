@@ -513,6 +513,88 @@ The [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dot
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
 A task that represents the asynchronous operation\. The task result contains the orphaned references, empty when either side could not be read\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIAddressPointsFromFilePostTask'></a>
+
+## UIAddressPointsFromFilePostTask Class
+
+Imports PRG address points from GML files selected through the user interface and posts them to the server\.
+
+The PRG is published as one GML file per voivodeship (0.7 - 1.6 GB each), not per county, so the county of every point is taken from its own TERYT commune code (see [CountyCode\(string\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.CountyCode(string) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.CountyCode\(string\)')). Each code is resolved to every polygon part of the county through [DiGi\.GIS\.WebAPI\.Classes\.AdministrativeAreal2DController\.GetIdsByCodeAsync\(System\.String,System\.Nullable\{DiGi\.GIS\.PostgreSQL\.Enums\.AdministrativeArealType\},System\.Threading\.CancellationToken\)](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.administrativeareal2dcontroller.getidsbycodeasync#digi-gis-webapi-classes-administrativeareal2dcontroller-getidsbycodeasync(system-string-system-nullable{digi-gis-postgresql-enums-administrativearealtype}-system-threading-cancellationtoken) 'DiGi\.GIS\.WebAPI\.Classes\.AdministrativeAreal2DController\.GetIdsByCodeAsync\(System\.String,System\.Nullable\{DiGi\.GIS\.PostgreSQL\.Enums\.AdministrativeArealType\},System\.Threading\.CancellationToken\)') and the points are posted with those identifiers; the server files each point under the part it lies in.
+
+Files are loaded one at a time and released before the next, because a loaded file holds a clone of its street and locality on every point (about 3 GB for a 714 MB file). A county that fails is named, recorded in the report and skipped, and the run continues.
+
+A report is written to [ReportDirectory](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIAddressPointsFromFilePostTask.ReportDirectory 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIAddressPointsFromFilePostTask\.ReportDirectory') and names the server the run posted to, so it cannot be mistaken for a description of another database.
+
+```csharp
+public class UIAddressPointsFromFilePostTask : DiGi.GIS.WebAPI.Classes.AddressPointsPostTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → [DiGi\.GIS\.WebAPI\.Classes\.SerializableObjectsPostTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.serializableobjectsposttask-1 'DiGi\.GIS\.WebAPI\.Classes\.SerializableObjectsPostTask\`1')[DiGi\.GIS\.Classes\.AddressPoint](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.addresspoint 'DiGi\.GIS\.Classes\.AddressPoint')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.serializableobjectsposttask-1 'DiGi\.GIS\.WebAPI\.Classes\.SerializableObjectsPostTask\`1') → [DiGi\.GIS\.WebAPI\.Classes\.AddressPointsPostTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.addresspointsposttask 'DiGi\.GIS\.WebAPI\.Classes\.AddressPointsPostTask') → UIAddressPointsFromFilePostTask
+
+Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIAddressPointsFromFilePostTask.UIAddressPointsFromFilePostTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager)'></a>
+
+## UIAddressPointsFromFilePostTask\(GISWebAPIManager\) Constructor
+
+Initializes a new instance of the [UIAddressPointsFromFilePostTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIAddressPointsFromFilePostTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIAddressPointsFromFilePostTask') class\.
+
+```csharp
+public UIAddressPointsFromFilePostTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager GISWebAPIManager);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIAddressPointsFromFilePostTask.UIAddressPointsFromFilePostTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager).GISWebAPIManager'></a>
+
+`GISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
+
+The manager used to communicate with the GIS Web API\.
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIAddressPointsFromFilePostTask.ReportDirectory'></a>
+
+## UIAddressPointsFromFilePostTask\.ReportDirectory Property
+
+Gets or sets the directory the report is written into\. When null the directory the application was launched from is used\.
+
+Deliberately not a folder dialog: this runs on a thread pool thread, where a WPF common dialog needs an STA apartment.
+
+```csharp
+public string? ReportDirectory { get; set; }
+```
+
+#### Property Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIAddressPointsFromFilePostTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
+
+## UIAddressPointsFromFilePostTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
+
+Concrete implementation of the background work\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIAddressPointsFromFilePostTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
+
+`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
+
+The provider for reporting progress of the operation\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIAddressPointsFromFilePostTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+The token to monitor for cancellation requests\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task that represents the asynchronous operation\. The task result is true if every county was posted; otherwise, false\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.UIAdministrativeAreal2DFromFilePostTask'></a>
 
 ## UIAdministrativeAreal2DFromFilePostTask Class
