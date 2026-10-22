@@ -56,4 +56,17 @@
 			</ResolvedCompileFileDefinitions>
 		</ItemGroup>
 	</Target>
+
+	<!-- DiGi.PRG and DiGi.PRG.Geometry are compile-only <Reference> (HintPath) items of the .UI project, so they are
+	     not runtime assets and do not flow across the ProjectReference into this host's deps.json. The PRG import task
+	     loads them at runtime; declare them as direct host references so they reach the host deps.json (re-declare on the
+	     host the dependencies that HintPath references drop). -->
+	<ItemGroup>
+		<Reference Include="DiGi.PRG">
+			<HintPath>..\..\DiGi.PRG\bin\DiGi.PRG.dll</HintPath>
+		</Reference>
+		<Reference Include="DiGi.PRG.Geometry">
+			<HintPath>..\..\DiGi.PRG\bin\DiGi.PRG.Geometry.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 </Project>
