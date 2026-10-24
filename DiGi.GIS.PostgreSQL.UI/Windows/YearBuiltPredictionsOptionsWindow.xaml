@@ -30,6 +30,7 @@
                     <RowDefinition Height="28" />
                     <RowDefinition Height="28" />
                     <RowDefinition Height="200" />
+                    <RowDefinition Height="26" />
                 </Grid.RowDefinitions>
 
                 <controls:TextBoxControl x:Name="TextBoxControl_ScratchDirectory" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Scratch directory - one folder per county, named after its identifier" Value="" />
@@ -47,6 +48,10 @@
                 <Label x:Name="Label_Counties" Grid.Row="5" Content="Counties - a multi-part county is one entry per piece; select them all" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
 
                 <controls:ListBoxControl x:Name="ListBoxControl_Counties" Grid.Row="6" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+                <!-- Says what the markers mean, and whether they have been read yet: without it a county with no
+                     marker could be one never run or one whose coverage simply has not arrived. -->
+                <Label x:Name="Label_Coverage" Grid.Row="7" Content="" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
             </Grid>
         </ScrollViewer>
 

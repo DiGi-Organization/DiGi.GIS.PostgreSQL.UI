@@ -1,7 +1,10 @@
 using DiGi.GIS.PostgreSQL.Classes;
 using DiGi.GIS.YOLO.UI.Classes;
 using DiGi.UI.WPF.Classes;
+using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace DiGi.GIS.PostgreSQL.UI.Windows
@@ -17,13 +20,16 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     public partial class YearBuiltPredictionsOptionsWindow : Window
     {
         private readonly YearBuiltPredictionPipelineOptions yearBuiltPredictionPipelineOptions;
+        private readonly CancellationTokenSource cancellationTokenSource = new();
+        private Dictionary<int, double>? coverageFactors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="YearBuiltPredictionsOptionsWindow"/> class.
         /// </summary>
         /// <param name="yearBuiltPredictionPipelineOptions">The options the controls are filled from. When null the defaults are used.</param>
         /// <param name="administrativeAreal2DReferences">The counties to choose from. A county whose territory is in several pieces is one entry per piece, each with its own identifier, and each has to be selectable on its own - a run names every part of a county so that each written row is filed under the part its reference belongs to.</param>
-        public YearBuiltPredictionsOptionsWindow(YearBuiltPredictionPipelineOptions? yearBuiltPredictionPipelineOptions, IEnumerable<AdministrativeAreal2DReference>? administrativeAreal2DReferences)
+        /// <param name="coverageFactorsAsync">Reads the predicted year built coverage of each county part, keyed by part id, for the markers. Started here and never awaited before the window opens: the county list is shown at once and its markers are filled in when the read completes, whenever that is. Closing the window cancels it. When null no coverage is read and nothing is marked.</param>
+        public YearBuiltPredictionsOptionsWindow(YearBuiltPredictionPipelineOptions? yearBuiltPredictionPipelineOptions, IEnumerable<AdministrativeAreal2DReference>? administrativeAreal2DReferences, Func<CancellationToken, Task<Dictionary<int, double>?>>? coverageFactorsAsync = null)
         {
             InitializeComponent();
 
@@ -41,6 +47,58 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             ListBoxControl_Counties.ItemAdding += ListBoxControl_Counties_ItemAdding;
 
             SetCounties(administrativeAreal2DReferences);
+
+            // A read still running when the window closes is no longer wanted by anyone; cancelling it also stops the query
+            // behind it on the server.
+            Closed += (sender, e) => cancellationTokenSource.Cancel();
+
+            if (coverageFactorsAsync is not null)
+            {
+                Label_Coverage.Content = "Reading prediction coverage...";
+                _ = ReadCoverageFactorsAsync(coverageFactorsAsync);
+            }
+        }
+
+        /// <summary>
+        /// Sets the predicted year built coverage the county markers are drawn from, and redraws the county list in place.
+        /// <para>The selection and the scroll position are kept: the coverage normally arrives after the window is open, possibly while counties are being picked. Null means the coverage could not be read, which marks nothing and says so - never a false "not run".</para>
+        /// </summary>
+        /// <param name="coverageFactors">The share of each county part's buildings carrying a predicted year built, keyed by part id, or null when it could not be read.</param>
+        public void SetCoverageFactors(IReadOnlyDictionary<int, double>? coverageFactors)
+        {
+            this.coverageFactors = coverageFactors is null ? null : new Dictionary<int, double>(coverageFactors);
+
+            Label_Coverage.Content = coverageFactors is null
+                ? "Prediction coverage could not be read - no county is marked"
+                : string.Format("{0} - more than {1} % of the county's buildings already carry a predicted year built", Query.PredictedYearBuiltCoverageMarker(double.PositiveInfinity), Constants.YearBuiltPrediction.CoverageMarkerThreshold * 100);
+
+            ListBoxControl_Counties.RefreshItems();
+        }
+
+        private async Task ReadCoverageFactorsAsync(Func<CancellationToken, Task<Dictionary<int, double>?>> coverageFactorsAsync)
+        {
+            Dictionary<int, double>? coverageFactors_Read;
+            try
+            {
+                coverageFactors_Read = await coverageFactorsAsync(cancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException) when (cancellationTokenSource.IsCancellationRequested)
+            {
+                return;
+            }
+            catch (Exception exception)
+            {
+                Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "Prediction coverage could not be read: {Message}", exception.Message);
+                coverageFactors_Read = null;
+            }
+
+            // Resumed on the user interface thread, the context the read was started from. A window closed meanwhile is left alone.
+            if (cancellationTokenSource.IsCancellationRequested)
+            {
+                return;
+            }
+
+            SetCoverageFactors(coverageFactors_Read);
         }
 
         /// <summary>
@@ -171,7 +229,12 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             // The identifier is shown because it is what the run is keyed by, and because two pieces of the same
             // county are told apart by nothing else - they share their code and their name.
-            e.Name = $"{administrativeAreal2DReference.Code} {administrativeAreal2DReference.Name} (id {administrativeAreal2DReference.Id})";
+            string name = $"{administrativeAreal2DReference.Code} {administrativeAreal2DReference.Name} (id {administrativeAreal2DReference.Id})";
+
+            // Per part id, never per code: each piece of a multi-part county has its own coverage.
+            string? marker = coverageFactors is not null && coverageFactors.TryGetValue(administrativeAreal2DReference.Id, out double coverageFactor) ? Query.PredictedYearBuiltCoverageMarker(coverageFactor) : null;
+
+            e.Name = marker is null ? name : $"{name} {marker}";
         }
 
         private void SetCounties(IEnumerable<AdministrativeAreal2DReference>? administrativeAreal2DReferences)

@@ -255,3 +255,46 @@ public const string Key = "Key";
 
 #### Field Value
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.YearBuiltPrediction'></a>
+
+## YearBuiltPrediction Class
+
+Provides the constants of the Year Built prediction options shown by the GIS PostgreSQL UI\.
+
+```csharp
+public static class YearBuiltPrediction
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → YearBuiltPrediction
+### Fields
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.YearBuiltPrediction.CoverageMarkerThreshold'></a>
+
+## YearBuiltPrediction\.CoverageMarkerThreshold Field
+
+Gets the share of a county part's buildings that must carry a predicted year built before the part is marked as already predicted\.
+
+Strictly exceeded, not reached: a part at exactly this share is not marked. The marker answers only "has this county been run already?", so the threshold sits well above the stray predictions a partial or interrupted run leaves and well below a finished run, which covers almost every building of the part.
+
+```csharp
+public const double CoverageMarkerThreshold = 0.1;
+```
+
+#### Field Value
+[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.YearBuiltPrediction.CoverageTimeout'></a>
+
+## YearBuiltPrediction\.CoverageTimeout Field
+
+Gets how long the coverage behind the markers is waited for before the dialog gives up on it\.
+
+The prediction runs are read by unpacking every year built row of the counties asked for, which took 2.6 s for 0.66 million predicted rows and grows with them - at national coverage it is expected to take about a minute. The read never holds the dialog up, so the limit only bounds how long a request lingers against a server that has stopped answering.
+
+```csharp
+public static readonly TimeSpan CoverageTimeout;
+```
+
+#### Field Value
+[System\.TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan 'System\.TimeSpan')

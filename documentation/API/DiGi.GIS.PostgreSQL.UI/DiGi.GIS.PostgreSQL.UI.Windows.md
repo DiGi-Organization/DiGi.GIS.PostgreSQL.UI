@@ -826,28 +826,34 @@ Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system
 Implements [System\.Windows\.Markup\.IComponentConnector](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector 'System\.Windows\.Markup\.IComponentConnector')
 ### Constructors
 
-<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.YearBuiltPredictionsOptionsWindow(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_)'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.YearBuiltPredictionsOptionsWindow(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_,System.Func_System.Threading.CancellationToken,System.Threading.Tasks.Task_System.Collections.Generic.Dictionary_int,double___)'></a>
 
-## YearBuiltPredictionsOptionsWindow\(YearBuiltPredictionPipelineOptions, IEnumerable\<AdministrativeAreal2DReference\>\) Constructor
+## YearBuiltPredictionsOptionsWindow\(YearBuiltPredictionPipelineOptions, IEnumerable\<AdministrativeAreal2DReference\>, Func\<CancellationToken,Task\<Dictionary\<int,double\>\>\>\) Constructor
 
 Initializes a new instance of the [YearBuiltPredictionsOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.YearBuiltPredictionsOptionsWindow') class\.
 
 ```csharp
-public YearBuiltPredictionsOptionsWindow(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions? yearBuiltPredictionPipelineOptions, System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences);
+public YearBuiltPredictionsOptionsWindow(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions? yearBuiltPredictionPipelineOptions, System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences, System.Func<System.Threading.CancellationToken,System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<int,double>?>>? coverageFactorsAsync=null);
 ```
 #### Parameters
 
-<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.YearBuiltPredictionsOptionsWindow(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).yearBuiltPredictionPipelineOptions'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.YearBuiltPredictionsOptionsWindow(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_,System.Func_System.Threading.CancellationToken,System.Threading.Tasks.Task_System.Collections.Generic.Dictionary_int,double___).yearBuiltPredictionPipelineOptions'></a>
 
 `yearBuiltPredictionPipelineOptions` [DiGi\.GIS\.YOLO\.UI\.Classes\.YearBuiltPredictionPipelineOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yearbuiltpredictionpipelineoptions 'DiGi\.GIS\.YOLO\.UI\.Classes\.YearBuiltPredictionPipelineOptions')
 
 The options the controls are filled from\. When null the defaults are used\.
 
-<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.YearBuiltPredictionsOptionsWindow(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).administrativeAreal2DReferences'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.YearBuiltPredictionsOptionsWindow(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_,System.Func_System.Threading.CancellationToken,System.Threading.Tasks.Task_System.Collections.Generic.Dictionary_int,double___).administrativeAreal2DReferences'></a>
 
 `administrativeAreal2DReferences` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.administrativeareal2dreference 'DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
 
 The counties to choose from\. A county whose territory is in several pieces is one entry per piece, each with its own identifier, and each has to be selectable on its own \- a run names every part of a county so that each written row is filed under the part its reference belongs to\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.YearBuiltPredictionsOptionsWindow(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_,System.Func_System.Threading.CancellationToken,System.Threading.Tasks.Task_System.Collections.Generic.Dictionary_int,double___).coverageFactorsAsync'></a>
+
+`coverageFactorsAsync` [System\.Func&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.func-2 'System\.Func\`2')[System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')[,](https://learn.microsoft.com/en-us/dotnet/api/system.func-2 'System\.Func\`2')[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Collections\.Generic\.Dictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.func-2 'System\.Func\`2')
+
+Reads the predicted year built coverage of each county part, keyed by part id, for the markers\. Started here and never awaited before the window opens: the county list is shown at once and its markers are filled in when the read completes, whenever that is\. Closing the window cancels it\. When null no coverage is read and nothing is marked\.
 ### Properties
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.YearBuiltPredictionPipelineOptions'></a>
@@ -875,6 +881,25 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.SetCoverageFactors(System.Collections.Generic.IReadOnlyDictionary_int,double_)'></a>
+
+## YearBuiltPredictionsOptionsWindow\.SetCoverageFactors\(IReadOnlyDictionary\<int,double\>\) Method
+
+Sets the predicted year built coverage the county markers are drawn from, and redraws the county list in place\.
+
+The selection and the scroll position are kept: the coverage normally arrives after the window is open, possibly while counties are being picked. Null means the coverage could not be read, which marks nothing and says so - never a false "not run".
+
+```csharp
+public void SetCoverageFactors(System.Collections.Generic.IReadOnlyDictionary<int,double>? coverageFactors);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.SetCoverageFactors(System.Collections.Generic.IReadOnlyDictionary_int,double_).coverageFactors'></a>
+
+`coverageFactors` [System\.Collections\.Generic\.IReadOnlyDictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')
+
+The share of each county part's buildings carrying a predicted year built, keyed by part id, or null when it could not be read\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow'></a>
 

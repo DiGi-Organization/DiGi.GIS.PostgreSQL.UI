@@ -99,7 +99,12 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             application.Dispatcher.Invoke(() =>
             {
-                YearBuiltPredictionsOptionsWindow yearBuiltPredictionsOptionsWindow = new(YearBuiltPredictionPipelineOptions, administrativeAreal2DReferences);
+                // The coverage markers are read from the deployed API in the background - two requests for the whole list - and
+                // filled in once they arrive, so they never delay the dialog; a failed read marks nothing. Every part id is asked
+                // for, so each piece of a multi-part county gets its own marker.
+                List<int> countyIds_Coverage = [.. administrativeAreal2DReferences.ConvertAll(x => x.Id)];
+
+                YearBuiltPredictionsOptionsWindow yearBuiltPredictionsOptionsWindow = new(YearBuiltPredictionPipelineOptions, administrativeAreal2DReferences, token => Query.PredictedYearBuiltCoverageFactorsAsync(GISWebAPIManager, countyIds_Coverage, token));
 
                 if (yearBuiltPredictionsOptionsWindow.ShowDialog() is not bool dialogResult || !dialogResult)
                 {

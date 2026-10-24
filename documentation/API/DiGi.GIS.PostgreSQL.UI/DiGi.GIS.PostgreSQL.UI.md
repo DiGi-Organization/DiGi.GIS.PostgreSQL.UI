@@ -460,6 +460,95 @@ The reason the pair cannot be used, or null when it can\.
 [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
 True when the pair can be used; otherwise false\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactors(System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.PredictedYearBuiltRunResult_,System.Collections.Generic.IReadOnlyDictionary_int,long_)'></a>
+
+## Query\.PredictedYearBuiltCoverageFactors\(IEnumerable\<PredictedYearBuiltRunResult\>, IReadOnlyDictionary\<int,long\>\) Method
+
+Returns, per county part, the share of its buildings carrying a predicted year built\.
+
+The share is the count of the part's <b>largest</b> run over its building count, never the sum of its runs. A run does not replace the one before it - a building keeps an entry per run - so county 5 carried 10 437 objects from an old run and 33 584 from the current one out of 33 687 buildings, and summing would read 131 %.
+
+```csharp
+public static System.Collections.Generic.Dictionary<int,double> PredictedYearBuiltCoverageFactors(System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.PredictedYearBuiltRunResult?>? predictedYearBuiltRunResults, System.Collections.Generic.IReadOnlyDictionary<int,long>? building2DCounts);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactors(System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.PredictedYearBuiltRunResult_,System.Collections.Generic.IReadOnlyDictionary_int,long_).predictedYearBuiltRunResults'></a>
+
+`predictedYearBuiltRunResults` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.PostgreSQL\.Classes\.PredictedYearBuiltRunResult](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.predictedyearbuiltrunresult 'DiGi\.GIS\.PostgreSQL\.Classes\.PredictedYearBuiltRunResult')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The prediction runs, as `predictedyearbuiltruns` returns them\. Null entries are ignored\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactors(System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.PredictedYearBuiltRunResult_,System.Collections.Generic.IReadOnlyDictionary_int,long_).building2DCounts'></a>
+
+`building2DCounts` [System\.Collections\.Generic\.IReadOnlyDictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')
+
+The building count of each county part, keyed by part id\.
+
+#### Returns
+[System\.Collections\.Generic\.Dictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')  
+The share keyed by part id, for every part that has a run and a positive building count \- a part without a count is left out rather than given a share it cannot have\. Empty when either input is null\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken)'></a>
+
+## Query\.PredictedYearBuiltCoverageFactorsAsync\(GISWebAPIManager, IEnumerable\<int\>, CancellationToken\) Method
+
+Asynchronously reads, from the deployed Web API, the share of each county part's buildings carrying a predicted year built\.
+
+Two requests whatever the number of parts, sent together: `yearbuiltdata/predictedyearbuiltruns` for the runs and `building2d/estimatedcountsbycountyids` for the building counts, the latter a planner estimate read in one catalogue query. Combined by [PredictedYearBuiltCoverageFactors\(IEnumerable&lt;PredictedYearBuiltRunResult&gt;, IReadOnlyDictionary&lt;int,long&gt;\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactors(System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.PredictedYearBuiltRunResult_,System.Collections.Generic.IReadOnlyDictionary_int,long_) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.PredictedYearBuiltCoverageFactors\(System\.Collections\.Generic\.IEnumerable\<DiGi\.GIS\.PostgreSQL\.Classes\.PredictedYearBuiltRunResult\>, System\.Collections\.Generic\.IReadOnlyDictionary\<int,long\>\)').
+
+Never throws for a failed read and is not retried: whatever goes wrong - an unreachable server, an error status, [CoverageTimeout](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.YearBuiltPrediction.CoverageTimeout 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.YearBuiltPrediction\.CoverageTimeout') elapsing, a body that does not parse - answers null, so a caller shows no marker rather than a false "not run". Only a cancellation through [cancellationToken](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).cancellationToken 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.PredictedYearBuiltCoverageFactorsAsync\(DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager, System\.Collections\.Generic\.IEnumerable\<int\>, System\.Threading\.CancellationToken\)\.cancellationToken') is rethrown.
+
+```csharp
+public static System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<int,double>?> PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager? GISWebAPIManager, System.Collections.Generic.IEnumerable<int>? countyIds, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).GISWebAPIManager'></a>
+
+`GISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
+
+The manager that creates the HTTP clients\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).countyIds'></a>
+
+`countyIds` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The county part identifiers, one per part of a multi\-part county\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+Cancels both requests, which on the server cancels the queries behind them\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Collections\.Generic\.Dictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+The share keyed by part id, or null when it could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageMarker(System.Nullable_double_)'></a>
+
+## Query\.PredictedYearBuiltCoverageMarker\(Nullable\<double\>\) Method
+
+Returns the marker shown after a county in the Year Built prediction options when its predicted coverage exceeds [CoverageMarkerThreshold](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.YearBuiltPrediction.CoverageMarkerThreshold 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.YearBuiltPrediction\.CoverageMarkerThreshold')\.
+
+The text is built from the threshold, invariantly, so the two cannot drift apart and a Polish culture does not turn it into `(>10 %)`.
+
+```csharp
+public static string? PredictedYearBuiltCoverageMarker(System.Nullable<double> coverageFactor);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageMarker(System.Nullable_double_).coverageFactor'></a>
+
+`coverageFactor` [System\.Nullable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.nullable-1 'System\.Nullable\`1')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.nullable-1 'System\.Nullable\`1')
+
+The share of the county part's buildings carrying a predicted year built, as a fraction\. Null when it is not known\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+`(>10%)` when the factor strictly exceeds the threshold; null when it does not, when it is not a number, or when it is unknown \- no marker, never a false "not run"\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.RenderRefusal(string,object[])'></a>
 
 ## Query\.RenderRefusal\(string, object\[\]\) Method
