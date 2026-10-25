@@ -31,6 +31,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         public UIAddressPointsFromFilePostTask(GISWebAPIManager GISWebAPIManager)
             : base(GISWebAPIManager)
         {
+            // A bulk import posts batches that the server assigns to county parts by geometry, point by point. The 20 s default
+            // bounds a single attempt and cancelled county 3021 (134 440 points) client-side on 2026-10-25.
+            SerializableObjectsPostOptions.Delay = TimeSpan.FromMinutes(3);
         }
 
         /// <summary>
