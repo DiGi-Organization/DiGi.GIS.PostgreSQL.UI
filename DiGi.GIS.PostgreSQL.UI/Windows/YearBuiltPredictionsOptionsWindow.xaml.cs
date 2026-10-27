@@ -19,6 +19,10 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     /// </summary>
     public partial class YearBuiltPredictionsOptionsWindow : Window
     {
+        // What a blank scratch directory means: the dialog opens with it and OK substitutes it for an emptied box. A relative
+        // path is the ordinary case - the task makes it absolute before the run is launched.
+        private const string DefaultScratchDirectory = "scratch";
+
         private readonly YearBuiltPredictionPipelineOptions yearBuiltPredictionPipelineOptions;
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private Dictionary<int, double>? coverageFactors;
@@ -37,7 +41,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             // The captions stay in the XAML - the designer does not run this constructor, and a caption set here
             // leaves an empty label over an empty box in the preview. Only the values come from the options.
-            TextBoxControl_ScratchDirectory.Value = this.yearBuiltPredictionPipelineOptions.ScratchDirectory;
+            TextBoxControl_ScratchDirectory.Value = string.IsNullOrWhiteSpace(this.yearBuiltPredictionPipelineOptions.ScratchDirectory) ? DefaultScratchDirectory : this.yearBuiltPredictionPipelineOptions.ScratchDirectory;
             TextBoxControl_PythonPath.Value = this.yearBuiltPredictionPipelineOptions.PythonPath;
             TextBoxControl_MaxConcurrentRequests.Value = this.yearBuiltPredictionPipelineOptions.MaxConcurrentRequests.ToString();
 
@@ -123,10 +127,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             string? scratchDirectory = TextBoxControl_ScratchDirectory.Value;
             if (string.IsNullOrWhiteSpace(scratchDirectory))
             {
-                // The run refuses this itself, but only after the counties have been chosen and only into a log.
-                // Refusing it here is the one place the reason reaches whoever is looking at the dialog.
-                MessageBox.Show("A scratch directory has to be given.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                // A blank box is taken as "the default", not refused. The runner still refuses an empty directory,
+                // which is the backstop for a hand-written options file.
+                scratchDirectory = DefaultScratchDirectory;
             }
 
             if (!TextBoxControl_MaxConcurrentRequests.TryGetValue(out int maxConcurrentRequests) || maxConcurrentRequests < 1)
