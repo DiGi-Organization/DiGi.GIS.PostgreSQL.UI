@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DiGi.GIS.PostgreSQL.UI.Windows"
         xmlns:controls="clr-namespace:DiGi.UI.WPF.Controls;assembly=DiGi.UI.WPF"
         mc:Ignorable="d"
-        Title="Create TerrainPoint table" Height="500" Width="520" MinHeight="400" MinWidth="400"
+        Title="Update TerrainPoints" Height="500" Width="520" MinHeight="400" MinWidth="400"
         WindowStartupLocation="CenterScreen"
         WindowStyle="SingleBorderWindow"
         Icon="pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/DiGi.GIS.ico">
