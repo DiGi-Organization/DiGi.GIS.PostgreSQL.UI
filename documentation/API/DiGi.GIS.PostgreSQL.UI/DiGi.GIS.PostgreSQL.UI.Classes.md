@@ -2241,74 +2241,6 @@ A cancellation token that can be used to cancel the operation\.
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
 A task representing the asynchronous operation\. Returns true if the population was successful; otherwise, false\.
 
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointCreateTableTask'></a>
-
-## UIPostgreSQLTerrainPointCreateTableTask Class
-
-A terrain point run that is scoped from the user interface: the counties, the spacing of the sampling grid and whether points already stored are sampled again are asked for through [PostgreSQLTerrainPointCreateTableOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointCreateTableOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLTerrainPointCreateTableOptionsWindow') each time the task is started, and only then is the run handed to [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointCreateTableTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlterrainpointcreatetabletask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointCreateTableTask')\.
-
-That is what the settings are worth asking for: a national pass at 50 m is about 125 million points and one request to the elevation service each, while the same task over a named county at 10 m is an afternoon. Neither is a default the other would tolerate.
-
-```csharp
-public class UIPostgreSQLTerrainPointCreateTableTask : DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointCreateTableTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
-```
-
-Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointCreateTableTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlterrainpointcreatetabletask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointCreateTableTask') → UIPostgreSQLTerrainPointCreateTableTask
-
-Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
-### Constructors
-
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointCreateTableTask.UIPostgreSQLTerrainPointCreateTableTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager)'></a>
-
-## UIPostgreSQLTerrainPointCreateTableTask\(GISWebAPIManager, GISPostgreSQLConverterManager\) Constructor
-
-Initializes a new instance of the [UIPostgreSQLTerrainPointCreateTableTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointCreateTableTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLTerrainPointCreateTableTask') class\.
-
-```csharp
-public UIPostgreSQLTerrainPointCreateTableTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager? GISWebAPIManager, DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager? GISPostgreSQLConverterManager);
-```
-#### Parameters
-
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointCreateTableTask.UIPostgreSQLTerrainPointCreateTableTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager).GISWebAPIManager'></a>
-
-`GISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
-
-The manager the elevation service client is built from\.
-
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointCreateTableTask.UIPostgreSQLTerrainPointCreateTableTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager).GISPostgreSQLConverterManager'></a>
-
-`GISPostgreSQLConverterManager` [DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.gispostgresqlconvertermanager 'DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager')
-
-The GIS PostgreSQL converter manager used to read the areas and write the points\.
-### Methods
-
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointCreateTableTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
-
-## UIPostgreSQLTerrainPointCreateTableTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
-
-Executes the background task, sampling elevations county by county and writing them to the terrain point table\.
-
-```csharp
-protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
-```
-#### Parameters
-
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointCreateTableTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
-
-`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
-
-A progress reporter carrying the running total of points stored\.
-
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointCreateTableTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
-
-`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
-
-A cancellation token that can be used to cancel the operation\.
-
-#### Returns
-[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
-A task representing the asynchronous operation\. Returns true unless the run was cancelled\.
-
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointFillGapsTask'></a>
 
 ## UIPostgreSQLTerrainPointFillGapsTask Class
@@ -2368,6 +2300,74 @@ protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgre
 A progress reporter carrying the running total of points stored\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointFillGapsTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+A cancellation token that can be used to cancel the operation\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task representing the asynchronous operation\. Returns true unless the run was cancelled\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointUpdateTask'></a>
+
+## UIPostgreSQLTerrainPointUpdateTask Class
+
+A terrain point run that is scoped from the user interface: the counties, the spacing of the sampling grid and whether points already stored are sampled again are asked for through [PostgreSQLTerrainPointUpdateOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLTerrainPointUpdateOptionsWindow') each time the task is started, and only then is the run handed to [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointUpdateTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlterrainpointupdatetask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointUpdateTask')\.
+
+That is what the settings are worth asking for: a national pass at 50 m is about 125 million points and one request to the elevation service each, while the same task over a named county at 10 m is an afternoon. Neither is a default the other would tolerate.
+
+```csharp
+public class UIPostgreSQLTerrainPointUpdateTask : DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointUpdateTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointUpdateTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlterrainpointupdatetask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointUpdateTask') → UIPostgreSQLTerrainPointUpdateTask
+
+Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointUpdateTask.UIPostgreSQLTerrainPointUpdateTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager)'></a>
+
+## UIPostgreSQLTerrainPointUpdateTask\(GISWebAPIManager, GISPostgreSQLConverterManager\) Constructor
+
+Initializes a new instance of the [UIPostgreSQLTerrainPointUpdateTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointUpdateTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLTerrainPointUpdateTask') class\.
+
+```csharp
+public UIPostgreSQLTerrainPointUpdateTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager? GISWebAPIManager, DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager? GISPostgreSQLConverterManager);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointUpdateTask.UIPostgreSQLTerrainPointUpdateTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager).GISWebAPIManager'></a>
+
+`GISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
+
+The manager the elevation service client is built from\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointUpdateTask.UIPostgreSQLTerrainPointUpdateTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager).GISPostgreSQLConverterManager'></a>
+
+`GISPostgreSQLConverterManager` [DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.gispostgresqlconvertermanager 'DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager')
+
+The GIS PostgreSQL converter manager used to read the areas and write the points\.
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointUpdateTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
+
+## UIPostgreSQLTerrainPointUpdateTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
+
+Executes the background task, sampling elevations county by county and writing them to the terrain point table\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointUpdateTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
+
+`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
+
+A progress reporter carrying the running total of points stored\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLTerrainPointUpdateTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
 
 `cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
 

@@ -10,19 +10,19 @@ using System.Threading.Tasks;
 namespace DiGi.GIS.PostgreSQL.UI.Classes
 {
     /// <summary>
-    /// A terrain point run that is scoped from the user interface: the counties, the spacing of the sampling grid and whether points already stored are sampled again are asked for through <see cref="PostgreSQLTerrainPointCreateTableOptionsWindow"/> each time the task is started, and only then is the run handed to <see cref="PostgreSQLTerrainPointCreateTableTask"/>.
+    /// A terrain point run that is scoped from the user interface: the counties, the spacing of the sampling grid and whether points already stored are sampled again are asked for through <see cref="PostgreSQLTerrainPointUpdateOptionsWindow"/> each time the task is started, and only then is the run handed to <see cref="PostgreSQLTerrainPointUpdateTask"/>.
     /// <para>That is what the settings are worth asking for: a national pass at 50 m is about 125 million points and one request to the elevation service each, while the same task over a named county at 10 m is an afternoon. Neither is a default the other would tolerate.</para>
     /// </summary>
-    public class UIPostgreSQLTerrainPointCreateTableTask : PostgreSQLTerrainPointCreateTableTask, IGISPostgreSQLUIObject
+    public class UIPostgreSQLTerrainPointUpdateTask : PostgreSQLTerrainPointUpdateTask, IGISPostgreSQLUIObject
     {
         private readonly GISWebAPIManager? gISWebAPIManager;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UIPostgreSQLTerrainPointCreateTableTask"/> class.
+        /// Initializes a new instance of the <see cref="UIPostgreSQLTerrainPointUpdateTask"/> class.
         /// </summary>
         /// <param name="GISWebAPIManager">The manager the elevation service client is built from.</param>
         /// <param name="GISPostgreSQLConverterManager">The GIS PostgreSQL converter manager used to read the areas and write the points.</param>
-        public UIPostgreSQLTerrainPointCreateTableTask(GISWebAPIManager? GISWebAPIManager, GISPostgreSQLConverterManager? GISPostgreSQLConverterManager)
+        public UIPostgreSQLTerrainPointUpdateTask(GISWebAPIManager? GISWebAPIManager, GISPostgreSQLConverterManager? GISPostgreSQLConverterManager)
             : base(WebAPI.Create.HttpClient_GUGiK(GISWebAPIManager), GISPostgreSQLConverterManager)
         {
             gISWebAPIManager = GISWebAPIManager;
@@ -95,9 +95,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                             stringBuilder.Append("countyids=").Append(countyIds_Batch[j]);
                         }
 
-                        if (PostgreSQLTerrainPointCreateTableOptions.GridSize > 0)
+                        if (PostgreSQLTerrainPointUpdateOptions.GridSize > 0)
                         {
-                            stringBuilder.Append("&gridsize=").Append(PostgreSQLTerrainPointCreateTableOptions.GridSize.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            stringBuilder.Append("&gridsize=").Append(PostgreSQLTerrainPointUpdateOptions.GridSize.ToString(System.Globalization.CultureInfo.InvariantCulture));
                         }
 
                         try
@@ -118,29 +118,29 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             // Read on this thread, shown on the user interface thread. Reading inside the callback below would
             // hold the interface still for the whole of the query.
-            PostgreSQLTerrainPointCreateTableOptions? postgreSQLTerrainPointCreateTableOptions = null;
+            PostgreSQLTerrainPointUpdateOptions? postgreSQLTerrainPointUpdateOptions = null;
 
             application.Dispatcher.Invoke(() =>
             {
-                PostgreSQLTerrainPointCreateTableOptionsWindow postgreSQLTerrainPointCreateTableOptionsWindow = new(PostgreSQLTerrainPointCreateTableOptions, administrativeAreal2DReferences, terrainPointDensityResults);
+                PostgreSQLTerrainPointUpdateOptionsWindow postgreSQLTerrainPointUpdateOptionsWindow = new(PostgreSQLTerrainPointUpdateOptions, administrativeAreal2DReferences, terrainPointDensityResults);
 
-                if (postgreSQLTerrainPointCreateTableOptionsWindow.ShowDialog() is not bool dialogResult || !dialogResult)
+                if (postgreSQLTerrainPointUpdateOptionsWindow.ShowDialog() is not bool dialogResult || !dialogResult)
                 {
                     return;
                 }
 
-                postgreSQLTerrainPointCreateTableOptions = postgreSQLTerrainPointCreateTableOptionsWindow.PostgreSQLTerrainPointCreateTableOptions;
+                postgreSQLTerrainPointUpdateOptions = postgreSQLTerrainPointUpdateOptionsWindow.PostgreSQLTerrainPointUpdateOptions;
             });
 
             // A cancelled dialog leaves the options of an earlier run as they were - the window works on a copy -
             // and ends the run here rather than starting a national pass nobody asked for.
-            if (postgreSQLTerrainPointCreateTableOptions is null)
+            if (postgreSQLTerrainPointUpdateOptions is null)
             {
                 Serilog.Modify.Log("Terrain point options were cancelled - nothing was sampled");
                 return false;
             }
 
-            PostgreSQLTerrainPointCreateTableOptions = postgreSQLTerrainPointCreateTableOptions;
+            PostgreSQLTerrainPointUpdateOptions = postgreSQLTerrainPointUpdateOptions;
 
             return await base.ExecuteAsync(progress, cancellationToken);
         }

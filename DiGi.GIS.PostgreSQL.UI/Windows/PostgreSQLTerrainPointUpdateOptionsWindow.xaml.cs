@@ -6,26 +6,26 @@ using System.Windows;
 namespace DiGi.GIS.PostgreSQL.UI.Windows
 {
     /// <summary>
-    /// Interaction logic for PostgreSQLTerrainPointCreateTableOptionsWindow.xaml
+    /// Interaction logic for PostgreSQLTerrainPointUpdateOptionsWindow.xaml
     /// <para>Asks for the three settings that decide what a terrain point run costs and covers - the spacing of the sampling grid, whether points already stored are sampled again, and the counties to sample. Every other option of the instance it was given is carried over untouched, which is deliberate: the origin of the grid and the tile size are what let separate runs share their points, and they are not settings to change from a dialog.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.</para>
     /// </summary>
-    public partial class PostgreSQLTerrainPointCreateTableOptionsWindow : Window
+    public partial class PostgreSQLTerrainPointUpdateOptionsWindow : Window
     {
-        private readonly PostgreSQLTerrainPointCreateTableOptions postgreSQLTerrainPointCreateTableOptions;
+        private readonly PostgreSQLTerrainPointUpdateOptions postgreSQLTerrainPointUpdateOptions;
         private readonly Dictionary<int, TerrainPointDensityResult>? terrainPointDensityResults_ByCountyId;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PostgreSQLTerrainPointCreateTableOptionsWindow"/> class.
+        /// Initializes a new instance of the <see cref="PostgreSQLTerrainPointUpdateOptionsWindow"/> class.
         /// </summary>
-        /// <param name="postgreSQLTerrainPointCreateTableOptions">The options the controls are filled from. When null the defaults are used.</param>
+        /// <param name="postgreSQLTerrainPointUpdateOptions">The options the controls are filled from. When null the defaults are used.</param>
         /// <param name="administrativeAreal2DReferences">The counties to choose from. A county whose territory is in several pieces is one entry per piece, each with its own identifier, and each has to be selectable on its own.</param>
         /// <param name="terrainPointDensityResults">The density measurements of the county partitions. When provided, point count, density and equivalent spacing are shown for each county.</param>
-        public PostgreSQLTerrainPointCreateTableOptionsWindow(PostgreSQLTerrainPointCreateTableOptions? postgreSQLTerrainPointCreateTableOptions, IEnumerable<AdministrativeAreal2DReference>? administrativeAreal2DReferences, IEnumerable<TerrainPointDensityResult>? terrainPointDensityResults = null)
+        public PostgreSQLTerrainPointUpdateOptionsWindow(PostgreSQLTerrainPointUpdateOptions? postgreSQLTerrainPointUpdateOptions, IEnumerable<AdministrativeAreal2DReference>? administrativeAreal2DReferences, IEnumerable<TerrainPointDensityResult>? terrainPointDensityResults = null)
         {
             InitializeComponent();
 
-            this.postgreSQLTerrainPointCreateTableOptions = postgreSQLTerrainPointCreateTableOptions is null ? new PostgreSQLTerrainPointCreateTableOptions() : new PostgreSQLTerrainPointCreateTableOptions(postgreSQLTerrainPointCreateTableOptions);
+            this.postgreSQLTerrainPointUpdateOptions = postgreSQLTerrainPointUpdateOptions is null ? new PostgreSQLTerrainPointUpdateOptions() : new PostgreSQLTerrainPointUpdateOptions(postgreSQLTerrainPointUpdateOptions);
 
             if (terrainPointDensityResults is not null)
             {
@@ -41,9 +41,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             // The caption stays in the XAML - the designer does not run this constructor, and a caption set here
             // leaves an empty label over an empty box in the preview. Only the values come from the options.
-            TextBoxControl_GridSize.Value = this.postgreSQLTerrainPointCreateTableOptions.GridSize.ToString();
+            TextBoxControl_GridSize.Value = this.postgreSQLTerrainPointUpdateOptions.GridSize.ToString();
 
-            CheckBox_OverrideExisting.IsChecked = this.postgreSQLTerrainPointCreateTableOptions.OverrideExisting;
+            CheckBox_OverrideExisting.IsChecked = this.postgreSQLTerrainPointUpdateOptions.OverrideExisting;
 
             // Subscribed before the list is filled - the text of an item is decided as it is added.
             ListBoxControl_Counties.ItemAdding += ListBoxControl_Counties_ItemAdding;
@@ -54,11 +54,11 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
         /// <summary>
         /// Gets the options the window holds. They carry the values of the controls only once the dialog has been closed with OK; until then, and after a cancellation, they are the values it was opened with.
         /// </summary>
-        public PostgreSQLTerrainPointCreateTableOptions PostgreSQLTerrainPointCreateTableOptions
+        public PostgreSQLTerrainPointUpdateOptions PostgreSQLTerrainPointUpdateOptions
         {
             get
             {
-                return postgreSQLTerrainPointCreateTableOptions;
+                return postgreSQLTerrainPointUpdateOptions;
             }
         }
 
@@ -94,9 +94,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
                 countyIds.Add(administrativeAreal2DReference.Id);
             }
 
-            postgreSQLTerrainPointCreateTableOptions.GridSize = gridSize;
-            postgreSQLTerrainPointCreateTableOptions.OverrideExisting = CheckBox_OverrideExisting.IsChecked == true;
-            postgreSQLTerrainPointCreateTableOptions.CountyIds = countyIds;
+            postgreSQLTerrainPointUpdateOptions.GridSize = gridSize;
+            postgreSQLTerrainPointUpdateOptions.OverrideExisting = CheckBox_OverrideExisting.IsChecked == true;
+            postgreSQLTerrainPointUpdateOptions.CountyIds = countyIds;
 
             DialogResult = true;
             Close();
@@ -162,7 +162,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             ListBoxControl_Counties.SetItems(administrativeAreal2DReferences_Sorted);
 
-            HashSet<int>? countyIds = postgreSQLTerrainPointCreateTableOptions.CountyIds;
+            HashSet<int>? countyIds = postgreSQLTerrainPointUpdateOptions.CountyIds;
             if (countyIds is null || countyIds.Count == 0)
             {
                 return;
