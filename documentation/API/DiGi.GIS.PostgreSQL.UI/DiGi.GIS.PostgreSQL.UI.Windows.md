@@ -463,6 +463,138 @@ public void InitializeComponent();
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow'></a>
+
+## PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow Class
+
+Interaction logic for PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow\.xaml
+
+Asks for the county parts an acquisition-date backfill of `orto_datas` walks, the last year the stored series were fetched up to, and the paging of the walk. Unlike most county-scoped tasks, no selection means nothing rather than every county: the backfill rewrites every stored series it reaches, so the scope is always named.
+
+The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
+
+```csharp
+public class PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [System\.Windows\.Threading\.DispatcherObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.threading.dispatcherobject 'System\.Windows\.Threading\.DispatcherObject') → [System\.Windows\.DependencyObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.dependencyobject 'System\.Windows\.DependencyObject') → [System\.Windows\.Media\.Visual](https://learn.microsoft.com/en-us/dotnet/api/system.windows.media.visual 'System\.Windows\.Media\.Visual') → [System\.Windows\.UIElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.uielement 'System\.Windows\.UIElement') → [System\.Windows\.FrameworkElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement 'System\.Windows\.FrameworkElement') → [System\.Windows\.Controls\.Control](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.control 'System\.Windows\.Controls\.Control') → [System\.Windows\.Controls\.ContentControl](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.contentcontrol 'System\.Windows\.Controls\.ContentControl') → [System\.Windows\.Window](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window 'System\.Windows\.Window') → PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow
+
+Implements [System\.Windows\.Markup\.IComponentConnector](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector 'System\.Windows\.Markup\.IComponentConnector')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_)'></a>
+
+## PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow\(PostgreSQLOrtoDatasAcquisitionUpdateOptions, IEnumerable\<AdministrativeAreal2DReference\>\) Constructor
+
+Initializes a new instance of the [PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow') class\.
+
+```csharp
+public PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions? postgreSQLOrtoDatasAcquisitionUpdateOptions, System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).postgreSQLOrtoDatasAcquisitionUpdateOptions'></a>
+
+`postgreSQLOrtoDatasAcquisitionUpdateOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOrtoDatasAcquisitionUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlortodatasacquisitionupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOrtoDatasAcquisitionUpdateOptions')
+
+The options the controls are filled from\. When null the defaults are used\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).administrativeAreal2DReferences'></a>
+
+`administrativeAreal2DReferences` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.administrativeareal2dreference 'DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The county parts to choose from\. A county whose territory is in several pieces is one entry per piece, each with its own identifier\.
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptions'></a>
+
+## PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow\.PostgreSQLOrtoDatasAcquisitionUpdateOptions Property
+
+Gets the options the window holds\. They carry the values of the controls only once the dialog has been closed with OK; until then, and after a cancellation, they are the values it was opened with\.
+
+```csharp
+public DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions PostgreSQLOrtoDatasAcquisitionUpdateOptions { get; }
+```
+
+#### Property Value
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOrtoDatasAcquisitionUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlortodatasacquisitionupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOrtoDatasAcquisitionUpdateOptions')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.InitializeComponent()'></a>
+
+## PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow\.InitializeComponent\(\) Method
+
+InitializeComponent
+
+```csharp
+public void InitializeComponent();
+```
+
+Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoSheetUpdateOptionsWindow'></a>
+
+## PostgreSQLOrtoSheetUpdateOptionsWindow Class
+
+Interaction logic for PostgreSQLOrtoSheetUpdateOptionsWindow\.xaml
+
+Asks for the index years an orthophoto sheet import reads and for its pacing against the GUGiK index service. The whole index (49 years, 1957-2026, 1 337 341 rows on 2026-11-03) took 23 minutes to read; a single year is a quick trial.
+
+The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
+
+```csharp
+public class PostgreSQLOrtoSheetUpdateOptionsWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [System\.Windows\.Threading\.DispatcherObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.threading.dispatcherobject 'System\.Windows\.Threading\.DispatcherObject') → [System\.Windows\.DependencyObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.dependencyobject 'System\.Windows\.DependencyObject') → [System\.Windows\.Media\.Visual](https://learn.microsoft.com/en-us/dotnet/api/system.windows.media.visual 'System\.Windows\.Media\.Visual') → [System\.Windows\.UIElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.uielement 'System\.Windows\.UIElement') → [System\.Windows\.FrameworkElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement 'System\.Windows\.FrameworkElement') → [System\.Windows\.Controls\.Control](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.control 'System\.Windows\.Controls\.Control') → [System\.Windows\.Controls\.ContentControl](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.contentcontrol 'System\.Windows\.Controls\.ContentControl') → [System\.Windows\.Window](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window 'System\.Windows\.Window') → PostgreSQLOrtoSheetUpdateOptionsWindow
+
+Implements [System\.Windows\.Markup\.IComponentConnector](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector 'System\.Windows\.Markup\.IComponentConnector')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoSheetUpdateOptionsWindow.PostgreSQLOrtoSheetUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoSheetUpdateOptions)'></a>
+
+## PostgreSQLOrtoSheetUpdateOptionsWindow\(PostgreSQLOrtoSheetUpdateOptions\) Constructor
+
+Initializes a new instance of the [PostgreSQLOrtoSheetUpdateOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoSheetUpdateOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLOrtoSheetUpdateOptionsWindow') class\.
+
+```csharp
+public PostgreSQLOrtoSheetUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoSheetUpdateOptions? postgreSQLOrtoSheetUpdateOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoSheetUpdateOptionsWindow.PostgreSQLOrtoSheetUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoSheetUpdateOptions).postgreSQLOrtoSheetUpdateOptions'></a>
+
+`postgreSQLOrtoSheetUpdateOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOrtoSheetUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlortosheetupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOrtoSheetUpdateOptions')
+
+The options the controls are filled from\. When null the defaults are used\.
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoSheetUpdateOptionsWindow.PostgreSQLOrtoSheetUpdateOptions'></a>
+
+## PostgreSQLOrtoSheetUpdateOptionsWindow\.PostgreSQLOrtoSheetUpdateOptions Property
+
+Gets the options the window holds\. They carry the values of the controls only once the dialog has been closed with OK; until then, and after a cancellation, they are the values it was opened with\.
+
+```csharp
+public DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoSheetUpdateOptions PostgreSQLOrtoSheetUpdateOptions { get; }
+```
+
+#### Property Value
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOrtoSheetUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlortosheetupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOrtoSheetUpdateOptions')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoSheetUpdateOptionsWindow.InitializeComponent()'></a>
+
+## PostgreSQLOrtoSheetUpdateOptionsWindow\.InitializeComponent\(\) Method
+
+InitializeComponent
+
+```csharp
+public void InitializeComponent();
+```
+
+Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointFillGapsOptionsWindow'></a>
 
 ## PostgreSQLTerrainPointFillGapsOptionsWindow Class
