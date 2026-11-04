@@ -8,7 +8,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 {
     /// <summary>
     /// Interaction logic for PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.xaml
-    /// <para>Asks for the county parts an acquisition-date backfill of <c>orto_datas</c> walks, the last year the stored series were fetched up to, and the paging of the walk. Unlike most county-scoped tasks, no selection means nothing rather than every county: the backfill rewrites every stored series it reaches, so the scope is always named.</para>
+    /// <para>Asks for the county parts an acquisition-date backfill of <c>orto_datas</c> walks, the last year the stored series were fetched up to, and the paging of the walk. Unlike most county-scoped tasks, no selection means nothing rather than every county: the backfill reads every stored series it reaches, about 0.5 MB each, so the scope is always named.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.</para>
     /// </summary>
     public partial class PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow : Window

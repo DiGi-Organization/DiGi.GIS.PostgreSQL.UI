@@ -62,10 +62,10 @@ namespace DiGi.GIS.PostgreSQL.UI
 
                     // DiGi.GIS#18: the sheet index first, then the backfill that dates every stored image by the sheet
                     // it shows. The import reads the national index in about 23 minutes and only adds rows when GUGiK
-                    // publishes a new year; the backfill rewrites the series of the county parts it is given, so it
-                    // has no unscoped default.
+                    // publishes a new year; the backfill writes orto_data_acquisition for the county parts it is given
+                    // (orto_datas is only read, DiGi.GIS.PostgreSQL#123), and it has no unscoped default.
                     result.Add(Visual(new UIPostgreSQLOrtoSheetUpdateTask(GISWebAPIManager, gISPostgreSQLConverterManager), "Import orthophoto sheet index", "Imports the GUGiK orthophoto sheet index (SkorowidzOrtofomapy<year>) into orto_sheet, one index year at a time, and creates the table when it does not exist yet. The years and the pacing are asked for when the task is started"));
-                    result.Add(Visual(new UIPostgreSQLOrtoDatasAcquisitionUpdateTask(gISPostgreSQLConverterManager), "Backfill OrtoDatas acquisition dates", "Dates every stored OrtoDatas image by the orto_sheet sheet it shows (acquisition date, sheet id, content hash) and writes back only the series that changed. Import the sheet index first. The county parts, the last fetched year and the paging are asked for when the task is started"));
+                    result.Add(Visual(new UIPostgreSQLOrtoDatasAcquisitionUpdateTask(gISPostgreSQLConverterManager), "Backfill OrtoDatas acquisition dates", "Dates every stored OrtoDatas image by the orto_sheet sheet it shows (acquisition date, sheet id, content hash) into orto_data_acquisition, one row per image, writing only rows that changed; orto_datas is only read. Import the sheet index first. The county parts, the last fetched year and the paging are asked for when the task is started"));
 
                     result.Add(Visual(new UIPostgreSQLBuildingDataUpdateTask(gISPostgreSQLConverterManager), "Update building data", "Updates building data from Building2D and the other stored sources. The counties, the kinds of column to write and the statement timeout are asked for when the task is started - unscoped it walks every subdivision in the country"));
 

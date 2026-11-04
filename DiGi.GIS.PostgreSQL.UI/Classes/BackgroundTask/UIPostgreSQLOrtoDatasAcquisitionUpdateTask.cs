@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace DiGi.GIS.PostgreSQL.UI.Classes
 {
     /// <summary>
-    /// An acquisition-date backfill of <c>orto_datas</c> that is scoped from the user interface: the county parts, the last fetched year and the paging are asked for through <see cref="PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow"/> each time the task is started, and only then is the run handed to <see cref="PostgreSQLOrtoDatasAcquisitionUpdateTask"/>.
-    /// <para>The county parts are always named: the backfill rewrites every stored series it reaches, so a national pass is a deliberate selection of every part, not a default. Run the sheet import (<see cref="UIPostgreSQLOrtoSheetUpdateTask"/>) first.</para>
+    /// An acquisition-date backfill of <c>orto_datas</c> into <c>orto_data_acquisition</c> that is scoped from the user interface: the county parts, the last fetched year and the paging are asked for through <see cref="PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow"/> each time the task is started, and only then is the run handed to <see cref="PostgreSQLOrtoDatasAcquisitionUpdateTask"/>.
+    /// <para>The county parts are always named: the backfill reads every stored series it reaches, about 0.5 MB each, so a national pass is a deliberate selection of every part, not a default. Run the sheet import (<see cref="UIPostgreSQLOrtoSheetUpdateTask"/>) first.</para>
     /// </summary>
     public class UIPostgreSQLOrtoDatasAcquisitionUpdateTask : PostgreSQLOrtoDatasAcquisitionUpdateTask, IGISPostgreSQLUIObject
     {
