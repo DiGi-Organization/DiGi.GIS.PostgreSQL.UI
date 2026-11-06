@@ -177,6 +177,154 @@ public void InitializeComponent();
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow'></a>
+
+## OpenBuildingImportOptionsWindow Class
+
+Interaction logic for OpenBuildingImportOptionsWindow\.xaml
+
+Asks what decides a run of the open building import (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#38): which source files the release came in, whether the scope is a county list or a bounding box, and the release metadata the register stores. The dataset itself is not asked - the row the operator started fixes it, so a row named for one release cannot import another.
+
+The SHA-256 is never typed. The field is shown disabled with the caption saying when it is computed: the wrapper hashes the source files after this dialog closes and before the run starts.
+
+Exactly one scope form has to be filled - a county selection or the four coordinates of an EPSG:2180 box - and OK still refuses when either is missing or both are given, because both is ambiguous and neither has no run. What the core task enforces is asked here first through [OpenBuildingImportOptionsMessage\(PostgreSQLOpenBuildingImportTaskOptions\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingImportOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OpenBuildingImportOptionsMessage\(DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions\)'), so the operator is told while the dialog is open rather than from a failed run's log.
+
+The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
+
+```csharp
+public class OpenBuildingImportOptionsWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [System\.Windows\.Threading\.DispatcherObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.threading.dispatcherobject 'System\.Windows\.Threading\.DispatcherObject') → [System\.Windows\.DependencyObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.dependencyobject 'System\.Windows\.DependencyObject') → [System\.Windows\.Media\.Visual](https://learn.microsoft.com/en-us/dotnet/api/system.windows.media.visual 'System\.Windows\.Media\.Visual') → [System\.Windows\.UIElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.uielement 'System\.Windows\.UIElement') → [System\.Windows\.FrameworkElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement 'System\.Windows\.FrameworkElement') → [System\.Windows\.Controls\.Control](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.control 'System\.Windows\.Controls\.Control') → [System\.Windows\.Controls\.ContentControl](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.contentcontrol 'System\.Windows\.Controls\.ContentControl') → [System\.Windows\.Window](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window 'System\.Windows\.Window') → OpenBuildingImportOptionsWindow
+
+Implements [System\.Windows\.Markup\.IComponentConnector](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector 'System\.Windows\.Markup\.IComponentConnector')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.OpenBuildingImportOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_)'></a>
+
+## OpenBuildingImportOptionsWindow\(PostgreSQLOpenBuildingImportTaskOptions, IEnumerable\<AdministrativeAreal2DReference\>\) Constructor
+
+Initializes a new instance of the [OpenBuildingImportOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.OpenBuildingImportOptionsWindow') class\.
+
+```csharp
+public OpenBuildingImportOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions? postgreSQLOpenBuildingImportTaskOptions, System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.OpenBuildingImportOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).postgreSQLOpenBuildingImportTaskOptions'></a>
+
+`postgreSQLOpenBuildingImportTaskOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingimporttaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions')
+
+The options the controls are filled from\. When null the defaults are used, and the dataset row then reports that no dataset was chosen\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.OpenBuildingImportOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).administrativeAreal2DReferences'></a>
+
+`administrativeAreal2DReferences` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.administrativeareal2dreference 'DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The county parts to choose from\. A county whose territory is in several pieces is one entry per piece, each with its own identifier, and each has to be selectable on its own\. Nothing is preselected: the scope is required, and a dialog that opens with every county ticked invites a national run as the default\.
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.PostgreSQLOpenBuildingImportTaskOptions'></a>
+
+## OpenBuildingImportOptionsWindow\.PostgreSQLOpenBuildingImportTaskOptions Property
+
+Gets the options the window holds\. They carry the values of the controls only once the dialog has been closed with OK; until then, and after a cancellation, they are the values it was opened with\.
+
+```csharp
+public DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions PostgreSQLOpenBuildingImportTaskOptions { get; }
+```
+
+#### Property Value
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingimporttaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.DisplayName(string)'></a>
+
+## OpenBuildingImportOptionsWindow\.DisplayName\(string\) Method
+
+Maps a dataset key to the caption shown for it on the window \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#38\)\.
+
+```csharp
+private static string DisplayName(string? datasetKey);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.DisplayName(string).datasetKey'></a>
+
+`datasetKey` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The dataset key the row fixed, or null\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The display name, including the key itself so the two cannot be read apart\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.FileFilter(string)'></a>
+
+## OpenBuildingImportOptionsWindow\.FileFilter\(string\) Method
+
+Maps a dataset key to the file type the add\-files dialog is filtered by \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#38\)\.
+
+The dialog always offers All Files as well, so the datasets released as two formats - GHS-OBAT comes as CSV with GeoPackage centroids - can still be picked in one pass.
+
+```csharp
+private static (string FileTypeName,string FileExtension) FileFilter(string? datasetKey);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.FileFilter(string).datasetKey'></a>
+
+`datasetKey` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The dataset key the row fixed, or null\.
+
+#### Returns
+[&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[,](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')  
+The dialog's file type name and extension filter\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.InitializeComponent()'></a>
+
+## OpenBuildingImportOptionsWindow\.InitializeComponent\(\) Method
+
+InitializeComponent
+
+```csharp
+public void InitializeComponent();
+```
+
+Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.SetScopeControls()'></a>
+
+## OpenBuildingImportOptionsWindow\.SetScopeControls\(\) Method
+
+Shows the scope form that is checked and hides the other one, so the window never offers a county selection and a box to fill at the same time\.
+
+```csharp
+private void SetScopeControls();
+```
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.TrimOrNull(string)'></a>
+
+## OpenBuildingImportOptionsWindow\.TrimOrNull\(string\) Method
+
+Reads a control's value as trimmed text, mapping blank to null so an empty optional field is stored as absent rather than as whitespace\.
+
+```csharp
+private static string? TrimOrNull(string? value);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.TrimOrNull(string).value'></a>
+
+`value` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The raw control value\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The trimmed text, or null when there was none\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuilding2DRefreshOptionsWindow'></a>
 
 ## PostgreSQLBuilding2DRefreshOptionsWindow Class

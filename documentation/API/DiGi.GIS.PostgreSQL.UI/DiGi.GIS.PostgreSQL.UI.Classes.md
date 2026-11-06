@@ -1606,6 +1606,175 @@ The token to monitor for cancellation requests\.
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
 A task that represents the asynchronous operation\. The task result is true if the operation completed successfully; otherwise, false\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask'></a>
+
+## UIOpenBuildingImportTask Class
+
+The tray\-side wrapper of [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingimporttask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTask') \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#38\): it asks the operator for the run before it starts one, computes the release's SHA\-256 from the source files instead of having it typed, and writes the run report\.
+
+The window is shown on the dispatcher, because this body runs on a thread pool thread where a window cannot be created at all. A cancelled dialog ends the run before anything is written, and [SkipOptionsDialog](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.SkipOptionsDialog 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIOpenBuildingImportTask\.SkipOptionsDialog') is the seam a test or a hosted run uses to drive the task through its properties instead.
+
+What the dialog asked is checked once more through [OpenBuildingImportOptionsMessage\(PostgreSQLOpenBuildingImportTaskOptions\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingImportOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OpenBuildingImportOptionsMessage\(DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions\)') before the core task is started, so a hand-built task that skipped the dialog still refuses with a reason in the log rather than failing deep inside the import.
+
+```csharp
+public class UIOpenBuildingImportTask : DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingimporttask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTask') → UIOpenBuildingImportTask
+
+Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.UIOpenBuildingImportTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager)'></a>
+
+## UIOpenBuildingImportTask\(GISPostgreSQLConverterManager\) Constructor
+
+Initializes a new instance of the [UIOpenBuildingImportTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIOpenBuildingImportTask') class\.
+
+```csharp
+public UIOpenBuildingImportTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager gISPostgreSQLConverterManager);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.UIOpenBuildingImportTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager).gISPostgreSQLConverterManager'></a>
+
+`gISPostgreSQLConverterManager` [DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.gispostgresqlconvertermanager 'DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager')
+
+The manager holding the PostgreSQL converters\.
+### Fields
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.ReportPrefix'></a>
+
+## UIOpenBuildingImportTask\.ReportPrefix Field
+
+The report file name prefix; the dataset key follows it, so the six datasets never overwrite each other's report\.
+
+```csharp
+private const string ReportPrefix = "OpenBuilding_Import_Report_";
+```
+
+#### Field Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.DatasetKey'></a>
+
+## UIOpenBuildingImportTask\.DatasetKey Property
+
+Gets or sets the dataset key this row imports\. It forwards to [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions\.DatasetKey](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingimporttaskoptions.datasetkey 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions\.DatasetKey') of the options, so each of the six rows fixes its own dataset and a row named for one release cannot import another\.
+
+```csharp
+public string? DatasetKey { get; set; }
+```
+
+#### Property Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.SkipOptionsDialog'></a>
+
+## UIOpenBuildingImportTask\.SkipOptionsDialog Property
+
+Gets or sets whether the options dialog is skipped and the run takes its options from the task's properties as they are\.
+
+The dialog needs a running WPF application, which a test host has not got; a fact sets this and drives the run through the properties instead (the seam [UIPostgreSQLBuildingModelBuildingInformationUpdateTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingModelBuildingInformationUpdateTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLBuildingModelBuildingInformationUpdateTask') carries for the same reason). Off for every row the tray registers.
+
+```csharp
+public bool SkipOptionsDialog { get; set; }
+```
+
+#### Property Value
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
+
+## UIOpenBuildingImportTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
+
+Asks for the run's options, validates them, computes the release's SHA\-256 from the source files, runs the core import and writes the run report\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
+
+`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
+
+A progress reporter carrying the running total of rows written\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+A cancellation token that can be used to cancel the operation\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task representing the asynchronous operation\. Returns true unless the run was cancelled or refused\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.Sha256Async(System.Threading.CancellationToken)'></a>
+
+## UIOpenBuildingImportTask\.Sha256Async\(CancellationToken\) Method
+
+Computes the release's SHA\-256 from the source files and stores it on the options \- never typed, always derived from what is actually imported\.
+
+One source file answers its bare lowercase hex digest, the form `BuildingDatasetRelease` documents. Several files - GHS-OBAT comes as CSV with GeoPackage centroids - answer one `digest␣␣file name` line per file in ordinal path order, the sha256sum format, so every line of the stored value can be verified against its file with a stock tool.
+
+A file that cannot be hashed refuses the run: a release stored without provenance is worse than no run, and the failure is logged with the path that caused it.
+
+```csharp
+private System.Threading.Tasks.Task<bool> Sha256Async(System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.Sha256Async(System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+The cancellation token to monitor for cancellation requests\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task whose result is true when every source file was hashed and the value stored on the options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.WriteReport(System.DateTime,bool,System.Exception,System.Threading.CancellationToken)'></a>
+
+## UIOpenBuildingImportTask\.WriteReport\(DateTime, bool, Exception, CancellationToken\) Method
+
+Writes the run report next to this application: the release, the scope, the source files, the tallies and the register row id \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#38\)\.
+
+The report is written for a refused or cancelled run as well - a run that stored nothing is exactly when the reason belongs on disk - and a failure to write it is logged rather than thrown, so a read-only output directory cannot turn a finished import into a failed one.
+
+```csharp
+private void WriteReport(System.DateTime started, bool succeeded, System.Exception? exception, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.WriteReport(System.DateTime,bool,System.Exception,System.Threading.CancellationToken).started'></a>
+
+`started` [System\.DateTime](https://learn.microsoft.com/en-us/dotnet/api/system.datetime 'System\.DateTime')
+
+When the run started, for the report's duration\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.WriteReport(System.DateTime,bool,System.Exception,System.Threading.CancellationToken).succeeded'></a>
+
+`succeeded` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+What the core task answered for the run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.WriteReport(System.DateTime,bool,System.Exception,System.Threading.CancellationToken).exception'></a>
+
+`exception` [System\.Exception](https://learn.microsoft.com/en-us/dotnet/api/system.exception 'System\.Exception')
+
+The exception that ended the run, or null when none escaped the core task\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.WriteReport(System.DateTime,bool,System.Exception,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+The token the run observed, so the report can say whether it was cancelled\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOrtoDatasFromFilePostTask'></a>
 
 ## UIOrtoDatasFromFilePostTask Class

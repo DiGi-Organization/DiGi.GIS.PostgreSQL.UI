@@ -351,6 +351,37 @@ The seven\-digit TERYT commune code of an address point\.
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 The four\-digit county code; null when the input is null, shorter than four characters or its first four characters are not digits\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.FileSHA256Async(string,System.Threading.CancellationToken)'></a>
+
+## Query\.FileSHA256Async\(string, CancellationToken\) Method
+
+Computes the SHA\-256 of a file, streamed block by block rather than read into memory \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#38\)\.
+
+A release of an open building dataset reaches hundreds of gigabytes, so the digest is computed while the file is read, and the read observes the cancellation token - a cancelled run stops between blocks instead of only after the whole file.
+
+The digest is the lowercase hexadecimal form. A path that does not name an existing file answers null rather than throwing, and a read failure is logged and answers null, so a caller cannot silently store an empty or malformed digest as provenance.
+
+```csharp
+public static System.Threading.Tasks.Task<string?> FileSHA256Async(string? path, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.FileSHA256Async(string,System.Threading.CancellationToken).path'></a>
+
+`path` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file to hash\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.FileSHA256Async(string,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+The cancellation token to monitor for cancellation requests\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task whose result is the lowercase hexadecimal SHA\-256 of the file, or null when the file does not exist or could not be read\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.FullPath(string)'></a>
 
 ## Query\.FullPath\(string\) Method
@@ -459,6 +490,31 @@ The reason the pair cannot be used, or null when it can\.
 #### Returns
 [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
 True when the pair can be used; otherwise false\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingImportOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions)'></a>
+
+## Query\.OpenBuildingImportOptionsMessage\(PostgreSQLOpenBuildingImportTaskOptions\) Method
+
+Names why a set of open building import options cannot start a run, or answers null when it can \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#38\)\.
+
+The same rules the core task enforces are asked here first, so the operator is told what is missing while the options dialog is still open, instead of a run that starts and then fails into a log line. The core task stays the final gate - this is the earlier, friendlier copy of it.
+
+The checks are ordered from what the release is to what it covers: the dataset key, the two columns the register keys on, the source files, the quadkey the Microsoft reader needs per run, and exactly one scope form - a county list or a bounding box, never both and never neither.
+
+```csharp
+public static string? OpenBuildingImportOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions? postgreSQLOpenBuildingImportTaskOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingImportOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions).postgreSQLOpenBuildingImportTaskOptions'></a>
+
+`postgreSQLOpenBuildingImportTaskOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingimporttaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions')
+
+The options to check, or null\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The message naming the first problem found, or null when the options can start a run\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactors(System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.PredictedYearBuiltRunResult_,System.Collections.Generic.IReadOnlyDictionary_int,long_)'></a>
 
