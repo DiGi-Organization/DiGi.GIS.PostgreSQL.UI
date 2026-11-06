@@ -88,6 +88,7 @@ namespace DiGi.GIS.PostgreSQL.UI
                             if (ortoAreaObjectPostgreSQLConverter is not null && ortoAreaLabelPostgreSQLConverter is not null && ortoAreaImagePostgreSQLConverter is not null)
                             {
                                 result.Add(Visual(new PostgreSQLCreateOrtoAreaTablesTask(ortoAreaPostgreSQLConverter, ortoAreaObjectPostgreSQLConverter, ortoAreaLabelPostgreSQLConverter, ortoAreaImagePostgreSQLConverter), "Create OrtoArea tables", "Creates (or updates indexes on) the full-interpretation test-area tables: orto_area, orto_area_object and orto_area_label on the main database and orto_area_image on the storage database. Idempotent."));
+                                result.Add(Visual(new PostgreSQLCollectOrtoAreaTableEvidenceTask(ortoAreaPostgreSQLConverter, ortoAreaImagePostgreSQLConverter), "Collect OrtoArea table evidence", "Read-only: writes a report proving the four test-area tables exist (pg_indexes and information_schema), verifies the NULLS NOT DISTINCT label index from pg_indexes, and runs a self-cleaning insert/read/delete round trip per database. No schema changes."));
                             }
                         }
                     }
