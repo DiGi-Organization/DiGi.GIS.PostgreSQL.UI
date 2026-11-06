@@ -61,6 +61,11 @@
          referenced by HintPath, so its NuGet dependencies never reach this host from NuGet, and the
          Sqlite provider would only fail at its native e_sqlite3 on the first read. -->
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.5" />
+    <!-- IAsyncEnumerable is what every DiGi.GIS.IO reader returns: without this package the output holds
+         only the netstandard2.0 copy probed beside DiGi.GIS.IO.dll, which defines the interface instead of
+         forwarding it to the framework, and the first reader call fails with MissingMethodException
+         (DiGi.GIS.PostgreSQL declares the same package for the same reason). -->
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.9" />
     <PackageReference Include="NetTopologySuite.IO.GeoPackage" Version="2.0.0" />
     <PackageReference Include="Parquet.Net" Version="5.5.0" />
     <!-- Pin above the version Parquet.Net 5.5.0 resolves to (GHSA-pggp-6c3x-2xmx, NU1903). -->
