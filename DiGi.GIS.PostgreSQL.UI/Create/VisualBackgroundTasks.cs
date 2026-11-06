@@ -79,6 +79,17 @@ namespace DiGi.GIS.PostgreSQL.UI
                     {
                         result.Add(Visual(new UIPostgreSQLBuilding2DRefreshTask(building2DPostgreSQLConverter, gISPostgreSQLConverterManager.GetPostgreSQLConverter<AdministrativeAreal2DPostgreSQLConverter>()), "Refresh Building2Ds", "Re-derives each building's subdivision_id from its outline - the smallest subdivision containing it. Batch size, override existing, nested-layer-only and the counties are asked for when the task is started; unscoped and overriding it walks every building in the country"));
                         result.Add(Visual(new PostgreSQLBuilding2DCreateTableTask(building2DPostgreSQLConverter), "Create Building2D table", "Creates or updates (table indexes etc.) Building2D table in database"));
+                        OrtoAreaPostgreSQLConverter? ortoAreaPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<OrtoAreaPostgreSQLConverter>();
+                        if (ortoAreaPostgreSQLConverter is not null)
+                        {
+                            OrtoAreaObjectPostgreSQLConverter? ortoAreaObjectPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<OrtoAreaObjectPostgreSQLConverter>();
+                            OrtoAreaLabelPostgreSQLConverter? ortoAreaLabelPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<OrtoAreaLabelPostgreSQLConverter>();
+                            OrtoAreaImagePostgreSQLConverter? ortoAreaImagePostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<OrtoAreaImagePostgreSQLConverter>();
+                            if (ortoAreaObjectPostgreSQLConverter is not null && ortoAreaLabelPostgreSQLConverter is not null && ortoAreaImagePostgreSQLConverter is not null)
+                            {
+                                result.Add(Visual(new PostgreSQLCreateOrtoAreaTablesTask(ortoAreaPostgreSQLConverter, ortoAreaObjectPostgreSQLConverter, ortoAreaLabelPostgreSQLConverter, ortoAreaImagePostgreSQLConverter), "Create OrtoArea tables", "Creates (or updates indexes on) the full-interpretation test-area tables: orto_area, orto_area_object and orto_area_label on the main database and orto_area_image on the storage database. Idempotent."));
+                            }
+                        }
                     }
 
                     AdministrativeAreal2DPostgreSQLConverter? administrativeAreal2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<AdministrativeAreal2DPostgreSQLConverter>();
