@@ -1133,7 +1133,7 @@ The counties to choose from\. A county whose territory is in several pieces is o
 
 `coverageFactorsAsync` [System\.Func&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.func-2 'System\.Func\`2')[System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')[,](https://learn.microsoft.com/en-us/dotnet/api/system.func-2 'System\.Func\`2')[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Collections\.Generic\.Dictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.func-2 'System\.Func\`2')
 
-Reads the predicted year built coverage of each county part, keyed by part id, for the markers\. Started here and never awaited before the window opens: the county list is shown at once and its markers are filled in when the read completes, whenever that is\. Closing the window cancels it\. When null no coverage is read and nothing is marked\.
+Reads the predicted year built coverage of each county part, keyed by part id, for the markers\. Started here and never awaited before the window opens: the county list is shown at once and its markers are filled in when the read completes, whenever that is, with a progress bar in the bottom\-left corner running until it does\. Closing the window cancels it\. When null no coverage is read, nothing is marked and the progress bar is never shown\.
 ### Properties
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.YearBuiltPredictionPipelineOptions'></a>
@@ -1169,6 +1169,8 @@ Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/ap
 Sets the predicted year built coverage the county markers are drawn from, and redraws the county list in place\.
 
 The selection and the scroll position are kept: the coverage normally arrives after the window is open, possibly while counties are being picked. Null means the coverage could not be read, which marks nothing and says so - never a false "not run".
+
+Either way the coverage is settled, so the progress bar in the bottom-left corner is hidden.
 
 ```csharp
 public void SetCoverageFactors(System.Collections.Generic.IReadOnlyDictionary<int,double>? coverageFactors);

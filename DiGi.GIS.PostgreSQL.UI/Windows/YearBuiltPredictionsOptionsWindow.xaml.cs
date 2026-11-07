@@ -32,7 +32,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
         /// </summary>
         /// <param name="yearBuiltPredictionPipelineOptions">The options the controls are filled from. When null the defaults are used.</param>
         /// <param name="administrativeAreal2DReferences">The counties to choose from. A county whose territory is in several pieces is one entry per piece, each with its own identifier, and each has to be selectable on its own - a run names every part of a county so that each written row is filed under the part its reference belongs to.</param>
-        /// <param name="coverageFactorsAsync">Reads the predicted year built coverage of each county part, keyed by part id, for the markers. Started here and never awaited before the window opens: the county list is shown at once and its markers are filled in when the read completes, whenever that is. Closing the window cancels it. When null no coverage is read and nothing is marked.</param>
+        /// <param name="coverageFactorsAsync">Reads the predicted year built coverage of each county part, keyed by part id, for the markers. Started here and never awaited before the window opens: the county list is shown at once and its markers are filled in when the read completes, whenever that is, with a progress bar in the bottom-left corner running until it does. Closing the window cancels it. When null no coverage is read, nothing is marked and the progress bar is never shown.</param>
         public YearBuiltPredictionsOptionsWindow(YearBuiltPredictionPipelineOptions? yearBuiltPredictionPipelineOptions, IEnumerable<AdministrativeAreal2DReference>? administrativeAreal2DReferences, Func<CancellationToken, Task<Dictionary<int, double>?>>? coverageFactorsAsync = null)
         {
             InitializeComponent();
@@ -59,6 +59,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             if (coverageFactorsAsync is not null)
             {
                 Label_Coverage.Content = "Reading prediction coverage...";
+                ProgressBar_Coverage.Visibility = Visibility.Visible;
                 _ = ReadCoverageFactorsAsync(coverageFactorsAsync);
             }
         }
@@ -66,11 +67,14 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
         /// <summary>
         /// Sets the predicted year built coverage the county markers are drawn from, and redraws the county list in place.
         /// <para>The selection and the scroll position are kept: the coverage normally arrives after the window is open, possibly while counties are being picked. Null means the coverage could not be read, which marks nothing and says so - never a false "not run".</para>
+        /// <para>Either way the coverage is settled, so the progress bar in the bottom-left corner is hidden.</para>
         /// </summary>
         /// <param name="coverageFactors">The share of each county part's buildings carrying a predicted year built, keyed by part id, or null when it could not be read.</param>
         public void SetCoverageFactors(IReadOnlyDictionary<int, double>? coverageFactors)
         {
             this.coverageFactors = coverageFactors is null ? null : new Dictionary<int, double>(coverageFactors);
+
+            ProgressBar_Coverage.Visibility = Visibility.Collapsed;
 
             Label_Coverage.Content = coverageFactors is null
                 ? "Prediction coverage could not be read - no county is marked"
@@ -81,28 +85,37 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
         private async Task ReadCoverageFactorsAsync(Func<CancellationToken, Task<Dictionary<int, double>?>> coverageFactorsAsync)
         {
-            Dictionary<int, double>? coverageFactors_Read;
             try
             {
-                coverageFactors_Read = await coverageFactorsAsync(cancellationTokenSource.Token);
-            }
-            catch (OperationCanceledException) when (cancellationTokenSource.IsCancellationRequested)
-            {
-                return;
-            }
-            catch (Exception exception)
-            {
-                Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "Prediction coverage could not be read: {Message}", exception.Message);
-                coverageFactors_Read = null;
-            }
+                Dictionary<int, double>? coverageFactors_Read;
+                try
+                {
+                    coverageFactors_Read = await coverageFactorsAsync(cancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException) when (cancellationTokenSource.IsCancellationRequested)
+                {
+                    return;
+                }
+                catch (Exception exception)
+                {
+                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "Prediction coverage could not be read: {Message}", exception.Message);
+                    coverageFactors_Read = null;
+                }
 
-            // Resumed on the user interface thread, the context the read was started from. A window closed meanwhile is left alone.
-            if (cancellationTokenSource.IsCancellationRequested)
-            {
-                return;
-            }
+                // Resumed on the user interface thread, the context the read was started from. A window closed meanwhile is left alone.
+                if (cancellationTokenSource.IsCancellationRequested)
+                {
+                    return;
+                }
 
-            SetCoverageFactors(coverageFactors_Read);
+                SetCoverageFactors(coverageFactors_Read);
+            }
+            finally
+            {
+                // However the read ended - markers, a failure, or a cancellation that returns before SetCoverageFactors - nothing is
+                // being read any more.
+                ProgressBar_Coverage.Visibility = Visibility.Collapsed;
+            }
         }
 
         /// <summary>
