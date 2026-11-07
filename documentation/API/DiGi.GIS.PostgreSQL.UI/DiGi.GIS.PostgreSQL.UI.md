@@ -3,6 +3,40 @@
 ## DiGi\.GIS\.PostgreSQL\.UI Namespace
 ### Classes
 
+<a name='DiGi.GIS.PostgreSQL.UI.Convert'></a>
+
+## Convert Class
+
+```csharp
+public static class Convert
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → Convert
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Convert.ToSystem_String(thisSystem.Collections.Generic.IEnumerable_DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox_)'></a>
+
+## Convert\.ToSystem\_String\(this IEnumerable\<YOLOExclusionBoundingBox\>\) Method
+
+Formats exclusion boxes as the training dialog's box editor shows them: one box per line, `minX; minY; maxX; maxY` in EPSG:2180 \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#39\)\.
+
+Numbers are written in invariant culture with the round-trip format, so [TryParseYOLOExclusionBoundingBoxes\(string, List&lt;YOLOExclusionBoundingBox&gt;, string\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBoundingBoxes(string,System.Collections.Generic.List_DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox_,string) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.TryParseYOLOExclusionBoundingBoxes\(string, System\.Collections\.Generic\.List\<DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOExclusionBoundingBox\>, string\)') reads back exactly the boxes that were written, on any machine culture.
+
+```csharp
+public static string ToSystem_String(this System.Collections.Generic.IEnumerable<DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox>? yOLOExclusionBoundingBoxes);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Convert.ToSystem_String(thisSystem.Collections.Generic.IEnumerable_DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox_).yOLOExclusionBoundingBoxes'></a>
+
+`yOLOExclusionBoundingBoxes` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOExclusionBoundingBox](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yoloexclusionboundingbox 'DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOExclusionBoundingBox')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The boxes, or null\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The text, empty for no boxes; null boxes are skipped\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Create'></a>
 
 ## Create Class
@@ -633,6 +667,78 @@ The positional values, in the order the template's property tokens appear\.
 #### Returns
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 The rendered text\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBoundingBoxes(string,System.Collections.Generic.List_DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox_,string)'></a>
+
+## Query\.TryParseYOLOExclusionBoundingBoxes\(string, List\<YOLOExclusionBoundingBox\>, string\) Method
+
+Parses the exclusion boxes typed in the training dialog: one EPSG:2180 box per line as `minX minY maxX maxY` \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#39\)\.
+
+The four numbers are separated by semicolons, tabs or spaces, so the `epsg2180_x1..y2` columns of the T30 area list paste in as they are. Numbers are read in invariant culture, which is why a comma is not a separator: under pl-PL it is the decimal mark, and reading it either way would silently move a box. Blank lines and lines starting with `#` are skipped. A line that does not hold exactly four finite numbers refuses the whole text and names its line number - one wrong box would leave a test area in the training set.
+
+Corners are kept as typed: the exclusion test reads the area between them, so a pair given in either order names the same box.
+
+```csharp
+public static bool TryParseYOLOExclusionBoundingBoxes(string? text, out System.Collections.Generic.List<DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox>? yOLOExclusionBoundingBoxes, out string? reason);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBoundingBoxes(string,System.Collections.Generic.List_DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox_,string).text'></a>
+
+`text` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The text of the box editor, or null\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBoundingBoxes(string,System.Collections.Generic.List_DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox_,string).yOLOExclusionBoundingBoxes'></a>
+
+`yOLOExclusionBoundingBoxes` [System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOExclusionBoundingBox](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yoloexclusionboundingbox 'DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOExclusionBoundingBox')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')
+
+The parsed boxes in line order \- empty for an empty text \- or null when the text is refused\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBoundingBoxes(string,System.Collections.Generic.List_DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox_,string).reason'></a>
+
+`reason` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the text is refused, or null when it is accepted\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when every non\-blank line is a box\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBuffer(string,double,string)'></a>
+
+## Query\.TryParseYOLOExclusionBuffer\(string, double, string\) Method
+
+Parses the exclusion buffer typed in the training dialog \- metres every exclusion box is grown by on every side \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#39\)\.
+
+Empty or whitespace means the class default, read from a fresh [DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingDatasetOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yolotrainingdatasetoptions 'DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingDatasetOptions') so the dialog never carries its own copy of the number. Anything else has to be a finite, non-negative number in invariant culture (a decimal point, never a comma), so the same text means the same buffer on every machine.
+
+```csharp
+public static bool TryParseYOLOExclusionBuffer(string? text, out double exclusionBuffer, out string? reason);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBuffer(string,double,string).text'></a>
+
+`text` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The text of the buffer box, or null\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBuffer(string,double,string).exclusionBuffer'></a>
+
+`exclusionBuffer` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The buffer in metres, or the class default when the text is empty; 0 when the text is refused\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBuffer(string,double,string).reason'></a>
+
+`reason` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the text is refused, or null when it is accepted\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the text is empty or a usable buffer\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Query.YearBuiltPredictionConsoleAppPath(string,string)'></a>
 

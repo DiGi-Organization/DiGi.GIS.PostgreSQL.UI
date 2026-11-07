@@ -20,6 +20,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     /// <para><b>An interrupted run is offered for resume.</b> When the run name and project directory name a run whose folder holds an unfinished <c>weights\last.pt</c> and no completed <c>&lt;RunName&gt;.pt</c>, the dialog shows the checkpoint's epoch and ceiling and offers to resume it. Ticking <see cref="YOLOTrainingStep.Train"/> is still required; the box locks what a resume cannot change - the hyperparameters, the start weights and the dataset build - because the checkpoint restores them, and the epoch ceiling is fixed by the checkpoint.</para>
     /// <para><b>Stalls are handled by the runner.</b> <c>Automatic resumes</c> and <c>Stall limit</c> set <see cref="YOLOTrainingRunOptions.AutoResumeCount"/> and <see cref="YOLOTrainingRunOptions.InactivityTimeout"/>: a training that stalls or crashes is continued from its own <c>last.pt</c> that many times, and a stall is what a silent training becomes after the limit. Both are enabled only with the Training step, and an empty stall limit keeps the runner's default of 15 minutes.</para>
     /// <para><b>What is not offered is the runner's to decide.</b> The dataset's confidence threshold, split, label check sizes, legacy cut-off and request sizes carry through the copy untouched at the values its README describes; they shape what the detector is trained on, and a control opened before every run invites changing them between runs that are then compared.</para>
+    /// <para><b>Test areas are kept out of training.</b> The exclusion buffer and the exclusion boxes (DiGi.GIS.PostgreSQL.UI#39) edit <see cref="YOLOTrainingDatasetOptions.ExclusionBuffer"/> and <see cref="YOLOTrainingDatasetOptions.ExclusionBoundingBoxes"/>, parsed by <see cref="Query.TryParseYOLOExclusionBuffer(string?, out double, out string?)"/> and <see cref="Query.TryParseYOLOExclusionBoundingBoxes(string?, out List{YOLOExclusionBoundingBox}?, out string?)"/>: an empty buffer is the class default, an empty box list excludes nothing, and a malformed line refuses OK with its line number.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were, and every member the window has no control for carries through untouched.</para>
     /// </summary>
     public partial class YOLOTrainingOptionsWindow : Window
@@ -80,6 +81,11 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             TextBoxControl_PythonPath.Value = this.yOLOTrainingRunOptions.PythonPath ?? yOLOTrainingDatasetOptions?.PythonPath;
             TextBoxControl_WorkingDirectory.Value = this.yOLOTrainingRunOptions.WorkingDirectory ?? yOLOTrainingDatasetOptions?.WorkingDirectory;
             TextBoxControl_WeightsPaths.Value = yOLOTrainingDatasetOptions?.WeightsPaths is List<string> weightsPaths ? string.Join("; ", weightsPaths) : null;
+
+            // The exclusion of the pilot test areas (DiGi.GIS.PostgreSQL.UI#39), shown as stored so reopening the
+            // dialog shows what the next build will exclude.
+            TextBoxControl_ExclusionBuffer.Value = (yOLOTrainingDatasetOptions ?? new YOLOTrainingDatasetOptions()).ExclusionBuffer.ToString("R", CultureInfo.InvariantCulture);
+            TextBox_ExclusionBoundingBoxes.Text = yOLOTrainingDatasetOptions?.ExclusionBoundingBoxes.ToSystem_String() ?? string.Empty;
 
             // The runner reads an empty list as every step, and so does the dialog.
             List<YOLOTrainingStep>? yOLOTrainingSteps = this.yOLOTrainingRunOptions.Steps;
@@ -293,6 +299,18 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
                 return;
             }
 
+            if (!Query.TryParseYOLOExclusionBuffer(TextBoxControl_ExclusionBuffer.Value, out double exclusionBuffer, out string? exclusionBufferReason))
+            {
+                Warn(exclusionBufferReason!);
+                return;
+            }
+
+            if (!Query.TryParseYOLOExclusionBoundingBoxes(TextBox_ExclusionBoundingBoxes.Text, out List<YOLOExclusionBoundingBox>? yOLOExclusionBoundingBoxes, out string? exclusionBoundingBoxesReason))
+            {
+                Warn(exclusionBoundingBoxesReason!);
+                return;
+            }
+
             HashSet<int> countyIds = [];
             foreach (AdministrativeAreal2DReference administrativeAreal2DReference in administrativeAreal2DReferences)
             {
@@ -343,6 +361,8 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             yOLOTrainingDatasetOptions.OutputDirectory = datasetDirectory;
             yOLOTrainingDatasetOptions.CountyIds = countyIds;
             yOLOTrainingDatasetOptions.WeightsPaths = weightsPaths.Count == 0 ? null : weightsPaths;
+            yOLOTrainingDatasetOptions.ExclusionBuffer = exclusionBuffer;
+            yOLOTrainingDatasetOptions.ExclusionBoundingBoxes = yOLOExclusionBoundingBoxes ?? [];
 
             yOLOTrainingRunOptions = yOLOTrainingRunOptions_Result;
             yOLOTrainingScenario = yOLOTrainingScenario_Selected;
