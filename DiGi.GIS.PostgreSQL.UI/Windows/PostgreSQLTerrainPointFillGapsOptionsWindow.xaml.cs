@@ -43,7 +43,13 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             // A read still running when the window closes is no longer wanted by anyone; cancelling it also stops the
             // queries behind it on the server.
-            Closed += (sender, e) => cancellationTokenSource.Cancel();
+            // Every way out raises Closed - OK included, because once the counties are chosen nobody needs the densities.
+            // Disposed straight after: the read took its token when it started, and Cancel has already reached it.
+            Closed += (sender, e) =>
+            {
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+            };
 
             if (terrainPointDensityResultsAsync is not null)
             {

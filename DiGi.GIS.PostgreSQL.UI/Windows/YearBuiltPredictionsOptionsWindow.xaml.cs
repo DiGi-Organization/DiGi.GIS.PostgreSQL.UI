@@ -54,7 +54,13 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             // A read still running when the window closes is no longer wanted by anyone; cancelling it also stops the query
             // behind it on the server.
-            Closed += (sender, e) => cancellationTokenSource.Cancel();
+            // Every way out raises Closed - OK included, because once the counties are chosen nobody needs the markers.
+            // Disposed straight after: the read took its token when it started, and Cancel has already reached it.
+            Closed += (sender, e) =>
+            {
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+            };
 
             if (coverageFactorsAsync is not null)
             {
