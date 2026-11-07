@@ -109,7 +109,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <controls:TextBoxControl x:Name="TextBoxControl_Quadkey" Grid.Column="0" HorizontalAlignment="Stretch" Text="Quadkey - required for the Microsoft dataset" Value="" />
+            <controls:TextBoxControl x:Name="TextBoxControl_Quadkey" Grid.Column="0" HorizontalAlignment="Stretch" Text="Quadkey - Microsoft, only for a file outside a quadkey=&lt;digits&gt; folder" Value="" />
             <controls:TextBoxControl x:Name="TextBoxControl_Sha256" Grid.Column="1" HorizontalAlignment="Stretch" IsEnabled="False" Text="SHA-256 - computed from the source files when the task starts" Value="" />
         </Grid>
 

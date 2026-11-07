@@ -9,7 +9,7 @@ namespace DiGi.GIS.PostgreSQL.UI
         /// <summary>
         /// Names why a set of open building import options cannot start a run, or answers null when it can (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#38).
         /// <para>The same rules the core task enforces are asked here first, so the operator is told what is missing while the options dialog is still open, instead of a run that starts and then fails into a log line. The core task stays the final gate - this is the earlier, friendlier copy of it.</para>
-        /// <para>The checks are ordered from what the release is to what it covers: the dataset key, the two columns the register keys on, the source files, the quadkey the Microsoft reader needs per run, and exactly one scope form - a county list or a bounding box, never both and never neither.</para>
+        /// <para>The checks are ordered from what the release is to what it covers: the dataset key, the two columns the register keys on, the source files, the quadkey of every Microsoft file (its own <c>quadkey=</c> folder, or the typed quadkey for a file without one), and exactly one scope form - a county list or a bounding box, never both and never neither.</para>
         /// </summary>
         /// <param name="postgreSQLOpenBuildingImportTaskOptions">The options to check, or null.</param>
         /// <returns>The message naming the first problem found, or null when the options can start a run.</returns>
@@ -61,11 +61,12 @@ namespace DiGi.GIS.PostgreSQL.UI
                 }
             }
 
-            if (tableName == PostgreSQL.Constants.TableName.Microsoft_Building2D && string.IsNullOrWhiteSpace(postgreSQLOpenBuildingImportTaskOptions.Quadkey))
+            if (tableName == PostgreSQL.Constants.TableName.Microsoft_Building2D && !PostgreSQL.Query.TryMicrosoftQuadkeys(sourcePaths, postgreSQLOpenBuildingImportTaskOptions.Quadkey, out _, out string? quadkeyMessage))
             {
-                // The quadkey is the Microsoft chunk's source identity: the reader is handed it per run and
-                // the rows it stores name the chunk through it.
-                return "The Microsoft dataset needs the quadkey of its source chunk.";
+                // The quadkey is each Microsoft chunk's source identity: a file's quadkey=<digits> folder names it,
+                // the typed quadkey stands in for a file without one, and two files may not share one
+                // (DiGi-Organization/DiGi.GIS.PostgreSQL#132).
+                return quadkeyMessage ?? "Every Microsoft file needs its own quadkey.";
             }
 
             bool hasCountyScope = postgreSQLOpenBuildingImportTaskOptions.CountyIds is not null && postgreSQLOpenBuildingImportTaskOptions.CountyIds.Count != 0;

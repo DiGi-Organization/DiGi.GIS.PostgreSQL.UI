@@ -499,7 +499,7 @@ Names why a set of open building import options cannot start a run, or answers n
 
 The same rules the core task enforces are asked here first, so the operator is told what is missing while the options dialog is still open, instead of a run that starts and then fails into a log line. The core task stays the final gate - this is the earlier, friendlier copy of it.
 
-The checks are ordered from what the release is to what it covers: the dataset key, the two columns the register keys on, the source files, the quadkey the Microsoft reader needs per run, and exactly one scope form - a county list or a bounding box, never both and never neither.
+The checks are ordered from what the release is to what it covers: the dataset key, the two columns the register keys on, the source files, the quadkey of every Microsoft file (its own `quadkey=` folder, or the typed quadkey for a file without one), and exactly one scope form - a county list or a bounding box, never both and never neither.
 
 ```csharp
 public static string? OpenBuildingImportOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions? postgreSQLOpenBuildingImportTaskOptions);
