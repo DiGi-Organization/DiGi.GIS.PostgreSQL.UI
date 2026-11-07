@@ -16,6 +16,7 @@
             <RowDefinition Height="30" />
             <RowDefinition Height="28" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="26" />
             <RowDefinition Height="33" />
         </Grid.RowDefinitions>
 
@@ -27,9 +28,23 @@
 
         <controls:ListBoxControl x:Name="ListBoxControl_Counties" Grid.Row="3" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
-            <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
-            <Button x:Name="Button_Cancel" Content="Cancel" Width="70" Height="23" Margin="5,0,5,0" IsCancel="True" Click="Button_Cancel_Click" />
-        </StackPanel>
+        <!-- Says whether the point densities beside the counties have been read yet: without it a county with no
+             figure could be one never sampled or one whose density simply has not arrived. -->
+        <Label x:Name="Label_Density" Grid.Row="4" Content="" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Shown only while the densities are being read (Coding - WPF Deferred Loading.md). -->
+            <ProgressBar x:Name="ProgressBar_Density" Grid.Column="0" IsIndeterminate="True" Width="150" Height="14" Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed" ToolTip="Reading terrain point densities" />
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
+                <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
+                <Button x:Name="Button_Cancel" Content="Cancel" Width="70" Height="23" Margin="5,0,5,0" IsCancel="True" Click="Button_Cancel_Click" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

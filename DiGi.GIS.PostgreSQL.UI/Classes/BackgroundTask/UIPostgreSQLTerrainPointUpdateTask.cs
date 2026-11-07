@@ -65,56 +65,11 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 return false;
             }
 
-            List<TerrainPointDensityResult>? terrainPointDensityResults = null;
-            if (gISWebAPIManager is not null)
-            {
-                System.Net.Http.HttpClient? httpClient_Terrain = gISWebAPIManager.CreateHttpClient<TerrainController>(nameof(TerrainController.GetDensitiesByCountyIdsAsync), out string? path_Densities);
-                if (httpClient_Terrain is not null && !string.IsNullOrWhiteSpace(path_Densities))
-                {
-                    List<int> countyIds = [];
-                    foreach (AdministrativeAreal2DReference administrativeAreal2DReference in administrativeAreal2DReferences)
-                    {
-                        countyIds.Add(administrativeAreal2DReference.Id);
-                    }
-
-                    terrainPointDensityResults = [];
-                    DiGi.WebAPI.Classes.PostOptions postOptions = new() { RequestResult = true };
-                    int batchSize = WebAPI.Constants.Terrain.MaximumDensityCountyCount;
-
-                    for (int i = 0; i < countyIds.Count; i += batchSize)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        int count = Math.Min(batchSize, countyIds.Count - i);
-                        List<int> countyIds_Batch = countyIds.GetRange(i, count);
-
-                        System.Text.StringBuilder stringBuilder = new(path_Densities);
-                        for (int j = 0; j < countyIds_Batch.Count; j++)
-                        {
-                            stringBuilder.Append(j == 0 ? "?" : "&");
-                            stringBuilder.Append("countyids=").Append(countyIds_Batch[j]);
-                        }
-
-                        if (PostgreSQLTerrainPointUpdateOptions.GridSize > 0)
-                        {
-                            stringBuilder.Append("&gridsize=").Append(PostgreSQLTerrainPointUpdateOptions.GridSize.ToString(System.Globalization.CultureInfo.InvariantCulture));
-                        }
-
-                        try
-                        {
-                            DiGi.WebAPI.Classes.PostResponse<List<TerrainPointDensityResult>?> postResponse = await DiGi.WebAPI.Query.GetAsync<List<TerrainPointDensityResult>>(httpClient_Terrain, stringBuilder.ToString(), postOptions);
-                            if (postResponse is not null && postResponse.Succeeded && postResponse.Result is List<TerrainPointDensityResult> results)
-                            {
-                                terrainPointDensityResults.AddRange(results);
-                            }
-                        }
-                        catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
-                        {
-                            Serilog.Modify.Log(exception, "Terrain point densities could not be retrieved for batch starting at index {Index}", i);
-                        }
-                    }
-                }
-            }
+            // The densities only annotate the county list, so they are read after the dialog opens rather than before it:
+            // the window starts the read, shows a progress bar while it runs and fills the labels in when it completes,
+            // and closing the window cancels it (DiGi.GIS.PostgreSQL.UI#41). The grid size is the one the dialog opens with.
+            List<int> countyIds_Density = administrativeAreal2DReferences.ConvertAll(x => x.Id);
+            double gridSize_Density = PostgreSQLTerrainPointUpdateOptions.GridSize;
 
             // Read on this thread, shown on the user interface thread. Reading inside the callback below would
             // hold the interface still for the whole of the query.
@@ -122,7 +77,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             application.Dispatcher.Invoke(() =>
             {
-                PostgreSQLTerrainPointUpdateOptionsWindow postgreSQLTerrainPointUpdateOptionsWindow = new(PostgreSQLTerrainPointUpdateOptions, administrativeAreal2DReferences, terrainPointDensityResults);
+                PostgreSQLTerrainPointUpdateOptionsWindow postgreSQLTerrainPointUpdateOptionsWindow = new(PostgreSQLTerrainPointUpdateOptions, administrativeAreal2DReferences, token => Query.TerrainPointDensityResultsAsync(gISWebAPIManager, countyIds_Density, gridSize_Density, token));
 
                 if (postgreSQLTerrainPointUpdateOptionsWindow.ShowDialog() is not bool dialogResult || !dialogResult)
                 {

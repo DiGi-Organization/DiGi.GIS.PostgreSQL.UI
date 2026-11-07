@@ -256,6 +256,49 @@ public const string Key = "Key";
 #### Field Value
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.TerrainPointDensity'></a>
+
+## TerrainPointDensity Class
+
+Provides the constants of the terrain point density read behind the county labels of the terrain point options dialogs\.
+
+```csharp
+public static class TerrainPointDensity
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → TerrainPointDensity
+### Fields
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.TerrainPointDensity.MaxConcurrentRequests'></a>
+
+## TerrainPointDensity\.MaxConcurrentRequests Field
+
+Gets how many density requests are in flight at once\.
+
+Each request counts the stored points of up to `WebAPI.Constants.Terrain.MaximumDensityCountyCount` county partitions on the database server, so the 406 county parts are about nine requests. Sent one after another they are what kept the dialog closed (DiGi.GIS.PostgreSQL.UI#41); sent all at once they are nine aggregates competing with whatever else the server runs. Three is the middle.
+
+```csharp
+public const int MaxConcurrentRequests = 3;
+```
+
+#### Field Value
+[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.TerrainPointDensity.Timeout'></a>
+
+## TerrainPointDensity\.Timeout Field
+
+Gets how long the densities behind the county labels are waited for before the dialog gives up on them\.
+
+Sent as the server `commandtimeout` too, so a query nobody is waiting for any more also stops on PostgreSQL. Not measured against the deployed estate yet: it replaces a read that had no limit at all (600 s per request, one request after another), and the read never holds the dialog up, so the limit only bounds how long requests linger against a server that has stopped answering.
+
+```csharp
+public static readonly TimeSpan Timeout;
+```
+
+#### Field Value
+[System\.TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan 'System\.TimeSpan')
+
 <a name='DiGi.GIS.PostgreSQL.UI.Constants.YearBuiltPrediction'></a>
 
 ## YearBuiltPrediction Class

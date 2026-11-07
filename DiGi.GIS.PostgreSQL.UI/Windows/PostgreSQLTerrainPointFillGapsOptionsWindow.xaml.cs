@@ -1,6 +1,9 @@
 using DiGi.GIS.PostgreSQL.Classes;
 using DiGi.UI.WPF.Classes;
+using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace DiGi.GIS.PostgreSQL.UI.Windows
@@ -14,31 +17,20 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     public partial class PostgreSQLTerrainPointFillGapsOptionsWindow : Window
     {
         private readonly PostgreSQLTerrainPointFillGapsOptions postgreSQLTerrainPointFillGapsOptions;
-        private readonly Dictionary<int, TerrainPointDensityResult>? terrainPointDensityResults_ByCountyId;
+        private readonly CancellationTokenSource cancellationTokenSource = new();
+        private Dictionary<int, TerrainPointDensityResult>? terrainPointDensityResults_ByCountyId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PostgreSQLTerrainPointFillGapsOptionsWindow"/> class.
         /// </summary>
         /// <param name="postgreSQLTerrainPointFillGapsOptions">The options the controls are filled from. When null the defaults are used.</param>
         /// <param name="administrativeAreal2DReferences">The counties to choose from. A county whose territory is in several pieces is one entry per piece, each with its own identifier, and each has to be selectable on its own.</param>
-        /// <param name="terrainPointDensityResults">The density measurements of the county partitions. When provided, point count, density and equivalent spacing are shown for each county.</param>
-        public PostgreSQLTerrainPointFillGapsOptionsWindow(PostgreSQLTerrainPointFillGapsOptions? postgreSQLTerrainPointFillGapsOptions, IEnumerable<AdministrativeAreal2DReference>? administrativeAreal2DReferences, IEnumerable<TerrainPointDensityResult>? terrainPointDensityResults = null)
+        /// <param name="terrainPointDensityResultsAsync">Reads the density measurements of the county partitions, keyed by part id, for the point count, density and equivalent spacing shown beside each county. Started here and never awaited before the window opens: the county list is shown at once, with a progress bar in the bottom-left corner, and the figures are filled in when the read completes (DiGi.GIS.PostgreSQL.UI#41). Closing the window cancels it. When null nothing is read, no county is annotated and the progress bar is never shown.</param>
+        public PostgreSQLTerrainPointFillGapsOptionsWindow(PostgreSQLTerrainPointFillGapsOptions? postgreSQLTerrainPointFillGapsOptions, IEnumerable<AdministrativeAreal2DReference>? administrativeAreal2DReferences, Func<CancellationToken, Task<Dictionary<int, TerrainPointDensityResult>?>>? terrainPointDensityResultsAsync = null)
         {
             InitializeComponent();
 
             this.postgreSQLTerrainPointFillGapsOptions = postgreSQLTerrainPointFillGapsOptions is null ? new PostgreSQLTerrainPointFillGapsOptions() : new PostgreSQLTerrainPointFillGapsOptions(postgreSQLTerrainPointFillGapsOptions);
-
-            if (terrainPointDensityResults is not null)
-            {
-                terrainPointDensityResults_ByCountyId = [];
-                foreach (TerrainPointDensityResult terrainPointDensityResult in terrainPointDensityResults)
-                {
-                    if (terrainPointDensityResult is not null)
-                    {
-                        terrainPointDensityResults_ByCountyId[terrainPointDensityResult.CountyId] = terrainPointDensityResult;
-                    }
-                }
-            }
 
             // The caption stays in the XAML - the designer does not run this constructor, and a caption set here
             // leaves an empty label over an empty box in the preview. Only the values come from the options.
@@ -48,6 +40,68 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             ListBoxControl_Counties.ItemAdding += ListBoxControl_Counties_ItemAdding;
 
             SetCounties(administrativeAreal2DReferences);
+
+            // A read still running when the window closes is no longer wanted by anyone; cancelling it also stops the
+            // queries behind it on the server.
+            Closed += (sender, e) => cancellationTokenSource.Cancel();
+
+            if (terrainPointDensityResultsAsync is not null)
+            {
+                Label_Density.Content = "Reading terrain point densities...";
+                ProgressBar_Density.Visibility = Visibility.Visible;
+                _ = ReadTerrainPointDensityResultsAsync(terrainPointDensityResultsAsync);
+            }
+        }
+
+        /// <summary>
+        /// Sets the terrain point densities shown beside the counties, and redraws the county list in place.
+        /// <para>The selection and the scroll position are kept: the densities normally arrive after the window is open, possibly while counties are being picked. Null means the densities could not be read, which annotates nothing and says so - a bare county is never a measured one. Either way the read is settled, so the progress bar is hidden.</para>
+        /// </summary>
+        /// <param name="terrainPointDensityResults">The densities keyed by county part id, or null when they could not be read.</param>
+        public void SetTerrainPointDensityResults(IReadOnlyDictionary<int, TerrainPointDensityResult>? terrainPointDensityResults)
+        {
+            terrainPointDensityResults_ByCountyId = terrainPointDensityResults is null ? null : new Dictionary<int, TerrainPointDensityResult>(terrainPointDensityResults);
+
+            ProgressBar_Density.Visibility = Visibility.Collapsed;
+
+            Label_Density.Content = terrainPointDensityResults is null ? "Terrain point densities could not be read - no county is annotated" : "Point count, density and equivalent spacing stored for each county";
+
+            ListBoxControl_Counties.RefreshItems();
+        }
+
+        private async Task ReadTerrainPointDensityResultsAsync(Func<CancellationToken, Task<Dictionary<int, TerrainPointDensityResult>?>> terrainPointDensityResultsAsync)
+        {
+            try
+            {
+                Dictionary<int, TerrainPointDensityResult>? terrainPointDensityResults;
+                try
+                {
+                    // No ConfigureAwait(false): the continuation touches the controls, so it has to resume on the user interface thread.
+                    terrainPointDensityResults = await terrainPointDensityResultsAsync(cancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException) when (cancellationTokenSource.IsCancellationRequested)
+                {
+                    return;
+                }
+                catch (Exception exception)
+                {
+                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "Terrain point densities could not be read: {Message}", exception.Message);
+                    terrainPointDensityResults = null;
+                }
+
+                // A window closed meanwhile is left alone.
+                if (cancellationTokenSource.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                SetTerrainPointDensityResults(terrainPointDensityResults);
+            }
+            finally
+            {
+                // However the read ended - figures, a failure, or a cancellation that returns before the set - nothing is being read any more.
+                ProgressBar_Density.Visibility = Visibility.Collapsed;
+            }
         }
 
         /// <summary>

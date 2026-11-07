@@ -668,6 +668,49 @@ The positional values, in the order the template's property tokens appear\.
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 The rendered text\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Nullable_double_,System.Threading.CancellationToken)'></a>
+
+## Query\.TerrainPointDensityResultsAsync\(GISWebAPIManager, IEnumerable\<int\>, Nullable\<double\>, CancellationToken\) Method
+
+Asynchronously reads, from the deployed Web API, how densely each of the given county partitions is sampled with terrain points\.
+
+The partitions are sent in batches of `WebAPI.Constants.Terrain.MaximumDensityCountyCount` to `terrain/densitiesbycountyids`, at most [MaxConcurrentRequests](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.TerrainPointDensity.MaxConcurrentRequests 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.TerrainPointDensity\.MaxConcurrentRequests') at a time, and the whole read is bounded by [Timeout](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.TerrainPointDensity.Timeout 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.TerrainPointDensity\.Timeout'), which is also sent as the server `commandtimeout`.
+
+Never throws for a failed read and is not retried: an unreachable server, an error status, the timeout elapsing or a body that does not parse - in <b>any</b> batch - answers null. A partial result is not returned, because a county left out of it would read as one that was never measured (DiGi.GIS.PostgreSQL.UI#41). Only a cancellation through [cancellationToken](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Nullable_double_,System.Threading.CancellationToken).cancellationToken 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.TerrainPointDensityResultsAsync\(DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager, System\.Collections\.Generic\.IEnumerable\<int\>, System\.Nullable\<double\>, System\.Threading\.CancellationToken\)\.cancellationToken') is rethrown.
+
+```csharp
+public static System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<int,DiGi.GIS.PostgreSQL.Classes.TerrainPointDensityResult>?> TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager? GISWebAPIManager, System.Collections.Generic.IEnumerable<int>? countyIds, System.Nullable<double> gridSize, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Nullable_double_,System.Threading.CancellationToken).GISWebAPIManager'></a>
+
+`GISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
+
+The manager that creates the HTTP client\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Nullable_double_,System.Threading.CancellationToken).countyIds'></a>
+
+`countyIds` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The county part identifiers, one per part of a multi\-part county\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Nullable_double_,System.Threading.CancellationToken).gridSize'></a>
+
+`gridSize` [System\.Nullable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.nullable-1 'System\.Nullable\`1')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.nullable-1 'System\.Nullable\`1')
+
+The lattice spacing a sampling run used, in metres, which turns the density into a completeness\. Null, or not a positive finite number, leaves it out\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Nullable_double_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+Cancels every request, which on the server cancels the queries behind them\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Collections\.Generic\.Dictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[DiGi\.GIS\.PostgreSQL\.Classes\.TerrainPointDensityResult](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.terrainpointdensityresult 'DiGi\.GIS\.PostgreSQL\.Classes\.TerrainPointDensityResult')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+The densities keyed by part id, or null when they could not be read\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBoundingBoxes(string,System.Collections.Generic.List_DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox_,string)'></a>
 
 ## Query\.TryParseYOLOExclusionBoundingBoxes\(string, List\<YOLOExclusionBoundingBox\>, string\) Method
