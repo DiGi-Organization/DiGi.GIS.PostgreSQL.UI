@@ -256,6 +256,34 @@ public const string Key = "Key";
 #### Field Value
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.OrtoDataAcquisitionCoverage'></a>
+
+## OrtoDataAcquisitionCoverage Class
+
+Provides the constants of the acquisition\-date coverage read behind the county labels of the acquisition backfill options dialog\.
+
+```csharp
+public static class OrtoDataAcquisitionCoverage
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → OrtoDataAcquisitionCoverage
+### Fields
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.OrtoDataAcquisitionCoverage.Timeout'></a>
+
+## OrtoDataAcquisitionCoverage\.Timeout Field
+
+Gets how long the coverage behind the county labels is waited for before the dialog gives up on it\.
+
+Sent as the PostgreSQL command timeout too, so a query nobody is waiting for any more also stops on the server. One grouped statement over every county part (DiGi.GIS.PostgreSQL#134): it projects `county_id` and `reference` of `orto_datas` and never `object`, against the acquisition rows aggregated per series. Not measured against the production store yet (DiGi.GIS.WebAPI#78); on a development store of 33 695 series it answered at once. Matches the backfill's own default command timeout, and the read never holds the dialog up, so the limit only bounds how long a query lingers against a database that has stopped answering.
+
+```csharp
+public static readonly TimeSpan Timeout;
+```
+
+#### Field Value
+[System\.TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan 'System\.TimeSpan')
+
 <a name='DiGi.GIS.PostgreSQL.UI.Constants.TerrainPointDensity'></a>
 
 ## TerrainPointDensity Class

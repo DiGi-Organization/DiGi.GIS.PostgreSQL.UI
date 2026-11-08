@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DiGi.GIS.PostgreSQL.UI.Windows"
         xmlns:controls="clr-namespace:DiGi.UI.WPF.Controls;assembly=DiGi.UI.WPF"
         mc:Ignorable="d"
-        Title="Backfill OrtoDatas acquisition dates" Height="600" Width="560" MinHeight="480" MinWidth="440"
+        Title="Backfill OrtoDatas acquisition dates" Height="640" Width="680" MinHeight="500" MinWidth="520"
         WindowStartupLocation="CenterScreen"
         WindowStyle="SingleBorderWindow"
         Icon="pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/DiGi.GIS.ico">
@@ -17,6 +17,7 @@
             <RowDefinition Height="60" />
             <RowDefinition Height="28" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="26" />
             <RowDefinition Height="33" />
         </Grid.RowDefinitions>
 
@@ -30,9 +31,23 @@
 
         <controls:ListBoxControl x:Name="ListBoxControl_Counties" Grid.Row="4" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
-            <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
-            <Button x:Name="Button_Cancel" Content="Cancel" Width="70" Height="23" Margin="5,0,5,0" IsCancel="True" Click="Button_Cancel_Click" />
-        </StackPanel>
+        <!-- Says whether the coverage beside the county parts has been read yet: without it a part with no figure could be
+             one that holds nothing or one whose coverage simply has not arrived. -->
+        <Label x:Name="Label_Coverage" Grid.Row="5" Content="" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Shown only while the coverage is being read (Coding - WPF Deferred Loading.md). -->
+            <ProgressBar x:Name="ProgressBar_Coverage" Grid.Column="0" IsIndeterminate="True" Width="150" Height="14" Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed" ToolTip="Reading acquisition-date coverage" />
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
+                <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
+                <Button x:Name="Button_Cancel" Content="Cancel" Width="70" Height="23" Margin="5,0,5,0" IsCancel="True" Click="Button_Cancel_Click" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

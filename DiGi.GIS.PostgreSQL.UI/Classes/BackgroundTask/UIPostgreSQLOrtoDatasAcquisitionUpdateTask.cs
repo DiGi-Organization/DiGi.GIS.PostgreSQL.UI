@@ -53,9 +53,14 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             // hold the interface still for the whole of the query.
             PostgreSQLOrtoDatasAcquisitionUpdateOptions? postgreSQLOrtoDatasAcquisitionUpdateOptions = null;
 
+            // The coverage beside the parts is read by the window itself, after it opens (Coding - WPF Deferred Loading.md):
+            // one grouped statement over every part, against the database this backfill writes to.
+            OrtoDatasPostgreSQLConverter? ortoDatasPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<OrtoDatasPostgreSQLConverter>();
+            List<int> countyIds_Coverage = administrativeAreal2DReferences.ConvertAll(x => x.Id);
+
             application.Dispatcher.Invoke(() =>
             {
-                PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow postgreSQLOrtoDatasAcquisitionUpdateOptionsWindow = new(PostgreSQLOrtoDatasAcquisitionUpdateOptions, administrativeAreal2DReferences);
+                PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow postgreSQLOrtoDatasAcquisitionUpdateOptionsWindow = new(PostgreSQLOrtoDatasAcquisitionUpdateOptions, administrativeAreal2DReferences, ortoDatasPostgreSQLConverter is null ? null : token => Query.OrtoDataAcquisitionCoverageResultsAsync(ortoDatasPostgreSQLConverter, countyIds_Coverage, token));
 
                 if (postgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.ShowDialog() is not bool dialogResult || !dialogResult)
                 {

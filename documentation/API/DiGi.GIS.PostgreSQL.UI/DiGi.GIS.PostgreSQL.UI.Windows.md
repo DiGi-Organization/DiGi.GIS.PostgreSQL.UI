@@ -630,28 +630,34 @@ Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system
 Implements [System\.Windows\.Markup\.IComponentConnector](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector 'System\.Windows\.Markup\.IComponentConnector')
 ### Constructors
 
-<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_)'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_,System.Func_System.Threading.CancellationToken,System.Threading.Tasks.Task_System.Collections.Generic.Dictionary_int,DiGi.GIS.PostgreSQL.Classes.OrtoDataAcquisitionCoverageResult___)'></a>
 
-## PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow\(PostgreSQLOrtoDatasAcquisitionUpdateOptions, IEnumerable\<AdministrativeAreal2DReference\>\) Constructor
+## PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow\(PostgreSQLOrtoDatasAcquisitionUpdateOptions, IEnumerable\<AdministrativeAreal2DReference\>, Func\<CancellationToken,Task\<Dictionary\<int,OrtoDataAcquisitionCoverageResult\>\>\>\) Constructor
 
 Initializes a new instance of the [PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow') class\.
 
 ```csharp
-public PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions? postgreSQLOrtoDatasAcquisitionUpdateOptions, System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences);
+public PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions? postgreSQLOrtoDatasAcquisitionUpdateOptions, System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences, System.Func<System.Threading.CancellationToken,System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<int,DiGi.GIS.PostgreSQL.Classes.OrtoDataAcquisitionCoverageResult>?>>? ortoDataAcquisitionCoverageResultsAsync=null);
 ```
 #### Parameters
 
-<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).postgreSQLOrtoDatasAcquisitionUpdateOptions'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_,System.Func_System.Threading.CancellationToken,System.Threading.Tasks.Task_System.Collections.Generic.Dictionary_int,DiGi.GIS.PostgreSQL.Classes.OrtoDataAcquisitionCoverageResult___).postgreSQLOrtoDatasAcquisitionUpdateOptions'></a>
 
 `postgreSQLOrtoDatasAcquisitionUpdateOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOrtoDatasAcquisitionUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlortodatasacquisitionupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOrtoDatasAcquisitionUpdateOptions')
 
 The options the controls are filled from\. When null the defaults are used\.
 
-<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).administrativeAreal2DReferences'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_,System.Func_System.Threading.CancellationToken,System.Threading.Tasks.Task_System.Collections.Generic.Dictionary_int,DiGi.GIS.PostgreSQL.Classes.OrtoDataAcquisitionCoverageResult___).administrativeAreal2DReferences'></a>
 
 `administrativeAreal2DReferences` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.administrativeareal2dreference 'DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
 
 The county parts to choose from\. A county whose territory is in several pieces is one entry per piece, each with its own identifier\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOrtoDatasAcquisitionUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_,System.Func_System.Threading.CancellationToken,System.Threading.Tasks.Task_System.Collections.Generic.Dictionary_int,DiGi.GIS.PostgreSQL.Classes.OrtoDataAcquisitionCoverageResult___).ortoDataAcquisitionCoverageResultsAsync'></a>
+
+`ortoDataAcquisitionCoverageResultsAsync` [System\.Func&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.func-2 'System\.Func\`2')[System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')[,](https://learn.microsoft.com/en-us/dotnet/api/system.func-2 'System\.Func\`2')[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Collections\.Generic\.Dictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDataAcquisitionCoverageResult](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.ortodataacquisitioncoverageresult 'DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDataAcquisitionCoverageResult')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.func-2 'System\.Func\`2')
+
+Reads how far the backfill has reached in each county part, keyed by part id, for the series, the backlog and the dated images shown beside each part \(DiGi\.GIS\.PostgreSQL\#134\)\. Started here and never awaited before the window opens: the county list is shown at once, with a progress bar in the bottom\-left corner, and the figures are filled in when the read completes\. Closing the window cancels it\. When null nothing is read, no part is annotated and the progress bar is never shown\.
 ### Properties
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.PostgreSQLOrtoDatasAcquisitionUpdateOptions'></a>
@@ -679,6 +685,25 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.SetOrtoDataAcquisitionCoverageResults(System.Collections.Generic.IReadOnlyDictionary_int,DiGi.GIS.PostgreSQL.Classes.OrtoDataAcquisitionCoverageResult_)'></a>
+
+## PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow\.SetOrtoDataAcquisitionCoverageResults\(IReadOnlyDictionary\<int,OrtoDataAcquisitionCoverageResult\>\) Method
+
+Sets the acquisition\-date coverage shown beside the county parts, and redraws the county list in place\.
+
+The selection and the scroll position are kept: the coverage normally arrives after the window is open, possibly while parts are being picked. Null means the coverage could not be read, which annotates nothing and says so - a bare part is never a measured one. A part absent from a dictionary that was read holds no OrtoDatas series, and says so. Either way the read is settled, so the progress bar is hidden.
+
+```csharp
+public void SetOrtoDataAcquisitionCoverageResults(System.Collections.Generic.IReadOnlyDictionary<int,DiGi.GIS.PostgreSQL.Classes.OrtoDataAcquisitionCoverageResult>? ortoDataAcquisitionCoverageResults);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.SetOrtoDataAcquisitionCoverageResults(System.Collections.Generic.IReadOnlyDictionary_int,DiGi.GIS.PostgreSQL.Classes.OrtoDataAcquisitionCoverageResult_).ortoDataAcquisitionCoverageResults'></a>
+
+`ortoDataAcquisitionCoverageResults` [System\.Collections\.Generic\.IReadOnlyDictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')[DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDataAcquisitionCoverageResult](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.ortodataacquisitioncoverageresult 'DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDataAcquisitionCoverageResult')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')
+
+The coverage keyed by county part id, or null when it could not be read\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoSheetUpdateOptionsWindow'></a>
 

@@ -550,6 +550,45 @@ The options to check, or null\.
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 The message naming the first problem found, or null when the options can start a run\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OrtoDataAcquisitionCoverageResultsAsync(DiGi.GIS.PostgreSQL.Classes.OrtoDatasPostgreSQLConverter,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken)'></a>
+
+## Query\.OrtoDataAcquisitionCoverageResultsAsync\(OrtoDatasPostgreSQLConverter, IEnumerable\<int\>, CancellationToken\) Method
+
+Asynchronously reads how far the acquisition\-date backfill has reached in each of the given county parts, from the database the backfill writes to\.
+
+Read through the converter rather than the Web API on purpose: the backfill runs against the database its configuration names, and the coverage beside a county has to describe that same database. Through the API it would describe production even on a development machine, where the backfill writes elsewhere.
+
+One grouped statement ([DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDatasPostgreSQLConverter\.GetAcquisitionCoveragesByCountyIdsAsync\(System\.Collections\.Generic\.IEnumerable\{System\.Int32\},System\.Int32,System\.Threading\.CancellationToken\)](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.ortodataspostgresqlconverter.getacquisitioncoveragesbycountyidsasync#digi-gis-postgresql-classes-ortodataspostgresqlconverter-getacquisitioncoveragesbycountyidsasync(system-collections-generic-ienumerable{system-int32}-system-int32-system-threading-cancellationtoken) 'DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDatasPostgreSQLConverter\.GetAcquisitionCoveragesByCountyIdsAsync\(System\.Collections\.Generic\.IEnumerable\{System\.Int32\},System\.Int32,System\.Threading\.CancellationToken\)')), bounded by [Timeout](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.OrtoDataAcquisitionCoverage.Timeout 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.OrtoDataAcquisitionCoverage\.Timeout'), which is also its command timeout. A part holding no series is absent from the result - a measured "nothing stored", not an unknown.
+
+Never throws for a failed read and is not retried: a missing converter, a connection that cannot be opened, the timeout elapsing or a failing statement answer null. Only a cancellation through [cancellationToken](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OrtoDataAcquisitionCoverageResultsAsync(DiGi.GIS.PostgreSQL.Classes.OrtoDatasPostgreSQLConverter,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).cancellationToken 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OrtoDataAcquisitionCoverageResultsAsync\(DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDatasPostgreSQLConverter, System\.Collections\.Generic\.IEnumerable\<int\>, System\.Threading\.CancellationToken\)\.cancellationToken') is rethrown.
+
+```csharp
+public static System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<int,DiGi.GIS.PostgreSQL.Classes.OrtoDataAcquisitionCoverageResult>?> OrtoDataAcquisitionCoverageResultsAsync(DiGi.GIS.PostgreSQL.Classes.OrtoDatasPostgreSQLConverter? ortoDatasPostgreSQLConverter, System.Collections.Generic.IEnumerable<int>? countyIds, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OrtoDataAcquisitionCoverageResultsAsync(DiGi.GIS.PostgreSQL.Classes.OrtoDatasPostgreSQLConverter,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).ortoDatasPostgreSQLConverter'></a>
+
+`ortoDatasPostgreSQLConverter` [DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDatasPostgreSQLConverter](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.ortodataspostgresqlconverter 'DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDatasPostgreSQLConverter')
+
+The converter of the `orto_datas` table, which shares its database with `orto_data_acquisition`\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OrtoDataAcquisitionCoverageResultsAsync(DiGi.GIS.PostgreSQL.Classes.OrtoDatasPostgreSQLConverter,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).countyIds'></a>
+
+`countyIds` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The county part identifiers, one per part of a multi\-part county\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OrtoDataAcquisitionCoverageResultsAsync(DiGi.GIS.PostgreSQL.Classes.OrtoDatasPostgreSQLConverter,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+Cancels the read, which also cancels the statement on the server\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Collections\.Generic\.Dictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDataAcquisitionCoverageResult](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.ortodataacquisitioncoverageresult 'DiGi\.GIS\.PostgreSQL\.Classes\.OrtoDataAcquisitionCoverageResult')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+The coverage keyed by county part id, or null when it could not be read\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactors(System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.PredictedYearBuiltRunResult_,System.Collections.Generic.IReadOnlyDictionary_int,long_)'></a>
 
 ## Query\.PredictedYearBuiltCoverageFactors\(IEnumerable\<PredictedYearBuiltRunResult\>, IReadOnlyDictionary\<int,long\>\) Method
