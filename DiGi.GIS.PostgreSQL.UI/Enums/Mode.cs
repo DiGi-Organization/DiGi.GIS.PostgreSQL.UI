@@ -21,6 +21,6 @@ namespace DiGi.GIS.PostgreSQL.UI.Enums
         /// <summary>
         /// Indicates that the operation is performed on both the server and client sides.
         /// </summary>
-        [Description("Server And Cient")] ServerAndCient,
+        [Description("Server And Client")] ServerAndClient,
     }
 }

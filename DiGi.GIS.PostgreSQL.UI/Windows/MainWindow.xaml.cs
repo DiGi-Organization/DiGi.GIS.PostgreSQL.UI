@@ -33,7 +33,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
                 this.mode = Mode.Client;
                 if (this.gISPostgreSQLConverterManager is not null && this.gISPostgreSQLConverterManager.IsAvailable<Building2DPostgreSQLConverter>())
                 {
-                    this.mode = Mode.ServerAndCient;
+                    this.mode = Mode.ServerAndClient;
                 }
             }
 

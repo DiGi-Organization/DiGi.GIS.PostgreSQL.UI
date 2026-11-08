@@ -26,9 +26,9 @@ Indicates that the operation is performed on the server side\.
 
 Indicates that the operation is performed on the client side\.
 
-<a name='DiGi.GIS.PostgreSQL.UI.Enums.Mode.ServerAndCient'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Enums.Mode.ServerAndClient'></a>
 
-`ServerAndCient` 2
+`ServerAndClient` 2
 
 Indicates that the operation is performed on both the server and client sides\.
 

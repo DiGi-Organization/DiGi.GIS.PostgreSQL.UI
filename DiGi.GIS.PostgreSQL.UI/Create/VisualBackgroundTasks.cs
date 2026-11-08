@@ -42,7 +42,7 @@ namespace DiGi.GIS.PostgreSQL.UI
                 return DiGi.UI.WPF.Create.VisualBackgroundTask(backgroundTask, name, description);
             }
 
-            if (mode == Mode.Server || mode == Mode.ServerAndCient)
+            if (mode == Mode.Server || mode == Mode.ServerAndClient)
             {
                 if (gISPostgreSQLConverterManager is not null)
                 {
@@ -204,7 +204,7 @@ namespace DiGi.GIS.PostgreSQL.UI
                 }
             }
 
-            if (mode == Mode.Client || mode == Mode.ServerAndCient)
+            if (mode == Mode.Client || mode == Mode.ServerAndClient)
             {
                 if (GISWebAPIManager is not null)
                 {
