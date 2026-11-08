@@ -38,7 +38,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <para>The tray icon is animated while any client or server background task is running and returns to the static icon once every task has stopped - finished, failed or cancelled.</para>
         /// </summary>
         public GISPostgreSQLTrayApplicationContext()
-            : base("GIS PostgreSQL")
+            : base("GIS PostgreSQL", new DiGi.UI.Windows.Classes.TrayApplicationContextOptions() { ShowWindowOnStartup = true, HideOnMinimize = true, HideOnDeactivate = false })
         {
             SetIcon(SmallIcon("DiGi.GIS.ico"));
 
