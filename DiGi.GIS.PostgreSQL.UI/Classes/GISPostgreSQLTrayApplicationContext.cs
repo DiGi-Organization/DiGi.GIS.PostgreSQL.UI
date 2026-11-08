@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using System.Windows.Resources;
 
@@ -124,6 +125,43 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             {
                 UpdateAnimation();
             }
+        }
+
+        /// <summary>
+        /// Returns the hover popup text listing every running client and server task with its live status and duration.
+        /// </summary>
+        /// <returns>One line per running task under a header, or <see langword="null"/> when no task runs, which shows the native tooltip.</returns>
+        protected override string? GetHoverText()
+        {
+            MainWindow? mainWindow = Window;
+            if (mainWindow is null)
+            {
+                return null;
+            }
+
+            List<IVisualBackgroundTask> visualBackgroundTasks = [];
+            foreach (ObservableCollection<IVisualBackgroundTask>? visualBackgroundTasks_Temp in new[] { mainWindow.VisualBackgroundTasks_Client, mainWindow.VisualBackgroundTasks_Server })
+            {
+                if (visualBackgroundTasks_Temp is not null)
+                {
+                    visualBackgroundTasks.AddRange(visualBackgroundTasks_Temp.Where(x => x.IsRunning));
+                }
+            }
+
+            if (visualBackgroundTasks.Count == 0)
+            {
+                return null;
+            }
+
+            StringBuilder stringBuilder = new();
+            stringBuilder.Append(string.Format("GIS PostgreSQL - {0} running task{1}", visualBackgroundTasks.Count, visualBackgroundTasks.Count == 1 ? string.Empty : "s"));
+            foreach (IVisualBackgroundTask visualBackgroundTask in visualBackgroundTasks)
+            {
+                stringBuilder.AppendLine();
+                stringBuilder.Append(string.Format("{0}: {1} [{2}]", visualBackgroundTask.Name, visualBackgroundTask.Status, visualBackgroundTask.ExecutionTimeSpanText));
+            }
+
+            return stringBuilder.ToString();
         }
 
         private void UpdateAnimation()

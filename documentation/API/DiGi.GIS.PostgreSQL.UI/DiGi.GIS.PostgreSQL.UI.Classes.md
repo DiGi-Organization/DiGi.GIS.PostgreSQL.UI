@@ -207,6 +207,20 @@ public GISPostgreSQLTrayApplicationContext();
 ```
 ### Methods
 
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.GISPostgreSQLTrayApplicationContext.GetHoverText()'></a>
+
+## GISPostgreSQLTrayApplicationContext\.GetHoverText\(\) Method
+
+Returns the hover popup text listing every running client and server task with its live status and duration\.
+
+```csharp
+protected override string? GetHoverText();
+```
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+One line per running task under a header, or [null](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/null 'https://docs\.microsoft\.com/en\-us/dotnet/csharp/language\-reference/keywords/null') when no task runs, which shows the native tooltip\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.GISPostgreSQLTrayApplicationContext.GetWindow()'></a>
 
 ## GISPostgreSQLTrayApplicationContext\.GetWindow\(\) Method
