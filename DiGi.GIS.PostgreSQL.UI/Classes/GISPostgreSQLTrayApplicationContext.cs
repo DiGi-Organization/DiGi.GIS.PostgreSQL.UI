@@ -35,7 +35,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GISPostgreSQLTrayApplicationContext"/> class.
-        /// <para>The tray icon is animated while any client or server background task is running and returns to the static icon once every task has stopped - finished, failed or cancelled.</para>
+        /// <para>The tray icon is animated while any client or server background task is running and returns to the static icon once every task has stopped - finished, failed or cancelled. A green dot blinks in its top-right corner over the same period.</para>
         /// </summary>
         public GISPostgreSQLTrayApplicationContext()
             : base("GIS PostgreSQL", new DiGi.UI.Windows.Classes.TrayApplicationContextOptions() { ShowWindowOnStartup = true, HideOnMinimize = true, HideOnDeactivate = false })
@@ -53,6 +53,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             }
 
             SetAnimationIcons(icons_Animation, TimeSpan.FromMilliseconds(250));
+
+            // Green dot in the top-right corner, blinking slowly while any task runs.
+            SetIndicator(System.Drawing.Color.FromArgb(22, 163, 74), TimeSpan.FromSeconds(1));
 
             MainWindow? mainWindow = Window;
             if (mainWindow is null)
@@ -175,6 +178,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             bool running = (mainWindow.VisualBackgroundTasks_Client?.Any(x => x.IsRunning) ?? false) || (mainWindow.VisualBackgroundTasks_Server?.Any(x => x.IsRunning) ?? false);
 
             SetAnimated(running);
+            SetIndicatorVisible(running);
         }
 
         /// <summary>

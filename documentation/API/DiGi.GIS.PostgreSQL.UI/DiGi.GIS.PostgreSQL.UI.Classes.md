@@ -200,7 +200,7 @@ Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system
 
 Initializes a new instance of the [GISPostgreSQLTrayApplicationContext](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.GISPostgreSQLTrayApplicationContext 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.GISPostgreSQLTrayApplicationContext') class\.
 
-The tray icon is animated while any client or server background task is running and returns to the static icon once every task has stopped - finished, failed or cancelled.
+The tray icon is animated while any client or server background task is running and returns to the static icon once every task has stopped - finished, failed or cancelled. A green dot blinks in its top-right corner over the same period.
 
 ```csharp
 public GISPostgreSQLTrayApplicationContext();
