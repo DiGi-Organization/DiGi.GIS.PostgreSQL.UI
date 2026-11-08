@@ -10,6 +10,7 @@ using DiGi.WebAPI.Classes;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -48,17 +49,17 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Gets or sets the identifiers of the counties to be processed. When null every county held on the server is processed.
         /// </summary>
-        public IEnumerable<int>? CountyIds { get; set; } = null;
+        public IEnumerable<int>? CountyIds { get; set; }
 
         /// <summary>
         /// Gets or sets the seed of the sampling. Two runs sharing a seed draw the same references, which is what lets a run before a change be compared with one after it. The seed is combined per county by <see cref="PostgreSQL.Query.RandomSeed(int, int)"/>, so a county's draw does not depend on the scope of the run or on what any other county holds.
         /// </summary>
-        public int RandomSeed { get; set; } = 0;
+        public int RandomSeed { get; set; }
 
         /// <summary>
         /// Gets or sets the directory the two report files are written into. When null the user is asked for one.
         /// </summary>
-        public string? ReportDirectory { get; set; } = null;
+        public string? ReportDirectory { get; set; }
 
         /// <summary>
         /// Gets or sets the number of references drawn per county. A value of zero or less takes every reference of the county.
@@ -73,7 +74,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Gets or sets the two-digit voivodeship codes to be processed. A county is in scope when its code starts with one of them. When null every voivodeship is processed. Combined with <see cref="CountyIds"/> both filters have to admit the county.
         /// </summary>
-        public IEnumerable<string>? VoivodeshipCodes { get; set; } = null;
+        public IEnumerable<string>? VoivodeshipCodes { get; set; }
 
         /// <inheritdoc />
         protected override async Task<bool> ExecuteAsync(IProgress<long> progress, CancellationToken cancellationToken)
@@ -158,7 +159,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 "=== BUILDING MODEL VERIFICATION ===",
                 $"Started: {DateTime.Now:yyyy-MM-dd HH:mm:ss}",
                 $"Enclosure tolerance: {Tolerance.ToString(System.Globalization.CultureInfo.InvariantCulture)}",
-                $"Sample size per county: {(SampleSize < 1 ? "all" : SampleSize.ToString())}",
+                $"Sample size per county: {(SampleSize < 1 ? "all" : SampleSize.ToString(CultureInfo.CurrentCulture))}",
                 $"Random seed: {RandomSeed} (combined with the county row id, so a county's draw is the same at any scope)",
                 string.Empty,
                 "Code;CountyId;Requested;Missing;Valid;Invalid;NotEnclosed;SeaLevel;SpacePointOutsideShell;UnlocatedBuildingInformation",

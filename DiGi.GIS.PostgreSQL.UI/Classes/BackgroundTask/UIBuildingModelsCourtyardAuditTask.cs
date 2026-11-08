@@ -10,6 +10,7 @@ using DiGi.WebAPI.Classes;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -46,7 +47,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Gets or sets the identifiers of the counties to be audited. When null every county held on the server is audited.
         /// </summary>
-        public IEnumerable<int>? CountyIds { get; set; } = null;
+        public IEnumerable<int>? CountyIds { get; set; }
 
         /// <summary>
         /// Gets or sets how many source-building requests are allowed to be in flight at once. The source pull is one request per building, so an unbounded national pass would take weeks when they are issued one after another; the requests are independent, so they go out in groups of this size.
@@ -56,12 +57,12 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Gets or sets the maximum number of references audited per county. A value of zero or less audits every reference of the county - the estate-wide behaviour. Capping a run keeps a sanity-check bounded without changing that default.
         /// </summary>
-        public int MaxReferencesPerCounty { get; set; } = 0;
+        public int MaxReferencesPerCounty { get; set; }
 
         /// <summary>
         /// Gets or sets the directory the two report files are written into. When null the user is asked for one.
         /// </summary>
-        public string? ReportDirectory { get; set; } = null;
+        public string? ReportDirectory { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether counties named in the checkpoint of an earlier run are skipped. Defaults to <see langword="true"/>. A county is checkpointed only once every reference of it has been audited, so turning this off re-audits every county in scope from the first.
@@ -76,7 +77,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Gets or sets the two-digit voivodeship codes to be audited. A county is in scope when its code starts with one of them. When null every voivodeship is audited. Combined with <see cref="CountyIds"/> both filters have to admit the county.
         /// </summary>
-        public IEnumerable<string>? VoivodeshipCodes { get; set; } = null;
+        public IEnumerable<string>? VoivodeshipCodes { get; set; }
 
         /// <summary>
         /// Decides whether the source CityGML building carries a courtyard - one of its <see cref="CityGML.Classes.GroundSurface"/> surfaces holds an interior ring. This is the source half of the affected test; a wall or roof surface never counts, so only ground surfaces are examined.
@@ -440,7 +441,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 summaryLines.Add($"{code};{countyId};{count_Total_County};{count_SourceHasRing_County};{count_Affected_County};{count_Ok_County};{count_Missing_County};{count_NoCourtyard_County}");
 
                 // Recorded only once every reference of the county has been audited. A county interrupted part way is therefore not checkpointed and is redone in full on the next run.
-                await streamWriter_Checkpoint.WriteLineAsync(countyId.ToString());
+                await streamWriter_Checkpoint.WriteLineAsync(countyId.ToString(CultureInfo.CurrentCulture));
                 await streamWriter_Checkpoint.FlushAsync(cancellationToken);
 
                 Serilog.Modify.Log("County {Code} (id {CountyId}) audited and checkpointed", code, countyId);

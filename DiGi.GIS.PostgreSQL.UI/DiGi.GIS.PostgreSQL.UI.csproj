@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0-windows7.0</TargetFramework>
-	<LangVersion>latest</LangVersion>
 	<OutputPath>..\bin\</OutputPath>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
@@ -26,6 +25,11 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="DiGi.GIS.PostgreSQL.UI.xUnit" />
+  </ItemGroup>
+
+  <!-- WPF host: MessageBox and OpenFileDialog mean the WPF/Microsoft.Win32 types; a file using Windows Forms imports it itself -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
   </ItemGroup>
 
   <Target Name="CopyFiles" AfterTargets="Build">

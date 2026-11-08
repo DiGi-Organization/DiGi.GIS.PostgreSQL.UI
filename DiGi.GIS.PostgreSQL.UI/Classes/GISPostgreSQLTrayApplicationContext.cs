@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
     /// </summary>
     public class GISPostgreSQLTrayApplicationContext : DiGi.UI.Windows.Classes.TrayApplicationContext<MainWindow>
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1805:Do not initialize unnecessarily", Justification = "Never assigned elsewhere: the explicit null states that the tray application runs without a mode (and keeps CS0649 away).")]
         private readonly Mode? mode = null;
 
         private readonly GISPostgreSQLConverterManager? gISPostgreSQLConverterManager = PostgreSQL.Create.GISPostgreSQLConverterManager();
@@ -83,7 +85,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             {
                 try
                 {
-                    StreamResourceInfo? streamResourceInfo = System.Windows.Application.GetResourceStream(new Uri(string.Format("pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/{0}", fileName)));
+                    StreamResourceInfo? streamResourceInfo = System.Windows.Application.GetResourceStream(new Uri(string.Format(CultureInfo.CurrentCulture, "pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/{0}", fileName)));
                     if (streamResourceInfo?.Stream is not Stream stream)
                     {
                         return null;
@@ -157,11 +159,11 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             }
 
             StringBuilder stringBuilder = new();
-            stringBuilder.Append(string.Format("GIS PostgreSQL - {0} running task{1}", visualBackgroundTasks.Count, visualBackgroundTasks.Count == 1 ? string.Empty : "s"));
+            stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, "GIS PostgreSQL - {0} running task{1}", visualBackgroundTasks.Count, visualBackgroundTasks.Count == 1 ? string.Empty : "s"));
             foreach (IVisualBackgroundTask visualBackgroundTask in visualBackgroundTasks)
             {
                 stringBuilder.AppendLine();
-                stringBuilder.Append(string.Format("{0}: {1} [{2}]", visualBackgroundTask.Name, visualBackgroundTask.Status, visualBackgroundTask.ExecutionTimeSpanText));
+                stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, "{0}: {1} [{2}]", visualBackgroundTask.Name, visualBackgroundTask.Status, visualBackgroundTask.ExecutionTimeSpanText));
             }
 
             return stringBuilder.ToString();

@@ -3,6 +3,7 @@ using DiGi.GIS.PostgreSQL.Classes;
 using DiGi.GIS.PostgreSQL.Enums;
 using DiGi.UI.WPF.Classes;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows;
 
 namespace DiGi.GIS.PostgreSQL.UI.Windows
@@ -30,7 +31,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             // The caption stays in the XAML - the designer does not run this constructor, and a caption set here
             // leaves an empty label over an empty box in the preview. Only the values come from the options.
-            TextBoxControl_CommandTimeout.Value = this.postgreSQLBuildingDataUpdateOptions.CommandTimeout.ToString();
+            TextBoxControl_CommandTimeout.Value = this.postgreSQLBuildingDataUpdateOptions.CommandTimeout.ToString(CultureInfo.CurrentCulture);
 
             // Subscribed before the lists are filled - the text of an item is decided as it is added.
             ListBoxControl_UpdateTypes.ItemAdding += ListBoxControl_UpdateTypes_ItemAdding;

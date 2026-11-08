@@ -303,7 +303,9 @@ namespace DiGi.GIS.PostgreSQL.UI
                 }
             }
 
-            result.Sort((x, y) => x.Name!.CompareTo(y.Name));
+#pragma warning disable CA1309 // menu order shown to the user: the culture-aware order it always had
+            result.Sort((x, y) => string.Compare(x.Name!, y.Name, StringComparison.CurrentCulture));
+#pragma warning restore CA1309
 
             return result;
         }

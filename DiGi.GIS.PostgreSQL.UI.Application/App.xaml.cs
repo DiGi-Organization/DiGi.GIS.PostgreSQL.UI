@@ -44,7 +44,7 @@ namespace DiGi.GIS.PostgreSQL.UI
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             Exception currentException = e.Exception;
-            string errorMessage = string.Format("UI Thread Exception: {0}\n{1}", currentException.Message, currentException.StackTrace);
+            string errorMessage = string.Format(System.Globalization.CultureInfo.CurrentCulture, "UI Thread Exception: {0}\n{1}", currentException.Message, currentException.StackTrace);
 
             MessageBox.Show(errorMessage, "Critical UI Error");
 
@@ -60,7 +60,7 @@ namespace DiGi.GIS.PostgreSQL.UI
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception currentException = (Exception)e.ExceptionObject;
-            string errorMessage = string.Format("Non-UI Thread Exception: {0}\n{1}", currentException.Message, currentException.StackTrace);
+            string errorMessage = string.Format(System.Globalization.CultureInfo.CurrentCulture, "Non-UI Thread Exception: {0}\n{1}", currentException.Message, currentException.StackTrace);
 
             MessageBox.Show(errorMessage, "Fatal Domain Error");
         }

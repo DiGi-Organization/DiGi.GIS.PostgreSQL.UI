@@ -44,7 +44,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Gets or sets the path of the headless runner. When null it is resolved by <see cref="Query.YearBuiltPredictionConsoleAppPath"/> - the training mode is hosted by the same executable as the Year Built prediction.
         /// </summary>
-        public string? ConsoleAppPath { get; set; } = null;
+        public string? ConsoleAppPath { get; set; }
 
         /// <summary>
         /// Gets or sets the scenario the dialog opens with, and which it writes back to when it is closed with OK.
@@ -54,7 +54,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Gets or sets the options the dialog opens with, and which it writes back to - with every path made absolute - when a run is confirmed. When null the defaults of <see cref="YOLOTrainingScenario"/> are used, which name no county and no folder and therefore ask for them.
         /// </summary>
-        public YOLOTrainingRunOptions? YOLOTrainingRunOptions { get; set; } = null;
+        public YOLOTrainingRunOptions? YOLOTrainingRunOptions { get; set; }
 
         /// <inheritdoc />
         protected override async Task<bool> ExecuteAsync(IProgress<long> progress, CancellationToken cancellationToken)

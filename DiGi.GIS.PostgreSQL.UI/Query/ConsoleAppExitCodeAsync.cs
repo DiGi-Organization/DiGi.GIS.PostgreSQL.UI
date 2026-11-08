@@ -112,7 +112,7 @@ namespace DiGi.GIS.PostgreSQL.UI
 
             YearBuiltPredictionExitCode yearBuiltPredictionExitCode = (YearBuiltPredictionExitCode)process.ExitCode;
 
-            string description = Enum.IsDefined(typeof(YearBuiltPredictionExitCode), yearBuiltPredictionExitCode)
+            string description = Enum.IsDefined(yearBuiltPredictionExitCode)
                 ? Core.Query.Description(yearBuiltPredictionExitCode) ?? yearBuiltPredictionExitCode.ToString()
                 : string.Format(System.Globalization.CultureInfo.InvariantCulture, "Unrecognised exit code {0}", process.ExitCode);
 

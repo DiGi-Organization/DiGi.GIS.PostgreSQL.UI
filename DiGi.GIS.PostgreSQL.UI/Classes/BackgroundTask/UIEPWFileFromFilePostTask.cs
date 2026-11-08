@@ -5,6 +5,7 @@ using DiGi.GIS.WebAPI.Classes;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,7 +52,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 OpenFileDialog openFileDialog = new()
                 {
                     Title = "Select EPW file",
-                    Filter = string.Format("EPW File (*.{0})|*.{0}|All files (*.*)|*.*", EPW.Constants.FileExtension.EPWFile)
+                    Filter = string.Format(CultureInfo.CurrentCulture, "EPW File (*.{0})|*.{0}|All files (*.*)|*.*", EPW.Constants.FileExtension.EPWFile)
                 };
 
                 bool? dialogResult = openFileDialog.ShowDialog();

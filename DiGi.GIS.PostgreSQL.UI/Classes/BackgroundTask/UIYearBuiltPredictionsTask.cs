@@ -43,12 +43,12 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Gets or sets the path of the headless runner. When null it is resolved by <see cref="Query.YearBuiltPredictionConsoleAppPath"/>, which probes this application's own output, the runner's folder beside it, and the runner's build output in a workspace checkout.
         /// </summary>
-        public string? ConsoleAppPath { get; set; } = null;
+        public string? ConsoleAppPath { get; set; }
 
         /// <summary>
         /// Gets or sets the options the dialog opens with, and which it writes back to when it is closed with OK. When null the defaults are used, which name no county and therefore ask for nothing.
         /// </summary>
-        public YearBuiltPredictionPipelineOptions? YearBuiltPredictionPipelineOptions { get; set; } = null;
+        public YearBuiltPredictionPipelineOptions? YearBuiltPredictionPipelineOptions { get; set; }
 
         /// <inheritdoc />
         protected override async Task<bool> ExecuteAsync(IProgress<long> progress, CancellationToken cancellationToken)

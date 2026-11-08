@@ -40,7 +40,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// Gets or sets the directory the report is written into. When null the directory the application was launched from is used.
         /// <para>Deliberately not a folder dialog: this runs on a thread pool thread, where a WPF common dialog needs an STA apartment.</para>
         /// </summary>
-        public string? ReportDirectory { get; set; } = null;
+        public string? ReportDirectory { get; set; }
 
         /// <summary>
         /// Concrete implementation of the background work.

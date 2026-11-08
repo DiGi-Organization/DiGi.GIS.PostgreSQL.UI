@@ -2,6 +2,7 @@ using DiGi.GIS.PostgreSQL.Classes;
 using DiGi.UI.WPF.Classes;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +14,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     /// <para>Asks for the three settings that decide what a terrain point run costs and covers - the spacing of the sampling grid, whether points already stored are sampled again, and the counties to sample. Every other option of the instance it was given is carried over untouched, which is deliberate: the origin of the grid and the tile size are what let separate runs share their points, and they are not settings to change from a dialog.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.</para>
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "The Closed handler cancels and disposes the token source.")]
     public partial class PostgreSQLTerrainPointUpdateOptionsWindow : Window
     {
         private readonly PostgreSQLTerrainPointUpdateOptions postgreSQLTerrainPointUpdateOptions;
@@ -33,7 +35,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             // The caption stays in the XAML - the designer does not run this constructor, and a caption set here
             // leaves an empty label over an empty box in the preview. Only the values come from the options.
-            TextBoxControl_GridSize.Value = this.postgreSQLTerrainPointUpdateOptions.GridSize.ToString();
+            TextBoxControl_GridSize.Value = this.postgreSQLTerrainPointUpdateOptions.GridSize.ToString(CultureInfo.CurrentCulture);
 
             CheckBox_OverrideExisting.IsChecked = this.postgreSQLTerrainPointUpdateOptions.OverrideExisting;
 

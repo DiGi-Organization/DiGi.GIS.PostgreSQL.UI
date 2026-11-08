@@ -51,17 +51,17 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// Gets or sets the identifiers of the county rows to stamp. When null every county row is in scope.
         /// <para>These are polygon parts, not counties - a multi-part county holds one row per part and each is walked on its own.</para>
         /// </summary>
-        public IEnumerable<int>? CountyIds { get; set; } = null;
+        public IEnumerable<int>? CountyIds { get; set; }
 
         /// <summary>
         /// Gets or sets the two-digit voivodeship codes to be stamped. A county row is in scope when its code starts with one of them. When null every voivodeship is in scope. Combined with <see cref="CountyIds"/> both filters have to admit the row.
         /// </summary>
-        public IEnumerable<string>? VoivodeshipCodes { get; set; } = null;
+        public IEnumerable<string>? VoivodeshipCodes { get; set; }
 
         /// <summary>
         /// Gets or sets the detail level of the building model table to walk. When null every level whose table exists is walked.
         /// </summary>
-        public BuildingModelDetailLevel? BuildingModelDetailLevel { get; set; } = null;
+        public BuildingModelDetailLevel? BuildingModelDetailLevel { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the task only reports what it would stamp. Defaults to <see langword="true"/>; nothing is written until it is turned off.
@@ -88,13 +88,13 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// Gets or sets the directory the checkpoint and the reports are written into. When null the directory the application was launched from is used.
         /// <para>Deliberately not a folder dialog: this runs on a thread pool thread, where a WPF common dialog needs an STA apartment and throws instead of opening.</para>
         /// </summary>
-        public string? ReportDirectory { get; set; } = null;
+        public string? ReportDirectory { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the options window is skipped and the properties of this task are used as they are. Defaults to <see langword="false"/>.
         /// <para>A run started from the tray always asks for its scope through <see cref="PostgreSQLBuildingModelBuildingInformationUpdateOptionsWindow"/>. A caller that sets the options itself - a test, or a host that runs the task without the user interface - turns this on so <see cref="ExecuteAsync(IProgress{long}, CancellationToken)"/> never asks for them.</para>
         /// </summary>
-        public bool SkipOptionsDialog { get; set; } = false;
+        public bool SkipOptionsDialog { get; set; }
 
         /// <inheritdoc />
         protected override async Task<bool> ExecuteAsync(IProgress<long> progress, CancellationToken cancellationToken)
@@ -604,12 +604,12 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             /// <summary>
             /// The reason for a <c>Failed</c> or <c>Rejected</c> row; null otherwise.
             /// </summary>
-            public string? Reason = null;
+            public string? Reason;
 
             /// <summary>
             /// The value to write for a <c>ToUpdate</c> row; null otherwise.
             /// </summary>
-            public JsonNode? Value = null;
+            public JsonNode? Value;
         }
     }
 }

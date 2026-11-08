@@ -70,7 +70,7 @@ namespace DiGi.GIS.PostgreSQL.UI
             if (result.Steps is null || result.Steps.Count == 0)
             {
                 List<YOLOTrainingStep> yOLOTrainingSteps = [];
-                foreach (YOLOTrainingStep yOLOTrainingStep in Enum.GetValues(typeof(YOLOTrainingStep)))
+                foreach (YOLOTrainingStep yOLOTrainingStep in Enum.GetValues<YOLOTrainingStep>())
                 {
                     yOLOTrainingSteps.Add(yOLOTrainingStep);
                 }

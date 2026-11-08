@@ -1,6 +1,7 @@
 using DiGi.GIS.PostgreSQL.Classes;
 using DiGi.UI.WPF.Classes;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows;
 
 namespace DiGi.GIS.PostgreSQL.UI.Windows
@@ -28,7 +29,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             // The caption stays in the XAML - the designer does not run this constructor. Only the values come
             // from the options.
-            TextBoxControl_BatchSize.Value = this.postgreSQLBuilding2DRefreshOptions.BatchSize.ToString();
+            TextBoxControl_BatchSize.Value = this.postgreSQLBuilding2DRefreshOptions.BatchSize.ToString(CultureInfo.CurrentCulture);
             CheckBox_OverrideExistingSubdivisionIds.IsChecked = this.postgreSQLBuilding2DRefreshOptions.OverrideExistingSubdivisionIds;
             CheckBox_NestedSubdivisionsOnly.IsChecked = this.postgreSQLBuilding2DRefreshOptions.NestedSubdivisionsOnly;
 

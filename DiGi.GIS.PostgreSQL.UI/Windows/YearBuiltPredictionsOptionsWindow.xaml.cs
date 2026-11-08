@@ -3,6 +3,7 @@ using DiGi.GIS.YOLO.UI.Classes;
 using DiGi.UI.WPF.Classes;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,6 +18,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     /// <para>The scratch cleanup is the one flag that survives, because its reason is about this run rather than about the sequence: a cancelled county is cleaned, so a run that is meant to be interrupted has to be able to say so beforehand.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were, and every member the window has no control for carries through untouched.</para>
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "The Closed handler cancels and disposes the token source.")]
     public partial class YearBuiltPredictionsOptionsWindow : Window
     {
         // What a blank scratch directory means: the dialog opens with it and OK substitutes it for an emptied box. A relative
@@ -43,7 +45,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             // leaves an empty label over an empty box in the preview. Only the values come from the options.
             TextBoxControl_ScratchDirectory.Value = string.IsNullOrWhiteSpace(this.yearBuiltPredictionPipelineOptions.ScratchDirectory) ? DefaultScratchDirectory : this.yearBuiltPredictionPipelineOptions.ScratchDirectory;
             TextBoxControl_PythonPath.Value = this.yearBuiltPredictionPipelineOptions.PythonPath;
-            TextBoxControl_MaxConcurrentRequests.Value = this.yearBuiltPredictionPipelineOptions.MaxConcurrentRequests.ToString();
+            TextBoxControl_MaxConcurrentRequests.Value = this.yearBuiltPredictionPipelineOptions.MaxConcurrentRequests.ToString(CultureInfo.CurrentCulture);
 
             CheckBox_CleanScratchDirectory.IsChecked = this.yearBuiltPredictionPipelineOptions.CleanScratchDirectory;
 
@@ -84,7 +86,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             Label_Coverage.Content = coverageFactors is null
                 ? "Prediction coverage could not be read - no county is marked"
-                : string.Format("{0} - more than {1} % of the county's buildings already carry a predicted year built", Query.PredictedYearBuiltCoverageMarker(double.PositiveInfinity), Constants.YearBuiltPrediction.CoverageMarkerThreshold * 100);
+                : string.Format(CultureInfo.CurrentCulture, "{0} - more than {1} % of the county's buildings already carry a predicted year built", Query.PredictedYearBuiltCoverageMarker(double.PositiveInfinity), Constants.YearBuiltPrediction.CoverageMarkerThreshold * 100);
 
             ListBoxControl_Counties.RefreshItems();
         }

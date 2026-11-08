@@ -6,6 +6,7 @@ using DiGi.GIS.WebAPI.Classes;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,7 +53,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 OpenFileDialog openFileDialog = new()
                 {
                     Title = "Select GIS Model file",
-                    Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile)
+                    Filter = string.Format(CultureInfo.CurrentCulture, "{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile)
                 };
 
                 bool? dialogResult = openFileDialog.ShowDialog();

@@ -35,7 +35,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// Gets or sets the identifiers of the county rows to clean. When null every county row is examined.
         /// <para>These are polygon parts, not counties - a multi-part county holds one row per part and each is cleaned on its own.</para>
         /// </summary>
-        public IEnumerable<int>? CountyIds { get; set; } = null;
+        public IEnumerable<int>? CountyIds { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the task only reports what it would do. Defaults to <see langword="true"/>; nothing is written until it is turned off.
@@ -46,13 +46,13 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// Gets or sets the directory the two report files are written into. When null the directory the application was launched from is used.
         /// <para>Deliberately not a folder dialog: this runs on a thread pool thread, where a WPF common dialog needs an STA apartment and throws instead of opening.</para>
         /// </summary>
-        public string? ReportDirectory { get; set; } = null;
+        public string? ReportDirectory { get; set; }
 
         /// <summary>
         /// Gets or sets the two-digit voivodeship codes to be cleaned. A county row is in scope when its code starts with one of them. When null every voivodeship is cleaned. Combined with <see cref="CountyIds"/> both filters have to admit the row.
         /// <para>This is what makes the national regeneration affordable: a voivodeship is regenerated and then cleaned before the next one starts, so the storage tablespace only ever carries a second copy of one voivodeship rather than of the whole country.</para>
         /// </summary>
-        public IEnumerable<string>? VoivodeshipCodes { get; set; } = null;
+        public IEnumerable<string>? VoivodeshipCodes { get; set; }
 
         /// <inheritdoc />
         protected override async Task<bool> ExecuteAsync(IProgress<long> progress, CancellationToken cancellationToken)

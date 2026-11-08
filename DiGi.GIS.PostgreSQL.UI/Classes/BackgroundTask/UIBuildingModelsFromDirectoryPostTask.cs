@@ -7,6 +7,7 @@ using DiGi.WebAPI.Classes;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -106,7 +107,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 }
 
                 // Same matching rule as Analytical.Create.BuildingModels(GISModelFile, directory) - a county's CityGML lives in <code>.zip.
-                string[] paths_CityGML = Directory.GetFiles(directory, string.Format("{0}.zip", code), SearchOption.AllDirectories);
+                string[] paths_CityGML = Directory.GetFiles(directory, string.Format(CultureInfo.CurrentCulture, "{0}.zip", code), SearchOption.AllDirectories);
                 if (paths_CityGML.Length == 0)
                 {
                     continue;

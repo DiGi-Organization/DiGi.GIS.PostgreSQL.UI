@@ -55,7 +55,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// Gets or sets whether the options dialog is skipped and the run takes its options from the task's properties as they are.
         /// <para>The dialog needs a running WPF application, which a test host has not got; a fact sets this and drives the run through the properties instead (the seam <see cref="UIPostgreSQLBuildingModelBuildingInformationUpdateTask"/> carries for the same reason). Off for every row the tray registers.</para>
         /// </summary>
-        public bool SkipOptionsDialog { get; set; } = false;
+        public bool SkipOptionsDialog { get; set; }
 
         /// <summary>
         /// Asks for the run's options, validates them, computes the release's SHA-256 from the source files, runs the core import and writes the run report.

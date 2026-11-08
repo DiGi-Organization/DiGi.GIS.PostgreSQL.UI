@@ -6,6 +6,7 @@ using DiGi.WebAPI.Classes;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -62,7 +63,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             string? source_Latest = await LatestSourceAsync(gISWebAPIManager);
             if (!string.IsNullOrWhiteSpace(source_Latest))
             {
-                MessageBoxResult messageBoxResult = MessageBox.Show(string.Format("The last building on the server came from:\n\n{0}\n\nContinue from that file?\n\nYes - resume from it.\nNo - import the whole directory from the start.", source_Latest), "Continue", MessageBoxButton.YesNoCancel);
+                MessageBoxResult messageBoxResult = MessageBox.Show(string.Format(CultureInfo.CurrentCulture, "The last building on the server came from:\n\n{0}\n\nContinue from that file?\n\nYes - resume from it.\nNo - import the whole directory from the start.", source_Latest), "Continue", MessageBoxButton.YesNoCancel);
                 if (messageBoxResult == MessageBoxResult.Cancel)
                 {
                     return false;
@@ -128,7 +129,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             {
                 Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "Resume source {Source} was not found under {Directory}; nothing was imported", source_Resume ?? string.Empty, directory);
 
-                MessageBox.Show(string.Format("Could not resume: no file matching\n\n{0}\n\nwas found under the selected directory. Nothing has been imported.", source_Resume), "Continue", MessageBoxButton.OK);
+                MessageBox.Show(string.Format(CultureInfo.CurrentCulture, "Could not resume: no file matching\n\n{0}\n\nwas found under the selected directory. Nothing has been imported.", source_Resume), "Continue", MessageBoxButton.OK);
 
                 return false;
             }
@@ -284,7 +285,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         {
             private readonly string source;
 
-            private bool matched = false;
+            private bool matched;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ResumeFilter"/> class.

@@ -2,6 +2,7 @@ using DiGi.GIS.PostgreSQL.Classes;
 using DiGi.UI.WPF.Classes;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +15,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     /// <para>The spacing is the one that has to be right. Set finer than a county actually holds, every node in between reads as a gap and the repair turns into a densification of the whole country, so the equivalent spacing measured for each county is shown beside it.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.</para>
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "The Closed handler cancels and disposes the token source.")]
     public partial class PostgreSQLTerrainPointFillGapsOptionsWindow : Window
     {
         private readonly PostgreSQLTerrainPointFillGapsOptions postgreSQLTerrainPointFillGapsOptions;
@@ -34,7 +36,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             // The caption stays in the XAML - the designer does not run this constructor, and a caption set here
             // leaves an empty label over an empty box in the preview. Only the values come from the options.
-            TextBoxControl_GridSize.Value = this.postgreSQLTerrainPointFillGapsOptions.GridSize.ToString();
+            TextBoxControl_GridSize.Value = this.postgreSQLTerrainPointFillGapsOptions.GridSize.ToString(CultureInfo.CurrentCulture);
 
             // Subscribed before the list is filled - the text of an item is decided as it is added.
             ListBoxControl_Counties.ItemAdding += ListBoxControl_Counties_ItemAdding;

@@ -10,6 +10,7 @@ using DiGi.GIS.WebAPI.Classes;
 using DiGi.WebAPI.Classes;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -55,7 +56,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// Gets or sets the directory the checkpoint and the list of failed counties are written into. When null the directory the application was launched from is used.
         /// <para>Deliberately not a folder dialog: this runs on a thread pool thread, where a WPF common dialog needs an STA apartment and throws instead of opening.</para>
         /// </summary>
-        public string? ReportDirectory { get; set; } = null;
+        public string? ReportDirectory { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether counties named in the checkpoint of an earlier run are skipped. Defaults to <see langword="true"/>.
@@ -67,7 +68,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// Gets or sets the two-digit voivodeship codes to be processed. A county is in scope when its code starts with one of them. When null every voivodeship is processed. Combined with <see cref="BuildingModelsPostTask.CountyIds"/> both filters have to admit the county.
         /// <para>Regenerating one voivodeship at a time is what keeps the storage tablespace within reach: a county's models are written beside the ones they supersede until <see cref="PostgreSQLBuildingModelCleanupTask"/> removes them, so a national pass in one go would need room for a second copy of the whole table.</para>
         /// </summary>
-        public IEnumerable<string>? VoivodeshipCodes { get; set; } = null;
+        public IEnumerable<string>? VoivodeshipCodes { get; set; }
 
         /// <inheritdoc />
         protected override async Task<bool> ExecuteAsync(IProgress<long> progress, CancellationToken cancellationToken)
@@ -545,7 +546,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 // Recorded only once every page of the county has been generated and uploaded. A county
                 // interrupted part way is therefore redone in full on the next run, which is safe: the upsert
                 // is keyed on the building reference, so regenerating replaces rather than inserts.
-                await streamWriter_Checkpoint.WriteLineAsync(countyId.ToString());
+                await streamWriter_Checkpoint.WriteLineAsync(countyId.ToString(CultureInfo.CurrentCulture));
                 await streamWriter_Checkpoint.FlushAsync(cancellationToken);
 
                 Serilog.Modify.Log("County {Code} (id {CountyId}) ended", code, countyId);
@@ -555,7 +556,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             {
                 string path_Failed = Path.Combine(directory, "BuildingModels_Regeneration_Failed.txt");
 
-                await File.WriteAllLinesAsync(path_Failed, countyIds_Failed.ConvertAll(x => x.ToString()), cancellationToken);
+                await File.WriteAllLinesAsync(path_Failed, countyIds_Failed.ConvertAll(x => x.ToString(CultureInfo.CurrentCulture)), cancellationToken);
 
                 // Named so the re-run is a copy of this list into CountyIds rather than a hunt through the log.
                 Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "{Count} county rows failed and were skipped: {CountyIds}. Written to {Path} - re-run them with CountyIds set to that list", countyIds_Failed.Count, string.Join(", ", countyIds_Failed), path_Failed);

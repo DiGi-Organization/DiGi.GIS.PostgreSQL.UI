@@ -4,6 +4,7 @@ using DiGi.GIS.PostgreSQL.UI.Classes;
 using DiGi.UI.WPF.Classes;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 
@@ -33,8 +34,8 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
             // The caption stays in the XAML - the designer does not run this constructor, and a caption set here
             // leaves an empty label over an empty box in the preview. Only the values come from the options.
-            TextBoxControl_BatchSize.Value = this.postgreSQLBuildingModelBuildingInformationUpdateOptions.BatchSize.ToString();
-            TextBoxControl_CommandTimeout.Value = this.postgreSQLBuildingModelBuildingInformationUpdateOptions.CommandTimeout.ToString();
+            TextBoxControl_BatchSize.Value = this.postgreSQLBuildingModelBuildingInformationUpdateOptions.BatchSize.ToString(CultureInfo.CurrentCulture);
+            TextBoxControl_CommandTimeout.Value = this.postgreSQLBuildingModelBuildingInformationUpdateOptions.CommandTimeout.ToString(CultureInfo.CurrentCulture);
             TextBoxControl_ReportDirectory.Value = this.postgreSQLBuildingModelBuildingInformationUpdateOptions.ReportDirectory ?? string.Empty;
             CheckBox_Resume.IsChecked = this.postgreSQLBuildingModelBuildingInformationUpdateOptions.Resume;
             CheckBox_DryRun.IsChecked = this.postgreSQLBuildingModelBuildingInformationUpdateOptions.DryRun;

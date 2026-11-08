@@ -34,7 +34,7 @@ namespace DiGi.GIS.PostgreSQL.UI
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i].Trim();
-                if (line.Length == 0 || line.StartsWith("#", StringComparison.Ordinal))
+                if (line.Length == 0 || line.StartsWith('#'))
                 {
                     continue;
                 }
