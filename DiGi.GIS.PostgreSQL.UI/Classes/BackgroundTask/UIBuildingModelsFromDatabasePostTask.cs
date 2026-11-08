@@ -32,9 +32,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Initializes a new instance of the <see cref="UIBuildingModelsFromDatabasePostTask"/> class.
         /// </summary>
-        /// <param name="GISWebAPIManager">The <see cref="GISWebAPIManager"/> instance used to communicate with the server.</param>
-        public UIBuildingModelsFromDatabasePostTask(GISWebAPIManager GISWebAPIManager)
-            : base(GISWebAPIManager)
+        /// <param name="gISWebAPIManager">The <see cref="GISWebAPIManager"/> instance used to communicate with the server.</param>
+        public UIBuildingModelsFromDatabasePostTask(GISWebAPIManager gISWebAPIManager)
+            : base(gISWebAPIManager)
         {
         }
 
@@ -77,7 +77,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 return await base.ExecuteAsync(progress, cancellationToken);
             }
 
-            HttpClient? httpClient_AdministrativeAreal2D = GISWebAPIManager.CreateHttpClient<AdministrativeAreal2DController>(nameof(AdministrativeAreal2DController.GetAdministrativeAreal2DReferencesByAdministrativeArealTypeAsync), out string? path_AdministrativeAreal2D);
+            HttpClient? httpClient_AdministrativeAreal2D = gISWebAPIManager.CreateHttpClient<AdministrativeAreal2DController>(nameof(AdministrativeAreal2DController.GetAdministrativeAreal2DReferencesByAdministrativeArealTypeAsync), out string? path_AdministrativeAreal2D);
             if (httpClient_AdministrativeAreal2D is null || string.IsNullOrWhiteSpace(path_AdministrativeAreal2D))
             {
                 return false;
@@ -161,25 +161,25 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 }
             }
 
-            HttpClient? httpClient_Building2DReferences = GISWebAPIManager.CreateHttpClient<Building2DController>(nameof(Building2DController.GetBuilding2DReferencesByPagingParameterAsync), out string? path_Building2DReferences);
+            HttpClient? httpClient_Building2DReferences = gISWebAPIManager.CreateHttpClient<Building2DController>(nameof(Building2DController.GetBuilding2DReferencesByPagingParameterAsync), out string? path_Building2DReferences);
             if (httpClient_Building2DReferences is null || string.IsNullOrWhiteSpace(path_Building2DReferences))
             {
                 return false;
             }
 
-            HttpClient? httpClient_Building2D = GISWebAPIManager.CreateHttpClient<Building2DController>(nameof(Building2DController.GetItemsByBuilding2DReferencesAsync), out string? path_Building2D);
+            HttpClient? httpClient_Building2D = gISWebAPIManager.CreateHttpClient<Building2DController>(nameof(Building2DController.GetItemsByBuilding2DReferencesAsync), out string? path_Building2D);
             if (httpClient_Building2D is null || string.IsNullOrWhiteSpace(path_Building2D))
             {
                 return false;
             }
 
-            HttpClient? httpClient_Building = GISWebAPIManager.CreateHttpClient<BuildingController>(nameof(BuildingController.GetItemByReferenceAsync), out string? path_Building);
+            HttpClient? httpClient_Building = gISWebAPIManager.CreateHttpClient<BuildingController>(nameof(BuildingController.GetItemByReferenceAsync), out string? path_Building);
             if (httpClient_Building is null || string.IsNullOrWhiteSpace(path_Building))
             {
                 return false;
             }
 
-            HttpClient? httpClient_GUGiK = WebAPI.Create.HttpClient_GUGiK(GISWebAPIManager);
+            HttpClient? httpClient_GUGiK = WebAPI.Create.HttpClient_GUGiK(gISWebAPIManager);
             if (httpClient_GUGiK is null)
             {
                 return false;

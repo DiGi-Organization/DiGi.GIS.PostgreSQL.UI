@@ -29,15 +29,15 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
     /// </summary>
     public class UIYearBuiltPredictionsTask : ReportableBackgroundTask<long>, IGISPostgreSQLUIObject
     {
-        private readonly GISWebAPIManager GISWebAPIManager;
+        private readonly GISWebAPIManager gISWebAPIManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UIYearBuiltPredictionsTask"/> class.
         /// </summary>
-        /// <param name="GISWebAPIManager">The <see cref="WebAPI.Classes.GISWebAPIManager"/> instance the county rows behind the dialog are read with. The run itself authorizes with the runner's own key, not with this one.</param>
-        public UIYearBuiltPredictionsTask(GISWebAPIManager GISWebAPIManager)
+        /// <param name="gISWebAPIManager">The <see cref="WebAPI.Classes.GISWebAPIManager"/> instance the county rows behind the dialog are read with. The run itself authorizes with the runner's own key, not with this one.</param>
+        public UIYearBuiltPredictionsTask(GISWebAPIManager gISWebAPIManager)
         {
-            this.GISWebAPIManager = GISWebAPIManager;
+            this.gISWebAPIManager = gISWebAPIManager;
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 throw new BackgroundTaskFailureException(Query.RenderRefusal(template));
             }
 
-            HttpClient? httpClient_AdministrativeAreal2D = GISWebAPIManager.CreateHttpClient<AdministrativeAreal2DController>(nameof(AdministrativeAreal2DController.GetAdministrativeAreal2DReferencesByAdministrativeArealTypeAsync), out string? path_AdministrativeAreal2D);
+            HttpClient? httpClient_AdministrativeAreal2D = gISWebAPIManager.CreateHttpClient<AdministrativeAreal2DController>(nameof(AdministrativeAreal2DController.GetAdministrativeAreal2DReferencesByAdministrativeArealTypeAsync), out string? path_AdministrativeAreal2D);
             if (httpClient_AdministrativeAreal2D is null || string.IsNullOrWhiteSpace(path_AdministrativeAreal2D))
             {
                 string template = "County references could not be requested - the Year Built prediction run cannot be scoped";
@@ -104,7 +104,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 // for, so each piece of a multi-part county gets its own marker.
                 List<int> countyIds_Coverage = [.. administrativeAreal2DReferences.ConvertAll(x => x.Id)];
 
-                YearBuiltPredictionsOptionsWindow yearBuiltPredictionsOptionsWindow = new(YearBuiltPredictionPipelineOptions, administrativeAreal2DReferences, token => Query.PredictedYearBuiltCoverageFactorsAsync(GISWebAPIManager, countyIds_Coverage, token));
+                YearBuiltPredictionsOptionsWindow yearBuiltPredictionsOptionsWindow = new(YearBuiltPredictionPipelineOptions, administrativeAreal2DReferences, token => Query.PredictedYearBuiltCoverageFactorsAsync(gISWebAPIManager, countyIds_Coverage, token));
 
                 if (yearBuiltPredictionsOptionsWindow.ShowDialog() is not bool dialogResult || !dialogResult)
                 {

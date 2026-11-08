@@ -19,9 +19,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Initializes a new instance of the <see cref="UIUpdateFromFilePostTask"/> class.
         /// </summary>
-        /// <param name="GISWebAPIManager">The manager used to handle PostgreSQL Web API communications.</param>
-        public UIUpdateFromFilePostTask(GISWebAPIManager GISWebAPIManager)
-            : base(GISWebAPIManager)
+        /// <param name="gISWebAPIManager">The manager used to handle PostgreSQL Web API communications.</param>
+        public UIUpdateFromFilePostTask(GISWebAPIManager gISWebAPIManager)
+            : base(gISWebAPIManager)
         {
         }
 
@@ -82,7 +82,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 RequestResult = false
             };
 
-            return await GISWebAPIManager.UpdateItemsAsync(path, sufixes.Contains(FileNameSufix.OT_ADJA_A), sufixes.Contains(FileNameSufix.OT_ADMS_A), sufixes.Contains(FileNameSufix.OT_BUBD_A), serializableObjectsPostOptions, progress, cancellationToken);
+            return await gISWebAPIManager.UpdateItemsAsync(path, sufixes.Contains(FileNameSufix.OT_ADJA_A), sufixes.Contains(FileNameSufix.OT_ADMS_A), sufixes.Contains(FileNameSufix.OT_BUBD_A), serializableObjectsPostOptions, progress, cancellationToken);
         }
     }
 }

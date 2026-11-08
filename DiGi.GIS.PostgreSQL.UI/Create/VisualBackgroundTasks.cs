@@ -17,11 +17,11 @@ namespace DiGi.GIS.PostgreSQL.UI
         /// </summary>
         /// <param name="gISPostgreSQLConverterManager">The manager responsible for PostgreSQL conversion operations.</param>
         /// <param name="userPostgreSQLConverterManager">The manager holding the converter for the user database, or null where no User_PostgreSQL_Main.conf names one. Users live in their own database rather than in the one the rest of this application works against.</param>
-        /// <param name="GISWebAPIManager">The manager responsible for interacting with the PostgreSQL Web API.</param>
+        /// <param name="gISWebAPIManager">The manager responsible for interacting with the PostgreSQL Web API.</param>
         /// <param name="mode">The operation mode (Server, Client, or both) that determines which tasks are instantiated.</param>
         /// <param name="yearBuiltPredictionConsoleAppPath">An explicit path to the headless Year Built prediction runner, or null to let <see cref="Query.YearBuiltPredictionConsoleAppPath"/> probe for it. A test supplies one to decide whether that task is offered without deploying the runner, the same seam its resolver already carries.</param>
         /// <returns>A list of <see cref="IVisualBackgroundTask"/> objects sorted by name, or null if not applicable.</returns>
-        public static List<IVisualBackgroundTask>? VisualBackgroundTasks(GISPostgreSQLConverterManager? gISPostgreSQLConverterManager, UserPostgreSQLConverterManager? userPostgreSQLConverterManager, GISWebAPIManager? GISWebAPIManager, Mode mode, string? yearBuiltPredictionConsoleAppPath = null)
+        public static List<IVisualBackgroundTask>? VisualBackgroundTasks(GISPostgreSQLConverterManager? gISPostgreSQLConverterManager, UserPostgreSQLConverterManager? userPostgreSQLConverterManager, GISWebAPIManager? gISWebAPIManager, Mode mode, string? yearBuiltPredictionConsoleAppPath = null)
         {
             List<IVisualBackgroundTask> result = [];
 
@@ -48,23 +48,23 @@ namespace DiGi.GIS.PostgreSQL.UI
                 {
                     result.Add(Visual(new PostgreSQLAdministrativeAreal2DCreateDatabaseTask(gISPostgreSQLConverterManager), "Create main database", "Creates main database for AdministrativeAreal2D and Biulding2D objects"));
                     result.Add(Visual(new PostgreSQLOrtoDatasCreateDatabaseTask(gISPostgreSQLConverterManager), "Create storage database", "Creates storage database for OrtoDatas objects"));
-                    if (GISWebAPIManager is not null)
+                    if (gISWebAPIManager is not null)
                     {
-                        result.Add(Visual(new OrtoDatasTask(GISWebAPIManager, gISPostgreSQLConverterManager), "Bypass upload OrtoDatas from database", "Upload OrtoDatas from database. Direct update of OrtoDatas by bypassing the GIS WebAPI HTTP post."));
+                        result.Add(Visual(new OrtoDatasTask(gISWebAPIManager, gISPostgreSQLConverterManager), "Bypass upload OrtoDatas from database", "Upload OrtoDatas from database. Direct update of OrtoDatas by bypassing the GIS WebAPI HTTP post."));
                     }
 
                     // Scoped from a dialog rather than from defaults written here: the cost of this run is the
                     // square of the grid size over the area chosen, from an afternoon over one county to
                     // hundreds of millions of requests over the country, so it is asked for at the moment the
                     // task is started.
-                    result.Add(Visual(new UIPostgreSQLTerrainPointUpdateTask(GISWebAPIManager, gISPostgreSQLConverterManager), "Update TerrainPoints", "Updates the TerrainPoints by sampling terrain elevations onto a shared grid, adding points to counties that already have some (e.g. at a finer grid size). It also creates the TerrainPoint table when it does not exist yet. Grid size, override existing and the counties are asked for when the task is started"));
-                    result.Add(Visual(new UIPostgreSQLTerrainPointFillGapsTask(GISWebAPIManager, gISPostgreSQLConverterManager), "Fill TerrainPoint gaps", "Measures each county against the lattice and samples only the nodes it is short of, recovering the points a sampling run lost. Grid size and the counties are asked for when the task is started"));
+                    result.Add(Visual(new UIPostgreSQLTerrainPointUpdateTask(gISWebAPIManager, gISPostgreSQLConverterManager), "Update TerrainPoints", "Updates the TerrainPoints by sampling terrain elevations onto a shared grid, adding points to counties that already have some (e.g. at a finer grid size). It also creates the TerrainPoint table when it does not exist yet. Grid size, override existing and the counties are asked for when the task is started"));
+                    result.Add(Visual(new UIPostgreSQLTerrainPointFillGapsTask(gISWebAPIManager, gISPostgreSQLConverterManager), "Fill TerrainPoint gaps", "Measures each county against the lattice and samples only the nodes it is short of, recovering the points a sampling run lost. Grid size and the counties are asked for when the task is started"));
 
                     // DiGi.GIS#18: the sheet index first, then the backfill that dates every stored image by the sheet
                     // it shows. The import reads the national index in about 23 minutes and only adds rows when GUGiK
                     // publishes a new year; the backfill writes orto_data_acquisition for the county parts it is given
                     // (orto_datas is only read, DiGi.GIS.PostgreSQL#123), and it has no unscoped default.
-                    result.Add(Visual(new UIPostgreSQLOrtoSheetUpdateTask(GISWebAPIManager, gISPostgreSQLConverterManager), "Import orthophoto sheet index", "Imports the GUGiK orthophoto sheet index (SkorowidzOrtofomapy<year>) into orto_sheet, one index year at a time, and creates the table when it does not exist yet. The years and the pacing are asked for when the task is started"));
+                    result.Add(Visual(new UIPostgreSQLOrtoSheetUpdateTask(gISWebAPIManager, gISPostgreSQLConverterManager), "Import orthophoto sheet index", "Imports the GUGiK orthophoto sheet index (SkorowidzOrtofomapy<year>) into orto_sheet, one index year at a time, and creates the table when it does not exist yet. The years and the pacing are asked for when the task is started"));
                     result.Add(Visual(new UIPostgreSQLOrtoDatasAcquisitionUpdateTask(gISPostgreSQLConverterManager), "Backfill OrtoDatas acquisition dates", "Dates every stored OrtoDatas image by the orto_sheet sheet it shows (acquisition date, sheet id, content hash) into orto_data_acquisition, one row per image, writing only rows that changed; orto_datas is only read. Import the sheet index first. The county parts, the last fetched year and the paging are asked for when the task is started"));
 
                     result.Add(Visual(new UIPostgreSQLBuildingDataUpdateTask(gISPostgreSQLConverterManager), "Update building data", "Updates building data from Building2D and the other stored sources. The counties, the kinds of column to write and the statement timeout are asked for when the task is started - unscoped it walks every subdivision in the country"));
@@ -206,20 +206,20 @@ namespace DiGi.GIS.PostgreSQL.UI
 
             if (mode == Mode.Client || mode == Mode.ServerAndClient)
             {
-                if (GISWebAPIManager is not null)
+                if (gISWebAPIManager is not null)
                 {
-                    result.Add(Visual(new UIUpdateFromFilePostTask(GISWebAPIManager), "Upload Areal2Ds from BDOT10k file", "Upload AdministrativeAreal2Ds and/or Building2Ds from BDOT10k *.zip file"));
+                    result.Add(Visual(new UIUpdateFromFilePostTask(gISWebAPIManager), "Upload Areal2Ds from BDOT10k file", "Upload AdministrativeAreal2Ds and/or Building2Ds from BDOT10k *.zip file"));
 
-                    result.Add(Visual(new UIAdministrativeAreal2DFromFilePostTask(GISWebAPIManager), "Upload AdministrativeAreal2Ds from file", "Uploads AdministrativeAreal2Ds from file to the server"));
-                    result.Add(Visual(new UIEPWFileFromFilePostTask(GISWebAPIManager), "Upload EPWFile from file", "Uploads EPWFile from selected file or directory to the server"));
-                    result.Add(Visual(new UIBuilding2DsFromFilePostTask(GISWebAPIManager), "Upload Building2Ds from file", "Uploads Building2Ds from file to the server"));
-                    result.Add(Visual(new UIAddressPointsFromFilePostTask(GISWebAPIManager), "Upload AddressPoints from file", "Uploads PRG AddressPoints from selected GML file or directory to the server"));
-                    result.Add(Visual(new OrtoDatasFromDatabasePostTask(GISWebAPIManager), "Upload OrtoDatas from database", "Uploads OrtoDatas from Building2D information stored in the database to the server"));
-                    result.Add(Visual(new UIYearBuiltDatasFromFilePostTask(GISWebAPIManager), "Upload YearBuiltDatas from file", "Uploads YearBuiltDatas from file to the server"));
-                    result.Add(Visual(new UIOccupancyDatasFromFilePostTask(GISWebAPIManager), "Upload OccupancyDatas from file", "Uploads OccupancyDatas (Building2D and AdministrativeAreal2D) from file to the server"));
+                    result.Add(Visual(new UIAdministrativeAreal2DFromFilePostTask(gISWebAPIManager), "Upload AdministrativeAreal2Ds from file", "Uploads AdministrativeAreal2Ds from file to the server"));
+                    result.Add(Visual(new UIEPWFileFromFilePostTask(gISWebAPIManager), "Upload EPWFile from file", "Uploads EPWFile from selected file or directory to the server"));
+                    result.Add(Visual(new UIBuilding2DsFromFilePostTask(gISWebAPIManager), "Upload Building2Ds from file", "Uploads Building2Ds from file to the server"));
+                    result.Add(Visual(new UIAddressPointsFromFilePostTask(gISWebAPIManager), "Upload AddressPoints from file", "Uploads PRG AddressPoints from selected GML file or directory to the server"));
+                    result.Add(Visual(new OrtoDatasFromDatabasePostTask(gISWebAPIManager), "Upload OrtoDatas from database", "Uploads OrtoDatas from Building2D information stored in the database to the server"));
+                    result.Add(Visual(new UIYearBuiltDatasFromFilePostTask(gISWebAPIManager), "Upload YearBuiltDatas from file", "Uploads YearBuiltDatas from file to the server"));
+                    result.Add(Visual(new UIOccupancyDatasFromFilePostTask(gISWebAPIManager), "Upload OccupancyDatas from file", "Uploads OccupancyDatas (Building2D and AdministrativeAreal2D) from file to the server"));
 
-                    result.Add(Visual(new UIBuildingsFromDirectoryPostTask(GISWebAPIManager), "Create CityGML Buildings from directory", "Creates Buildings for Building2Ds from database based on CityGML files saved in directory"));
-                    result.Add(Visual(new UIBuildingModelsFromDirectoryPostTask(GISWebAPIManager), "Create BuildingModels from directory", "Creates BuildingModels for Building2Ds from database based on CityGML files saved in directory"));
+                    result.Add(Visual(new UIBuildingsFromDirectoryPostTask(gISWebAPIManager), "Create CityGML Buildings from directory", "Creates Buildings for Building2Ds from database based on CityGML files saved in directory"));
+                    result.Add(Visual(new UIBuildingModelsFromDirectoryPostTask(gISWebAPIManager), "Create BuildingModels from directory", "Creates BuildingModels for Building2Ds from database based on CityGML files saved in directory"));
                     // The national regeneration (issue #2), unscoped: all 406 county parts, ~15.2 million buildings,
                     // ~2.3 days at the measured 13 ms each.
                     // It runs against a truncated building_model_component, so every row it writes is the only row
@@ -239,7 +239,7 @@ namespace DiGi.GIS.PostgreSQL.UI
                     // Scoped from a dialog rather than from defaults written here: the county parts to walk,
                     // the checkpoint behaviour and the report directory are asked for each time the task
                     // starts. The pacing is not - MaxConcurrentRequests and PageSize are set here and only here.
-                    result.Add(Visual(new UIBuildingModelsFromDatabasePostTask(GISWebAPIManager)
+                    result.Add(Visual(new UIBuildingModelsFromDatabasePostTask(gISWebAPIManager)
                     {
                         MaxConcurrentRequests = 8
                     },
@@ -255,7 +255,7 @@ namespace DiGi.GIS.PostgreSQL.UI
                     // repair changed three counties from 10 198 / 24 260 / 51 740 references to 1 / 3 / 1, shifting
                     // the draw of every county after them. The per-county seed removes that for future runs; it
                     // cannot retrofit the baseline.
-                    result.Add(Visual(new UIBuildingModelsVerificationTask(GISWebAPIManager)
+                    result.Add(Visual(new UIBuildingModelsVerificationTask(gISWebAPIManager)
                     {
                         RandomSeed = 20260811,
                         SampleSize = 200
@@ -267,7 +267,7 @@ namespace DiGi.GIS.PostgreSQL.UI
                     // internal edge). It writes the per-county tally and the affected county ids that scope the
                     // regeneration. Read only - nothing is uploaded, and it checkpoints county by county so an
                     // interrupted national pass resumes rather than restarting from the first county.
-                    result.Add(Visual(new UIBuildingModelsCourtyardAuditTask(GISWebAPIManager),
+                    result.Add(Visual(new UIBuildingModelsCourtyardAuditTask(gISWebAPIManager),
                     "Audit BuildingModels for filled courtyards", "Read only: per county, models whose source CityGML GroundSurface has an interior ring but whose stored Footprints have no internal edge - the set the regeneration must run against"));
 
 
@@ -285,14 +285,14 @@ namespace DiGi.GIS.PostgreSQL.UI
                     // up running something other than what the row was offered for.
                     if (Query.YearBuiltPredictionConsoleAppPath(yearBuiltPredictionConsoleAppPath) is string path_YearBuiltPredictionConsoleApp)
                     {
-                        result.Add(Visual(new UIYearBuiltPredictionsTask(GISWebAPIManager) { ConsoleAppPath = path_YearBuiltPredictionConsoleApp }, "Predict year built", "Runs the Year Built prediction pipeline over the chosen counties - exports the orthophoto imagery, scores it with the frozen detector and stores the predicted construction year. The counties, the scratch directory, the interpreter, the request concurrency and the scratch cleanup are asked for when the task is started; every run writes the detections, the year built data and the predicted year built column"));
+                        result.Add(Visual(new UIYearBuiltPredictionsTask(gISWebAPIManager) { ConsoleAppPath = path_YearBuiltPredictionConsoleApp }, "Predict year built", "Runs the Year Built prediction pipeline over the chosen counties - exports the orthophoto imagery, scores it with the frozen detector and stores the predicted construction year. The counties, the scratch directory, the interpreter, the request concurrency and the scratch cleanup are asked for when the task is started; every run writes the detections, the year built data and the predicted year built column"));
 
                         // The same runner hosts the training mode (--train), so the row is offered on the same
                         // condition and handed the same resolved path.
-                        result.Add(Visual(new UIYOLOTrainingTask(GISWebAPIManager) { ConsoleAppPath = path_YearBuiltPredictionConsoleApp }, "Train YOLO detector", "Retrains the YOLO building detector - dataset build, label check, training, validation on the Test split and the detector evaluation that gates the new weights. Re-train continues from model.pt and appends the chosen counties to the existing dataset; Start from yolo26x.pt builds a new dataset. The inputs are asked for when the task is started; model.pt is never overwritten"));
+                        result.Add(Visual(new UIYOLOTrainingTask(gISWebAPIManager) { ConsoleAppPath = path_YearBuiltPredictionConsoleApp }, "Train YOLO detector", "Retrains the YOLO building detector - dataset build, label check, training, validation on the Test split and the detector evaluation that gates the new weights. Re-train continues from model.pt and appends the chosen counties to the existing dataset; Start from yolo26x.pt builds a new dataset. The inputs are asked for when the task is started; model.pt is never overwritten"));
                     }
 
-                    result.Add(Visual(new UIOrtoDatasFromFilePostTask(GISWebAPIManager)
+                    result.Add(Visual(new UIOrtoDatasFromFilePostTask(gISWebAPIManager)
                     {
                         SerializableObjectsPostOptions = new SerializableObjectsPostOptions()
                         {

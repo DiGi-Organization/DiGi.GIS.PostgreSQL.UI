@@ -17,10 +17,10 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Initializes a new instance of the <see cref="UIPostgreSQLOrtoSheetUpdateTask"/> class.
         /// </summary>
-        /// <param name="GISWebAPIManager">The manager the GUGiK service client is built from.</param>
+        /// <param name="gISWebAPIManager">The manager the GUGiK service client is built from.</param>
         /// <param name="GISPostgreSQLConverterManager">The GIS PostgreSQL converter manager the sheet table is written through.</param>
-        public UIPostgreSQLOrtoSheetUpdateTask(GISWebAPIManager? GISWebAPIManager, GISPostgreSQLConverterManager? GISPostgreSQLConverterManager)
-            : base(WebAPI.Create.HttpClient_GUGiK(GISWebAPIManager), GISPostgreSQLConverterManager)
+        public UIPostgreSQLOrtoSheetUpdateTask(GISWebAPIManager? gISWebAPIManager, GISPostgreSQLConverterManager? GISPostgreSQLConverterManager)
+            : base(WebAPI.Create.HttpClient_GUGiK(gISWebAPIManager), GISPostgreSQLConverterManager)
         {
         }
 

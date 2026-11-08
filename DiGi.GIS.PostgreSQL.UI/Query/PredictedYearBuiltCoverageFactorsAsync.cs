@@ -16,13 +16,13 @@ namespace DiGi.GIS.PostgreSQL.UI
         /// <para>Two requests whatever the number of parts, sent together: <c>yearbuiltdata/predictedyearbuiltruns</c> for the runs and <c>building2d/estimatedcountsbycountyids</c> for the building counts, the latter a planner estimate read in one catalogue query. Combined by <see cref="PredictedYearBuiltCoverageFactors"/>.</para>
         /// <para>Never throws for a failed read and is not retried: whatever goes wrong - an unreachable server, an error status, <see cref="Constants.YearBuiltPrediction.CoverageTimeout"/> elapsing, a body that does not parse - answers null, so a caller shows no marker rather than a false "not run". Only a cancellation through <paramref name="cancellationToken"/> is rethrown.</para>
         /// </summary>
-        /// <param name="GISWebAPIManager">The manager that creates the HTTP clients.</param>
+        /// <param name="gISWebAPIManager">The manager that creates the HTTP clients.</param>
         /// <param name="countyIds">The county part identifiers, one per part of a multi-part county.</param>
         /// <param name="cancellationToken">Cancels both requests, which on the server cancels the queries behind them.</param>
         /// <returns>The share keyed by part id, or null when it could not be read.</returns>
-        public static async Task<Dictionary<int, double>?> PredictedYearBuiltCoverageFactorsAsync(GISWebAPIManager? GISWebAPIManager, IEnumerable<int>? countyIds, CancellationToken cancellationToken = default)
+        public static async Task<Dictionary<int, double>?> PredictedYearBuiltCoverageFactorsAsync(GISWebAPIManager? gISWebAPIManager, IEnumerable<int>? countyIds, CancellationToken cancellationToken = default)
         {
-            if (GISWebAPIManager is null || countyIds is null)
+            if (gISWebAPIManager is null || countyIds is null)
             {
                 return null;
             }
@@ -42,8 +42,8 @@ namespace DiGi.GIS.PostgreSQL.UI
                 return null;
             }
 
-            HttpClient? httpClient_Runs = GISWebAPIManager.CreateHttpClient<YearBuiltDataController>(nameof(YearBuiltDataController.GetPredictedYearBuiltRunsAsync), out string? path_Runs);
-            HttpClient? httpClient_Counts = GISWebAPIManager.CreateHttpClient<Building2DController>(nameof(Building2DController.GetEstimatedCountsByCountyIdsAsync), out string? path_Counts);
+            HttpClient? httpClient_Runs = gISWebAPIManager.CreateHttpClient<YearBuiltDataController>(nameof(YearBuiltDataController.GetPredictedYearBuiltRunsAsync), out string? path_Runs);
+            HttpClient? httpClient_Counts = gISWebAPIManager.CreateHttpClient<Building2DController>(nameof(Building2DController.GetEstimatedCountsByCountyIdsAsync), out string? path_Counts);
             if (httpClient_Runs is null || string.IsNullOrWhiteSpace(path_Runs) || httpClient_Counts is null || string.IsNullOrWhiteSpace(path_Counts))
             {
                 Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "Predicted year built coverage cannot be requested - the endpoints are not available");

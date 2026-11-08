@@ -20,9 +20,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Initializes a new instance of the <see cref="UIOrtoDatasFromFilePostTask"/> class.
         /// </summary>
-        /// <param name="GISWebAPIManager">The manager used to communicate with the GIS PostgreSQL Web API.</param>
-        public UIOrtoDatasFromFilePostTask(GISWebAPIManager GISWebAPIManager)
-            : base(GISWebAPIManager)
+        /// <param name="gISWebAPIManager">The manager used to communicate with the GIS PostgreSQL Web API.</param>
+        public UIOrtoDatasFromFilePostTask(GISWebAPIManager gISWebAPIManager)
+            : base(gISWebAPIManager)
         {
         }
 

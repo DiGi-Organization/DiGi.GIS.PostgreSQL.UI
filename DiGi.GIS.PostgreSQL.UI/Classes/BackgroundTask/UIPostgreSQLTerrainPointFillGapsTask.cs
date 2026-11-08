@@ -20,12 +20,12 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Initializes a new instance of the <see cref="UIPostgreSQLTerrainPointFillGapsTask"/> class.
         /// </summary>
-        /// <param name="GISWebAPIManager">The manager the elevation service client is built from.</param>
+        /// <param name="gISWebAPIManager">The manager the elevation service client is built from.</param>
         /// <param name="GISPostgreSQLConverterManager">The GIS PostgreSQL converter manager used to read the areas and write the points.</param>
-        public UIPostgreSQLTerrainPointFillGapsTask(GISWebAPIManager? GISWebAPIManager, GISPostgreSQLConverterManager? GISPostgreSQLConverterManager)
-            : base(WebAPI.Create.HttpClient_GUGiK(GISWebAPIManager), GISPostgreSQLConverterManager)
+        public UIPostgreSQLTerrainPointFillGapsTask(GISWebAPIManager? gISWebAPIManager, GISPostgreSQLConverterManager? GISPostgreSQLConverterManager)
+            : base(WebAPI.Create.HttpClient_GUGiK(gISWebAPIManager), GISPostgreSQLConverterManager)
         {
-            gISWebAPIManager = GISWebAPIManager;
+            this.gISWebAPIManager = gISWebAPIManager;
         }
 
         /// <inheritdoc />

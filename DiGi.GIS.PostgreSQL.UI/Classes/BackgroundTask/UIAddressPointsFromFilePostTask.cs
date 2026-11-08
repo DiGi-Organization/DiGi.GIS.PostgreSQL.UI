@@ -27,9 +27,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Initializes a new instance of the <see cref="UIAddressPointsFromFilePostTask"/> class.
         /// </summary>
-        /// <param name="GISWebAPIManager">The manager used to communicate with the GIS Web API.</param>
-        public UIAddressPointsFromFilePostTask(GISWebAPIManager GISWebAPIManager)
-            : base(GISWebAPIManager)
+        /// <param name="gISWebAPIManager">The manager used to communicate with the GIS Web API.</param>
+        public UIAddressPointsFromFilePostTask(GISWebAPIManager gISWebAPIManager)
+            : base(gISWebAPIManager)
         {
             // A bulk import posts batches that the server assigns to county parts by geometry, point by point. The 20 s default
             // bounds a single attempt and cancelled county 3021 (134 440 points) client-side on 2026-10-25.
@@ -113,7 +113,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 return false;
             }
 
-            HttpClient? httpClient = GISWebAPIManager.CreateHttpClient<AdministrativeAreal2DController>(nameof(AdministrativeAreal2DController.GetIdsByCodeAsync), out string? path_Ids);
+            HttpClient? httpClient = gISWebAPIManager.CreateHttpClient<AdministrativeAreal2DController>(nameof(AdministrativeAreal2DController.GetIdsByCodeAsync), out string? path_Ids);
             if (httpClient is null || string.IsNullOrWhiteSpace(path_Ids))
             {
                 Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "County identifiers endpoint is not available");

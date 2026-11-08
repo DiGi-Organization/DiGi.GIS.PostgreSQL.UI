@@ -24,9 +24,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Initializes a new instance of the <see cref="UIBuildingsFromDirectoryPostTask"/> class.
         /// </summary>
-        /// <param name="GISWebAPIManager">The <see cref="GISWebAPIManager"/> instance used to communicate with the server.</param>
-        public UIBuildingsFromDirectoryPostTask(GISWebAPIManager GISWebAPIManager)
-            : base(GISWebAPIManager)
+        /// <param name="gISWebAPIManager">The <see cref="GISWebAPIManager"/> instance used to communicate with the server.</param>
+        public UIBuildingsFromDirectoryPostTask(GISWebAPIManager gISWebAPIManager)
+            : base(gISWebAPIManager)
         {
             // A bulk import posts batches that take the server far longer than an interactive request:
             // it deserializes thousands of buildings with full 3D geometry and upserts them in one go.
@@ -59,7 +59,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             // The last written building records the file it came from, so an interrupted import can pick
             // up there instead of walking the whole directory again.
-            string? source_Latest = await LatestSourceAsync(GISWebAPIManager);
+            string? source_Latest = await LatestSourceAsync(gISWebAPIManager);
             if (!string.IsNullOrWhiteSpace(source_Latest))
             {
                 MessageBoxResult messageBoxResult = MessageBox.Show(string.Format("The last building on the server came from:\n\n{0}\n\nContinue from that file?\n\nYes - resume from it.\nNo - import the whole directory from the start.", source_Latest), "Continue", MessageBoxButton.YesNoCancel);
@@ -139,16 +139,16 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Asynchronously reads the source path recorded on the most recently written building.
         /// </summary>
-        /// <param name="GISWebAPIManager">The manager used to reach the server.</param>
+        /// <param name="gISWebAPIManager">The manager used to reach the server.</param>
         /// <returns>A task whose result is the recorded source path, or null when the server holds no buildings or the path was not recorded.</returns>
-        private static async Task<string?> LatestSourceAsync(GISWebAPIManager? GISWebAPIManager)
+        private static async Task<string?> LatestSourceAsync(GISWebAPIManager? gISWebAPIManager)
         {
-            if (GISWebAPIManager is null)
+            if (gISWebAPIManager is null)
             {
                 return null;
             }
 
-            HttpClient? httpClient = GISWebAPIManager.CreateHttpClient<BuildingController>(nameof(BuildingController.GetItemByLatestCreatedAtAsync), out string? path);
+            HttpClient? httpClient = gISWebAPIManager.CreateHttpClient<BuildingController>(nameof(BuildingController.GetItemByLatestCreatedAtAsync), out string? path);
             if (httpClient is null || string.IsNullOrWhiteSpace(path))
             {
                 return null;

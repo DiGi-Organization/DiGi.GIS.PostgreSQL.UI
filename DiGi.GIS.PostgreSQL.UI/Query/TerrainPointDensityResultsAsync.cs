@@ -16,14 +16,14 @@ namespace DiGi.GIS.PostgreSQL.UI
         /// <para>The partitions are sent in batches of <c>WebAPI.Constants.Terrain.MaximumDensityCountyCount</c> to <c>terrain/densitiesbycountyids</c>, at most <see cref="Constants.TerrainPointDensity.MaxConcurrentRequests"/> at a time, and the whole read is bounded by <see cref="Constants.TerrainPointDensity.Timeout"/>, which is also sent as the server <c>commandtimeout</c>.</para>
         /// <para>Never throws for a failed read and is not retried: an unreachable server, an error status, the timeout elapsing or a body that does not parse - in <b>any</b> batch - answers null. A partial result is not returned, because a county left out of it would read as one that was never measured (DiGi.GIS.PostgreSQL.UI#41). Only a cancellation through <paramref name="cancellationToken"/> is rethrown.</para>
         /// </summary>
-        /// <param name="GISWebAPIManager">The manager that creates the HTTP client.</param>
+        /// <param name="gISWebAPIManager">The manager that creates the HTTP client.</param>
         /// <param name="countyIds">The county part identifiers, one per part of a multi-part county.</param>
         /// <param name="gridSize">The lattice spacing a sampling run used, in metres, which turns the density into a completeness. Null, or not a positive finite number, leaves it out.</param>
         /// <param name="cancellationToken">Cancels every request, which on the server cancels the queries behind them.</param>
         /// <returns>The densities keyed by part id, or null when they could not be read.</returns>
-        public static async Task<Dictionary<int, TerrainPointDensityResult>?> TerrainPointDensityResultsAsync(GISWebAPIManager? GISWebAPIManager, IEnumerable<int>? countyIds, double? gridSize, CancellationToken cancellationToken = default)
+        public static async Task<Dictionary<int, TerrainPointDensityResult>?> TerrainPointDensityResultsAsync(GISWebAPIManager? gISWebAPIManager, IEnumerable<int>? countyIds, double? gridSize, CancellationToken cancellationToken = default)
         {
-            if (GISWebAPIManager is null || countyIds is null)
+            if (gISWebAPIManager is null || countyIds is null)
             {
                 return null;
             }
@@ -43,7 +43,7 @@ namespace DiGi.GIS.PostgreSQL.UI
                 return null;
             }
 
-            HttpClient? httpClient = GISWebAPIManager.CreateHttpClient<TerrainController>(nameof(TerrainController.GetDensitiesByCountyIdsAsync), out string? path);
+            HttpClient? httpClient = gISWebAPIManager.CreateHttpClient<TerrainController>(nameof(TerrainController.GetDensitiesByCountyIdsAsync), out string? path);
             if (httpClient is null || string.IsNullOrWhiteSpace(path))
             {
                 Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "Terrain point densities cannot be requested - the endpoint is not available");

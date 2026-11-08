@@ -20,9 +20,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Initializes a new instance of the <see cref="UIYearBuiltDatasFromFilePostTask"/> class.
         /// </summary>
-        /// <param name="GISWebAPIManager">The manager used to handle communication with the PostgreSQL Web API.</param>
-        public UIYearBuiltDatasFromFilePostTask(GISWebAPIManager GISWebAPIManager)
-            : base(GISWebAPIManager)
+        /// <param name="gISWebAPIManager">The manager used to handle communication with the PostgreSQL Web API.</param>
+        public UIYearBuiltDatasFromFilePostTask(GISWebAPIManager gISWebAPIManager)
+            : base(gISWebAPIManager)
         {
         }
 

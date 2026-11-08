@@ -76,7 +76,7 @@ A [GISPostgreSQLConverterManagerConfigurationFile\(string\)](DiGi.GIS.PostgreSQL
 Creates and returns a sorted list of visual background tasks based on the specified operation mode and available managers\.
 
 ```csharp
-public static System.Collections.Generic.List<DiGi.UI.WPF.Interfaces.IVisualBackgroundTask>? VisualBackgroundTasks(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager? gISPostgreSQLConverterManager, DiGi.User.PostgreSQL.Classes.UserPostgreSQLConverterManager? userPostgreSQLConverterManager, DiGi.GIS.WebAPI.Classes.GISWebAPIManager? GISWebAPIManager, DiGi.GIS.PostgreSQL.UI.Enums.Mode mode, string? yearBuiltPredictionConsoleAppPath=null);
+public static System.Collections.Generic.List<DiGi.UI.WPF.Interfaces.IVisualBackgroundTask>? VisualBackgroundTasks(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager? gISPostgreSQLConverterManager, DiGi.User.PostgreSQL.Classes.UserPostgreSQLConverterManager? userPostgreSQLConverterManager, DiGi.GIS.WebAPI.Classes.GISWebAPIManager? gISWebAPIManager, DiGi.GIS.PostgreSQL.UI.Enums.Mode mode, string? yearBuiltPredictionConsoleAppPath=null);
 ```
 #### Parameters
 
@@ -92,9 +92,9 @@ The manager responsible for PostgreSQL conversion operations\.
 
 The manager holding the converter for the user database, or null where no User\_PostgreSQL\_Main\.conf names one\. Users live in their own database rather than in the one the rest of this application works against\.
 
-<a name='DiGi.GIS.PostgreSQL.UI.Create.VisualBackgroundTasks(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager,DiGi.User.PostgreSQL.Classes.UserPostgreSQLConverterManager,DiGi.GIS.WebAPI.Classes.GISWebAPIManager,DiGi.GIS.PostgreSQL.UI.Enums.Mode,string).GISWebAPIManager'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Create.VisualBackgroundTasks(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager,DiGi.User.PostgreSQL.Classes.UserPostgreSQLConverterManager,DiGi.GIS.WebAPI.Classes.GISWebAPIManager,DiGi.GIS.PostgreSQL.UI.Enums.Mode,string).gISWebAPIManager'></a>
 
-`GISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
+`gISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
 
 The manager responsible for interacting with the PostgreSQL Web API\.
 
@@ -629,13 +629,13 @@ Two requests whatever the number of parts, sent together: `yearbuiltdata/predict
 Never throws for a failed read and is not retried: whatever goes wrong - an unreachable server, an error status, [CoverageTimeout](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.YearBuiltPrediction.CoverageTimeout 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.YearBuiltPrediction\.CoverageTimeout') elapsing, a body that does not parse - answers null, so a caller shows no marker rather than a false "not run". Only a cancellation through [cancellationToken](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).cancellationToken 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.PredictedYearBuiltCoverageFactorsAsync\(DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager, System\.Collections\.Generic\.IEnumerable\<int\>, System\.Threading\.CancellationToken\)\.cancellationToken') is rethrown.
 
 ```csharp
-public static System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<int,double>?> PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager? GISWebAPIManager, System.Collections.Generic.IEnumerable<int>? countyIds, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
+public static System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<int,double>?> PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager? gISWebAPIManager, System.Collections.Generic.IEnumerable<int>? countyIds, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
 ```
 #### Parameters
 
-<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).GISWebAPIManager'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Query.PredictedYearBuiltCoverageFactorsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken).gISWebAPIManager'></a>
 
-`GISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
+`gISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
 
 The manager that creates the HTTP clients\.
 
@@ -718,13 +718,13 @@ The partitions are sent in batches of `WebAPI.Constants.Terrain.MaximumDensityCo
 Never throws for a failed read and is not retried: an unreachable server, an error status, the timeout elapsing or a body that does not parse - in <b>any</b> batch - answers null. A partial result is not returned, because a county left out of it would read as one that was never measured (DiGi.GIS.PostgreSQL.UI#41). Only a cancellation through [cancellationToken](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Nullable_double_,System.Threading.CancellationToken).cancellationToken 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.TerrainPointDensityResultsAsync\(DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager, System\.Collections\.Generic\.IEnumerable\<int\>, System\.Nullable\<double\>, System\.Threading\.CancellationToken\)\.cancellationToken') is rethrown.
 
 ```csharp
-public static System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<int,DiGi.GIS.PostgreSQL.Classes.TerrainPointDensityResult>?> TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager? GISWebAPIManager, System.Collections.Generic.IEnumerable<int>? countyIds, System.Nullable<double> gridSize, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
+public static System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<int,DiGi.GIS.PostgreSQL.Classes.TerrainPointDensityResult>?> TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager? gISWebAPIManager, System.Collections.Generic.IEnumerable<int>? countyIds, System.Nullable<double> gridSize, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
 ```
 #### Parameters
 
-<a name='DiGi.GIS.PostgreSQL.UI.Query.TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Nullable_double_,System.Threading.CancellationToken).GISWebAPIManager'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Nullable_double_,System.Threading.CancellationToken).gISWebAPIManager'></a>
 
-`GISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
+`gISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
 
 The manager that creates the HTTP client\.
 

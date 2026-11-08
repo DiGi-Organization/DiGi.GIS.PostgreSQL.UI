@@ -20,9 +20,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <summary>
         /// Initializes a new instance of the <see cref="UIEPWFileFromFilePostTask"/> class.
         /// </summary>
-        /// <param name="GISWebAPIManager">The manager used to communicate with the GIS PostgreSQL Web API.</param>
-        public UIEPWFileFromFilePostTask(GISWebAPIManager GISWebAPIManager)
-            : base(GISWebAPIManager)
+        /// <param name="gISWebAPIManager">The manager used to communicate with the GIS PostgreSQL Web API.</param>
+        public UIEPWFileFromFilePostTask(GISWebAPIManager gISWebAPIManager)
+            : base(gISWebAPIManager)
         {
         }
 
