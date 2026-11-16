@@ -10,6 +10,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     /// <summary>
     /// Interaction logic for PostgreSQLBuildingSolarRadiationSolveOptionsWindow.xaml
     /// <para>Asks for everything that decides what a batch solar radiation solve costs and stores: the county parts, the neighbour radii every building is solved for, whether results already stored are stepped over, and the batch, tile, ceiling and timeout settings (DiGi.GIS.PostgreSQL#136).</para>
+    /// <para>An optional limit of buildings per county part runs a pilot: empty solves every building (DiGi.GIS.PostgreSQL.UI#45).</para>
     /// <para>The counties matter most. A solve costs seconds per building and radius, so an unscoped run is the whole country several times over - the window never leaves with no county chosen.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.</para>
     /// </summary>
@@ -38,6 +39,10 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             TextBoxControl_ReceiverCountMax.Value = this.postgreSQLBuildingSolarRadiationSolveOptions.ReceiverCountMax.ToString(CultureInfo.CurrentCulture);
             TextBoxControl_CasterTriangleCountMax.Value = this.postgreSQLBuildingSolarRadiationSolveOptions.CasterTriangleCountMax.ToString(CultureInfo.CurrentCulture);
             TextBoxControl_CommandTimeout.Value = this.postgreSQLBuildingSolarRadiationSolveOptions.CommandTimeout.ToString(CultureInfo.CurrentCulture);
+
+            // Empty is "every building", not zero - the option is null then.
+            int? buildingCountMax = this.postgreSQLBuildingSolarRadiationSolveOptions.BuildingCountMax;
+            TextBoxControl_BuildingCountMax.Value = buildingCountMax is int buildingCountMax_Value ? buildingCountMax_Value.ToString(CultureInfo.CurrentCulture) : string.Empty;
 
             // Subscribed before the lists are filled - the text of an item is decided as it is added.
             ListBoxControl_Counties.ItemAdding += ListBoxControl_Counties_ItemAdding;
@@ -136,6 +141,18 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
                 return;
             }
 
+            int? buildingCountMax = null;
+            if (!string.IsNullOrWhiteSpace(TextBoxControl_BuildingCountMax.Value))
+            {
+                if (!TextBoxControl_BuildingCountMax.TryGetValue(out int buildingCountMax_Value) || buildingCountMax_Value < 1)
+                {
+                    MessageBox.Show("Buildings per part has to be empty or a whole number, 1 or greater.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                buildingCountMax = buildingCountMax_Value;
+            }
+
             HashSet<int> countyIds = [];
             foreach (AdministrativeAreal2DReference administrativeAreal2DReference in administrativeAreal2DReferences)
             {
@@ -150,6 +167,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             postgreSQLBuildingSolarRadiationSolveOptions.ReceiverCountMax = receiverCountMax;
             postgreSQLBuildingSolarRadiationSolveOptions.CasterTriangleCountMax = casterTriangleCountMax;
             postgreSQLBuildingSolarRadiationSolveOptions.CommandTimeout = commandTimeout;
+            postgreSQLBuildingSolarRadiationSolveOptions.BuildingCountMax = buildingCountMax;
 
             DialogResult = true;
             Close();

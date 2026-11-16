@@ -60,6 +60,7 @@
                 <controls:TextBoxControl x:Name="TextBoxControl_ReceiverCountMax" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Receivers per building, max" Value="" />
                 <controls:TextBoxControl x:Name="TextBoxControl_CasterTriangleCountMax" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Shading triangles, max" Value="" />
                 <controls:TextBoxControl x:Name="TextBoxControl_CommandTimeout" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Timeout in s (0 = none)" ToolTip="Command timeout in seconds applied to every statement; 0 disables it" Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_BuildingCountMax" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Buildings per part, max" ToolTip="Empty solves every building. Otherwise at most this many buildings per county part - only those still pending, in tile order, so a pilot is a compact cluster - and a repeat run with skip-existing continues with the next ones." Value="" />
             </UniformGrid>
         </Grid>
 

@@ -761,6 +761,8 @@ Interaction logic for PostgreSQLBuildingSolarRadiationSolveOptionsWindow\.xaml
 
 Asks for everything that decides what a batch solar radiation solve costs and stores: the county parts, the neighbour radii every building is solved for, whether results already stored are stepped over, and the batch, tile, ceiling and timeout settings (DiGi.GIS.PostgreSQL#136).
 
+An optional limit of buildings per county part runs a pilot: empty solves every building (DiGi.GIS.PostgreSQL.UI#45).
+
 The counties matter most. A solve costs seconds per building and radius, so an unscoped run is the whole country several times over - the window never leaves with no county chosen.
 
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
