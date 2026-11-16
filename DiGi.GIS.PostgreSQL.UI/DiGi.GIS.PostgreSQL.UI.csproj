@@ -84,6 +84,10 @@
          dependencies never reach this host through the HintPath, so the first PBF import would fail at its
          OsmSharp types - a green build proves nothing about that closure. -->
     <PackageReference Include="OsmSharp" Version="6.2.0" />
+    <!-- SolarCalculator is a NuGet dependency of DiGi.Solar, reached through the DiGi.GIS.PostgreSQL.Solar HintPath
+         below for the batch solar radiation solve (DiGi.GIS.PostgreSQL#136): a HintPath never carries it to this
+         host, and the solve would fail at its first sun position rather than at build time. -->
+    <PackageReference Include="SolarCalculator" Version="3.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -128,6 +132,23 @@
     </Reference>
     <Reference Include="DiGi.GIS.PostgreSQL">
       <HintPath>..\..\DiGi.GIS.PostgreSQL\bin\DiGi.GIS.PostgreSQL.dll</HintPath>
+    </Reference>
+    <!-- The batch solar radiation solve and its closure (DiGi.GIS.PostgreSQL#136): the solve lives in its own project
+         so that only the hosts running it carry DiGi.Solar and SolarCalculator. -->
+    <Reference Include="DiGi.Analytical.Building.Solar">
+      <HintPath>..\..\DiGi.Analytical\bin\DiGi.Analytical.Building.Solar.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.GIS.Analytical.Solar">
+      <HintPath>..\..\DiGi.GIS.Analytical\bin\DiGi.GIS.Analytical.Solar.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.GIS.PostgreSQL.Solar">
+      <HintPath>..\..\DiGi.GIS.PostgreSQL\bin\DiGi.GIS.PostgreSQL.Solar.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Solar">
+      <HintPath>..\..\DiGi.Solar\bin\DiGi.Solar.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Weather">
+      <HintPath>..\..\DiGi.Weather\bin\DiGi.Weather.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.GIS.WebAPI">
       <HintPath>..\..\DiGi.GIS.WebAPI\bin\DiGi.GIS.WebAPI.dll</HintPath>

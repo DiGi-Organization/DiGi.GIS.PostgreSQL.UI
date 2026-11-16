@@ -74,6 +74,13 @@ namespace DiGi.GIS.PostgreSQL.UI
                     // columns the models do not carry, and this one the columns they do.
                     result.Add(Visual(new UIPostgreSQLBuildingDataExternalComponentsUpdateTask(gISPostgreSQLConverterManager), "Update external components area", "Populates the External Components Area columns of building_data (external wall / roof / floor areas by direction and roof tilt) from BuildingModels stored in building_model_component"));
 
+                    // Solar urban-context effect (DiGi.GIS.PostgreSQL#107, #136): the solve stores one result per
+                    // building and radius, then the summary and the export read what it stored. All three are scoped
+                    // from a dialog - unscoped, the solve is the whole country once per radius.
+                    result.Add(Visual(new UIPostgreSQLBuildingSolarRadiationSolveTask(gISPostgreSQLConverterManager), "Solve building solar radiation", "Solves the annual solar radiation of every building in the chosen county parts for each neighbour radius (0 = the isolated building) and stores it. The counties, radii, ceilings, tile and batch size are asked for when the task is started. Needs stored building models and EPW files"));
+                    result.Add(Visual(new UIPostgreSQLBuildingDataSolarRadiationUpdateTask(gISPostgreSQLConverterManager), "Update building data solar summary", "Writes the yearly solar radiation summary columns of building_data from the stored solar radiation. The counties and the radius (empty = the latest result of any radius) are asked for when the task is started. Solve building solar radiation first"));
+                    result.Add(Visual(new UIPostgreSQLBuildingSolarRadiationContextExportTask(gISPostgreSQLConverterManager), "Export solar urban-context table", "Writes one CSV per county part with the irradiation per radius and its shortfall against the isolated building. The counties, radii and output folder are asked for when the task is started. Solve building solar radiation first"));
+
                     Building2DPostgreSQLConverter? building2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<Building2DPostgreSQLConverter>();
                     if (building2DPostgreSQLConverter is not null)
                     {

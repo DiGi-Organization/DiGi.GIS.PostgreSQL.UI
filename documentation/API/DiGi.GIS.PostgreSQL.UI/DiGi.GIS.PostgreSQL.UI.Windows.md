@@ -467,6 +467,77 @@ public void InitializeComponent();
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow'></a>
+
+## PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow Class
+
+Interaction logic for PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow\.xaml
+
+Asks for what a solar radiation summary run writes: the county parts, the radius the summary is built from, whether rows already carrying a total are stepped over, the batch size and the timeout.
+
+The radius is the field to read twice. A building can carry several variants - the isolated building (0) and one or more neighbour radii (DiGi.GIS.PostgreSQL#107) - and left empty the variant written last wins, building by building.
+
+The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
+
+```csharp
+public class PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [System\.Windows\.Threading\.DispatcherObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.threading.dispatcherobject 'System\.Windows\.Threading\.DispatcherObject') → [System\.Windows\.DependencyObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.dependencyobject 'System\.Windows\.DependencyObject') → [System\.Windows\.Media\.Visual](https://learn.microsoft.com/en-us/dotnet/api/system.windows.media.visual 'System\.Windows\.Media\.Visual') → [System\.Windows\.UIElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.uielement 'System\.Windows\.UIElement') → [System\.Windows\.FrameworkElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement 'System\.Windows\.FrameworkElement') → [System\.Windows\.Controls\.Control](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.control 'System\.Windows\.Controls\.Control') → [System\.Windows\.Controls\.ContentControl](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.contentcontrol 'System\.Windows\.Controls\.ContentControl') → [System\.Windows\.Window](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window 'System\.Windows\.Window') → PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow
+
+Implements [System\.Windows\.Markup\.IComponentConnector](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector 'System\.Windows\.Markup\.IComponentConnector')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_)'></a>
+
+## PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow\(PostgreSQLBuildingDataSolarRadiationUpdateOptions, IEnumerable\<AdministrativeAreal2DReference\>\) Constructor
+
+Initializes a new instance of the [PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow') class\.
+
+```csharp
+public PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions? postgreSQLBuildingDataSolarRadiationUpdateOptions, System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).postgreSQLBuildingDataSolarRadiationUpdateOptions'></a>
+
+`postgreSQLBuildingDataSolarRadiationUpdateOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingdatasolarradiationupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateOptions')
+
+The options the controls are filled from\. When null the defaults are used\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).administrativeAreal2DReferences'></a>
+
+`administrativeAreal2DReferences` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.administrativeareal2dreference 'DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The counties to choose from\. A county whose territory is in several pieces is one entry per piece, each with its own identifier, and each has to be selectable on its own\.
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.PostgreSQLBuildingDataSolarRadiationUpdateOptions'></a>
+
+## PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow\.PostgreSQLBuildingDataSolarRadiationUpdateOptions Property
+
+Gets the options the window holds\. They carry the values of the controls only once the dialog has been closed with OK; until then, and after a cancellation, they are the values it was opened with\.
+
+```csharp
+public DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions PostgreSQLBuildingDataSolarRadiationUpdateOptions { get; }
+```
+
+#### Property Value
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingdatasolarradiationupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateOptions')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.InitializeComponent()'></a>
+
+## PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow\.InitializeComponent\(\) Method
+
+InitializeComponent
+
+```csharp
+public void InitializeComponent();
+```
+
+Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataUpdateOptionsWindow'></a>
 
 ## PostgreSQLBuildingDataUpdateOptionsWindow Class
@@ -602,6 +673,148 @@ public DiGi.GIS.PostgreSQL.UI.Classes.PostgreSQLBuildingModelBuildingInformation
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingModelBuildingInformationUpdateOptionsWindow.InitializeComponent()'></a>
 
 ## PostgreSQLBuildingModelBuildingInformationUpdateOptionsWindow\.InitializeComponent\(\) Method
+
+InitializeComponent
+
+```csharp
+public void InitializeComponent();
+```
+
+Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow'></a>
+
+## PostgreSQLBuildingSolarRadiationContextExportOptionsWindow Class
+
+Interaction logic for PostgreSQLBuildingSolarRadiationContextExportOptionsWindow\.xaml
+
+Asks for what the urban-context export writes and where: the county parts (one CSV per part), the stored radii in the column order they are exported, whether only residential buildings are kept, the batch size and timeout, and the output folder (DiGi.GIS.PostgreSQL#136).
+
+The export refuses a run without a folder, so the window proposes [SolarContextDirectory\(string\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.SolarContextDirectory(string) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.SolarContextDirectory\(string\)') when the options carry none, and creates the folder when it is accepted.
+
+The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
+
+```csharp
+public class PostgreSQLBuildingSolarRadiationContextExportOptionsWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [System\.Windows\.Threading\.DispatcherObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.threading.dispatcherobject 'System\.Windows\.Threading\.DispatcherObject') → [System\.Windows\.DependencyObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.dependencyobject 'System\.Windows\.DependencyObject') → [System\.Windows\.Media\.Visual](https://learn.microsoft.com/en-us/dotnet/api/system.windows.media.visual 'System\.Windows\.Media\.Visual') → [System\.Windows\.UIElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.uielement 'System\.Windows\.UIElement') → [System\.Windows\.FrameworkElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement 'System\.Windows\.FrameworkElement') → [System\.Windows\.Controls\.Control](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.control 'System\.Windows\.Controls\.Control') → [System\.Windows\.Controls\.ContentControl](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.contentcontrol 'System\.Windows\.Controls\.ContentControl') → [System\.Windows\.Window](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window 'System\.Windows\.Window') → PostgreSQLBuildingSolarRadiationContextExportOptionsWindow
+
+Implements [System\.Windows\.Markup\.IComponentConnector](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector 'System\.Windows\.Markup\.IComponentConnector')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_)'></a>
+
+## PostgreSQLBuildingSolarRadiationContextExportOptionsWindow\(PostgreSQLBuildingSolarRadiationContextExportOptions, IEnumerable\<AdministrativeAreal2DReference\>\) Constructor
+
+Initializes a new instance of the [PostgreSQLBuildingSolarRadiationContextExportOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow') class\.
+
+```csharp
+public PostgreSQLBuildingSolarRadiationContextExportOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions? postgreSQLBuildingSolarRadiationContextExportOptions, System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).postgreSQLBuildingSolarRadiationContextExportOptions'></a>
+
+`postgreSQLBuildingSolarRadiationContextExportOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingsolarradiationcontextexportoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions')
+
+The options the controls are filled from\. When null the defaults are used\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).administrativeAreal2DReferences'></a>
+
+`administrativeAreal2DReferences` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.administrativeareal2dreference 'DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The counties to choose from\. A county whose territory is in several pieces is one entry per piece, each with its own identifier, and each has to be selectable on its own\.
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.PostgreSQLBuildingSolarRadiationContextExportOptions'></a>
+
+## PostgreSQLBuildingSolarRadiationContextExportOptionsWindow\.PostgreSQLBuildingSolarRadiationContextExportOptions Property
+
+Gets the options the window holds\. They carry the values of the controls only once the dialog has been closed with OK; until then, and after a cancellation, they are the values it was opened with\.
+
+```csharp
+public DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions PostgreSQLBuildingSolarRadiationContextExportOptions { get; }
+```
+
+#### Property Value
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingsolarradiationcontextexportoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.InitializeComponent()'></a>
+
+## PostgreSQLBuildingSolarRadiationContextExportOptionsWindow\.InitializeComponent\(\) Method
+
+InitializeComponent
+
+```csharp
+public void InitializeComponent();
+```
+
+Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow'></a>
+
+## PostgreSQLBuildingSolarRadiationSolveOptionsWindow Class
+
+Interaction logic for PostgreSQLBuildingSolarRadiationSolveOptionsWindow\.xaml
+
+Asks for everything that decides what a batch solar radiation solve costs and stores: the county parts, the neighbour radii every building is solved for, whether results already stored are stepped over, and the batch, tile, ceiling and timeout settings (DiGi.GIS.PostgreSQL#136).
+
+The counties matter most. A solve costs seconds per building and radius, so an unscoped run is the whole country several times over - the window never leaves with no county chosen.
+
+The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
+
+```csharp
+public class PostgreSQLBuildingSolarRadiationSolveOptionsWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [System\.Windows\.Threading\.DispatcherObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.threading.dispatcherobject 'System\.Windows\.Threading\.DispatcherObject') → [System\.Windows\.DependencyObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.dependencyobject 'System\.Windows\.DependencyObject') → [System\.Windows\.Media\.Visual](https://learn.microsoft.com/en-us/dotnet/api/system.windows.media.visual 'System\.Windows\.Media\.Visual') → [System\.Windows\.UIElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.uielement 'System\.Windows\.UIElement') → [System\.Windows\.FrameworkElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement 'System\.Windows\.FrameworkElement') → [System\.Windows\.Controls\.Control](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.control 'System\.Windows\.Controls\.Control') → [System\.Windows\.Controls\.ContentControl](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.contentcontrol 'System\.Windows\.Controls\.ContentControl') → [System\.Windows\.Window](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window 'System\.Windows\.Window') → PostgreSQLBuildingSolarRadiationSolveOptionsWindow
+
+Implements [System\.Windows\.Markup\.IComponentConnector](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector 'System\.Windows\.Markup\.IComponentConnector')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.PostgreSQLBuildingSolarRadiationSolveOptionsWindow(DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_)'></a>
+
+## PostgreSQLBuildingSolarRadiationSolveOptionsWindow\(PostgreSQLBuildingSolarRadiationSolveOptions, IEnumerable\<AdministrativeAreal2DReference\>\) Constructor
+
+Initializes a new instance of the [PostgreSQLBuildingSolarRadiationSolveOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLBuildingSolarRadiationSolveOptionsWindow') class\.
+
+```csharp
+public PostgreSQLBuildingSolarRadiationSolveOptionsWindow(DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOptions? postgreSQLBuildingSolarRadiationSolveOptions, System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.PostgreSQLBuildingSolarRadiationSolveOptionsWindow(DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).postgreSQLBuildingSolarRadiationSolveOptions'></a>
+
+`postgreSQLBuildingSolarRadiationSolveOptions` [DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.solar.classes.postgresqlbuildingsolarradiationsolveoptions 'DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions')
+
+The options the controls are filled from\. When null the defaults are used\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.PostgreSQLBuildingSolarRadiationSolveOptionsWindow(DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).administrativeAreal2DReferences'></a>
+
+`administrativeAreal2DReferences` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.administrativeareal2dreference 'DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The counties to choose from\. A county whose territory is in several pieces is one entry per piece, each with its own identifier, and each has to be selectable on its own\.
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.PostgreSQLBuildingSolarRadiationSolveOptions'></a>
+
+## PostgreSQLBuildingSolarRadiationSolveOptionsWindow\.PostgreSQLBuildingSolarRadiationSolveOptions Property
+
+Gets the options the window holds\. They carry the values of the controls only once the dialog has been closed with OK; until then, and after a cancellation, they are the values it was opened with\.
+
+```csharp
+public DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOptions PostgreSQLBuildingSolarRadiationSolveOptions { get; }
+```
+
+#### Property Value
+[DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.solar.classes.postgresqlbuildingsolarradiationsolveoptions 'DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.InitializeComponent()'></a>
+
+## PostgreSQLBuildingSolarRadiationSolveOptionsWindow\.InitializeComponent\(\) Method
 
 InitializeComponent
 

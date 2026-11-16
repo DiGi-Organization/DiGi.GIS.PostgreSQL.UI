@@ -1,0 +1,71 @@
+<Window x:Class="DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DiGi.GIS.PostgreSQL.UI.Windows"
+        xmlns:controls="clr-namespace:DiGi.UI.WPF.Controls;assembly=DiGi.UI.WPF"
+        mc:Ignorable="d"
+        Title="Solve building solar radiation" Height="700" Width="860" MinHeight="600" MinWidth="720"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="SingleBorderWindow"
+        Icon="pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/DiGi.GIS.ico">
+    <Grid Margin="5,5,5,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="33" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label x:Name="Label_Counties" Grid.Row="0" Content="Counties - one entry per piece of a county" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <controls:ListBoxControl x:Name="ListBoxControl_Counties" Grid.Row="1" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="60" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="180" />
+            </Grid.RowDefinitions>
+
+            <Label x:Name="Label_Radii" Grid.Row="0" Content="Neighbour radii in m - one solve per radius" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <controls:ListBoxControl x:Name="ListBoxControl_Radii" Grid.Row="1" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+            <controls:TextBoxControl x:Name="TextBoxControl_Radius" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Radius to add in m (0 = isolated)" Value="" />
+
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0">
+                <Button x:Name="Button_AddRadius" Content="Add" Width="70" Height="23" Margin="5,0,5,0" Click="Button_AddRadius_Click" />
+                <Button x:Name="Button_RemoveRadii" Content="Remove" Width="70" Height="23" Margin="5,0,5,0" Click="Button_RemoveRadii_Click" />
+            </StackPanel>
+
+            <CheckBox x:Name="CheckBox_SkipExisting" Grid.Row="4" Content="Skip results this solver already stored" ToolTip="Steps over a building and radius that already carry a result of the current solver version - resumes an interrupted run and keeps what the viewer stored. Clear it to solve everything again." Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+
+            <UniformGrid Grid.Row="5" Rows="3" Columns="2">
+                <controls:TextBoxControl x:Name="TextBoxControl_BatchSize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Batch size (buildings)" Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_TileSize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Tile size in m" Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_ReceiverCountMax" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Receivers per building, max" Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_CasterTriangleCountMax" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Shading triangles, max" Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_CommandTimeout" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Timeout in s (0 = none)" ToolTip="Command timeout in seconds applied to every statement; 0 disables it" Value="" />
+            </UniformGrid>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
+            <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
+            <Button x:Name="Button_Cancel" Content="Cancel" Width="70" Height="23" Margin="5,0,5,0" IsCancel="True" Click="Button_Cancel_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

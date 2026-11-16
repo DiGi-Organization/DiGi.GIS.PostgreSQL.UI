@@ -86,6 +86,32 @@ public const string PredictionImages = "images";
 #### Field Value
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.DirectoryName.Reports'></a>
+
+## DirectoryName\.Reports Field
+
+Gets the name of the folder beside this application's executable that generated reports are written to by default \- the deployed counterpart of `user files/reports`, since the build flattens [UserFiles](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.DirectoryName.UserFiles 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.DirectoryName\.UserFiles') into the output root\.
+
+```csharp
+public const string Reports = "reports";
+```
+
+#### Field Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.DirectoryName.SolarContext'></a>
+
+## DirectoryName\.SolarContext Field
+
+Gets the name of the folder, inside [Reports](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.DirectoryName.Reports 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.DirectoryName\.Reports'), that the solar urban\-context export writes its files to by default\.
+
+```csharp
+public const string SolarContext = "solar_context";
+```
+
+#### Field Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
 <a name='DiGi.GIS.PostgreSQL.UI.Constants.DirectoryName.UserFiles'></a>
 
 ## DirectoryName\.UserFiles Field

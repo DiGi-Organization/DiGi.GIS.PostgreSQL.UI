@@ -1,0 +1,81 @@
+<Window x:Class="DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DiGi.GIS.PostgreSQL.UI.Windows"
+        xmlns:controls="clr-namespace:DiGi.UI.WPF.Controls;assembly=DiGi.UI.WPF"
+        mc:Ignorable="d"
+        Title="Export solar urban-context table" Height="680" Width="860" MinHeight="580" MinWidth="720"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="SingleBorderWindow"
+        Icon="pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/DiGi.GIS.ico">
+    <Grid Margin="5,5,5,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="33" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label x:Name="Label_Counties" Grid.Row="0" Content="Counties - one file per piece of a county" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <controls:ListBoxControl x:Name="ListBoxControl_Counties" Grid.Row="1" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="60" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="60" />
+                <RowDefinition Height="60" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+
+            <Label x:Name="Label_Radii" Grid.Row="0" Content="Radii in m as stored, in column order" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <controls:ListBoxControl x:Name="ListBoxControl_Radii" Grid.Row="1" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+            <controls:TextBoxControl x:Name="TextBoxControl_Radius" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Radius to add in m (0 = isolated)" Value="" />
+
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0">
+                <Button x:Name="Button_AddRadius" Content="Add" Width="70" Height="23" Margin="5,0,5,0" Click="Button_AddRadius_Click" />
+                <Button x:Name="Button_RemoveRadii" Content="Remove" Width="70" Height="23" Margin="5,0,5,0" Click="Button_RemoveRadii_Click" />
+            </StackPanel>
+
+            <!-- Says when 0 is missing: the shortfall columns are measured against the isolated building and stay
+                 empty without it. A warning, not a refusal - an export of the radii alone is still a valid table. -->
+            <Label x:Name="Label_RadiiHint" Grid.Row="4" Content="" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <CheckBox x:Name="CheckBox_ResidentialOnly" Grid.Row="5" Content="Residential buildings only" Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+
+            <UniformGrid Grid.Row="6" Rows="1" Columns="2">
+                <controls:TextBoxControl x:Name="TextBoxControl_BatchSize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Batch size (buildings)" Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_CommandTimeout" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Timeout in s (0 = none)" ToolTip="Command timeout in seconds applied to every statement; 0 disables it" Value="" />
+            </UniformGrid>
+
+            <controls:TextBoxControl x:Name="TextBoxControl_OutputDirectory" Grid.Row="7" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Output folder" ToolTip="One solar_context_county_{id}.csv per county part" Value="" />
+
+            <StackPanel Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,5,0">
+                <Button x:Name="Button_Browse" Content="Browse..." Width="70" Height="23" Margin="5,0,5,0" Click="Button_Browse_Click" />
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
+            <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
+            <Button x:Name="Button_Cancel" Content="Cancel" Width="70" Height="23" Margin="5,0,5,0" IsCancel="True" Click="Button_Cancel_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

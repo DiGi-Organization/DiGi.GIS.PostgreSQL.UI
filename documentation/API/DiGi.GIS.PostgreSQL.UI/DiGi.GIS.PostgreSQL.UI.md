@@ -707,6 +707,29 @@ The positional values, in the order the template's property tokens appear\.
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 The rendered text\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.SolarContextDirectory(string)'></a>
+
+## Query\.SolarContextDirectory\(string\) Method
+
+Gets the folder the solar urban\-context export is offered by default: `reports/solar_context` beside this application's executable\.
+
+The export refuses to run without a folder - there is no sensible location on a server it could pick on its own (DiGi.GIS.PostgreSQL#136) - so the dialog proposes this one. It is the deployed counterpart of `user files/reports`, the git-ignored place for generated reports, because the build flattens `user files` into the output root.
+
+```csharp
+public static string SolarContextDirectory(string? baseDirectory=null);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.SolarContextDirectory(string).baseDirectory'></a>
+
+`baseDirectory` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The directory the folder is resolved against, or null to use this application's own output\. A test supplies one so the answer does not depend on where the test host runs\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The full path of the default folder\. It is not created here; the dialog creates it when it is accepted\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.TerrainPointDensityResultsAsync(DiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Collections.Generic.IEnumerable_int_,System.Nullable_double_,System.Threading.CancellationToken)'></a>
 
 ## Query\.TerrainPointDensityResultsAsync\(GISWebAPIManager, IEnumerable\<int\>, Nullable\<double\>, CancellationToken\) Method

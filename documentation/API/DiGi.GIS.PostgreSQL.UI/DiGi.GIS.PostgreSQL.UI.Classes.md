@@ -1981,6 +1981,68 @@ A cancellation token that can be used to cancel the operation\.
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
 A task representing the asynchronous operation\. Returns true when every county in scope was processed without error and no model was refused by the classification; otherwise, false\. Degenerate models do not make it false\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingDataSolarRadiationUpdateTask'></a>
+
+## UIPostgreSQLBuildingDataSolarRadiationUpdateTask Class
+
+A solar radiation summary run scoped from the user interface: the county parts, the radius the summary is built from, whether completed rows are stepped over, the batch size and the timeout are asked for through [PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow') each time the task is started, and only then is the run handed to [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingdatasolarradiationupdatetask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateTask')\.
+
+The radius matters once a building carries several variants (DiGi.GIS.PostgreSQL#107): without one the variant written last wins, building by building, so a summary meant to describe one variant has to name it.
+
+```csharp
+public class UIPostgreSQLBuildingDataSolarRadiationUpdateTask : DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingdatasolarradiationupdatetask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateTask') → UIPostgreSQLBuildingDataSolarRadiationUpdateTask
+
+Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingDataSolarRadiationUpdateTask.UIPostgreSQLBuildingDataSolarRadiationUpdateTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager)'></a>
+
+## UIPostgreSQLBuildingDataSolarRadiationUpdateTask\(GISPostgreSQLConverterManager\) Constructor
+
+Initializes a new instance of the [UIPostgreSQLBuildingDataSolarRadiationUpdateTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingDataSolarRadiationUpdateTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLBuildingDataSolarRadiationUpdateTask') class\.
+
+```csharp
+public UIPostgreSQLBuildingDataSolarRadiationUpdateTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager gISPostgreSQLConverterManager);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingDataSolarRadiationUpdateTask.UIPostgreSQLBuildingDataSolarRadiationUpdateTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager).gISPostgreSQLConverterManager'></a>
+
+`gISPostgreSQLConverterManager` [DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.gispostgresqlconvertermanager 'DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager')
+
+The GIS PostgreSQL converter manager used to read the counties and the stored solar radiation and to write the building data\.
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingDataSolarRadiationUpdateTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
+
+## UIPostgreSQLBuildingDataSolarRadiationUpdateTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
+
+Executes the background task that fills the yearly solar radiation summary columns of the building data table from the stored solar radiation\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingDataSolarRadiationUpdateTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
+
+`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
+
+A progress reporter for reporting the number of rows written\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingDataSolarRadiationUpdateTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+A cancellation token that can be used to cancel the operation\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task representing the asynchronous operation\. Returns true when every county in scope was processed without error; otherwise, false\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingDataUpdateTask'></a>
 
 ## UIPostgreSQLBuildingDataUpdateTask Class
@@ -2284,6 +2346,130 @@ public JsonNode? Value;
 
 #### Field Value
 [System\.Text\.Json\.Nodes\.JsonNode](https://learn.microsoft.com/en-us/dotnet/api/system.text.json.nodes.jsonnode 'System\.Text\.Json\.Nodes\.JsonNode')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationContextExportTask'></a>
+
+## UIPostgreSQLBuildingSolarRadiationContextExportTask Class
+
+An urban\-context export scoped from the user interface: the county parts, the radii and their column order, the residential filter, the batch size, the timeout and the output folder are asked for through [PostgreSQLBuildingSolarRadiationContextExportOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow') each time the task is started, and only then is the run handed to [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingsolarradiationcontextexporttask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportTask') \(DiGi\.GIS\.PostgreSQL\#136\)\.
+
+The export refuses a run without an output folder, and a server has no folder it could sensibly pick, so the dialog proposes [SolarContextDirectory\(string\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.SolarContextDirectory(string) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.SolarContextDirectory\(string\)') and creates it when it is accepted.
+
+```csharp
+public class UIPostgreSQLBuildingSolarRadiationContextExportTask : DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingsolarradiationcontextexporttask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportTask') → UIPostgreSQLBuildingSolarRadiationContextExportTask
+
+Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationContextExportTask.UIPostgreSQLBuildingSolarRadiationContextExportTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager)'></a>
+
+## UIPostgreSQLBuildingSolarRadiationContextExportTask\(GISPostgreSQLConverterManager\) Constructor
+
+Initializes a new instance of the [UIPostgreSQLBuildingSolarRadiationContextExportTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationContextExportTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLBuildingSolarRadiationContextExportTask') class\.
+
+```csharp
+public UIPostgreSQLBuildingSolarRadiationContextExportTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager gISPostgreSQLConverterManager);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationContextExportTask.UIPostgreSQLBuildingSolarRadiationContextExportTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager).gISPostgreSQLConverterManager'></a>
+
+`gISPostgreSQLConverterManager` [DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.gispostgresqlconvertermanager 'DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager')
+
+The GIS PostgreSQL converter manager used to read the counties, the stored solar radiation and the building data\.
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationContextExportTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
+
+## UIPostgreSQLBuildingSolarRadiationContextExportTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
+
+Executes the background task that exports the urban\-context table of every county part in scope\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationContextExportTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
+
+`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
+
+A progress reporter for reporting the number of building rows written\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationContextExportTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+A cancellation token that can be used to cancel the operation\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task representing the asynchronous operation\. Returns true when every county part in scope was exported without error; otherwise, false\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationSolveTask'></a>
+
+## UIPostgreSQLBuildingSolarRadiationSolveTask Class
+
+A batch solar radiation solve scoped from the user interface: the county parts, the neighbour radii and the batch, tile, ceiling and timeout settings are asked for through [PostgreSQLBuildingSolarRadiationSolveOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLBuildingSolarRadiationSolveOptionsWindow') each time the task is started, and only then is the run handed to [DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.solar.classes.postgresqlbuildingsolarradiationsolvetask 'DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveTask') \(DiGi\.GIS\.PostgreSQL\#136\)\.
+
+A solve costs seconds per building and radius, so unscoped it is the whole country once per radius - not a default anyone starts on purpose from a tray menu.
+
+```csharp
+public class UIPostgreSQLBuildingSolarRadiationSolveTask : DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → [DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.solar.classes.postgresqlbuildingsolarradiationsolvetask 'DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveTask') → UIPostgreSQLBuildingSolarRadiationSolveTask
+
+Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationSolveTask.UIPostgreSQLBuildingSolarRadiationSolveTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager)'></a>
+
+## UIPostgreSQLBuildingSolarRadiationSolveTask\(GISPostgreSQLConverterManager\) Constructor
+
+Initializes a new instance of the [UIPostgreSQLBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLBuildingSolarRadiationSolveTask') class\.
+
+```csharp
+public UIPostgreSQLBuildingSolarRadiationSolveTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager gISPostgreSQLConverterManager);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationSolveTask.UIPostgreSQLBuildingSolarRadiationSolveTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager).gISPostgreSQLConverterManager'></a>
+
+`gISPostgreSQLConverterManager` [DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.gispostgresqlconvertermanager 'DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager')
+
+The GIS PostgreSQL converter manager used to read the counties, buildings, models and weather and to write the results\.
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
+
+## UIPostgreSQLBuildingSolarRadiationSolveTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
+
+Executes the background task that solves and stores the annual solar radiation of every building of the county parts in scope\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
+
+`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
+
+A progress reporter for reporting the number of buildings considered\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+A cancellation token that can be used to cancel the operation\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task representing the asynchronous operation\. Returns true when every county part in scope was processed without error; otherwise, false\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLOrtoDatasAcquisitionUpdateTask'></a>
 

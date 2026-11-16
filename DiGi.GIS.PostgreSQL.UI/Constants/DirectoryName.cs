@@ -32,5 +32,15 @@ namespace DiGi.GIS.PostgreSQL.UI.Constants
         /// Gets the name of the folder, inside the YOLO models folder, that holds the pretrained base checkpoints such as <see cref="FileName.BaseModel"/>.
         /// </summary>
         public const string BaseModels = "base";
+
+        /// <summary>
+        /// Gets the name of the folder beside this application's executable that generated reports are written to by default - the deployed counterpart of <c>user files/reports</c>, since the build flattens <see cref="UserFiles"/> into the output root.
+        /// </summary>
+        public const string Reports = "reports";
+
+        /// <summary>
+        /// Gets the name of the folder, inside <see cref="Reports"/>, that the solar urban-context export writes its files to by default.
+        /// </summary>
+        public const string SolarContext = "solar_context";
     }
 }
