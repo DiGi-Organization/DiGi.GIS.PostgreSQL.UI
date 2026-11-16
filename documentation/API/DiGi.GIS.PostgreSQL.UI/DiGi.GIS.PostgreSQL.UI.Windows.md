@@ -763,6 +763,8 @@ Asks for everything that decides what a batch solar radiation solve costs and st
 
 An optional limit of buildings per county part runs a pilot: empty solves every building (DiGi.GIS.PostgreSQL.UI#45).
 
+The number of solves run at once: 0 is automatic, half the logical processors; 1 is one at a time. It changes the run time only, never the stored results (DiGi.GIS.PostgreSQL.UI#46, DiGi.GIS.PostgreSQL#139).
+
 The counties matter most. A solve costs seconds per building and radius, so an unscoped run is the whole country several times over - the window never leaves with no county chosen.
 
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.

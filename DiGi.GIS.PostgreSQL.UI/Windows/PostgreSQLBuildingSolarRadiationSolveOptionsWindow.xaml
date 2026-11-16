@@ -38,7 +38,7 @@
                 <RowDefinition Height="60" />
                 <RowDefinition Height="30" />
                 <RowDefinition Height="26" />
-                <RowDefinition Height="180" />
+                <RowDefinition Height="240" />
             </Grid.RowDefinitions>
 
             <Label x:Name="Label_Radii" Grid.Row="0" Content="Neighbour radii in m - one solve per radius" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
@@ -54,13 +54,14 @@
 
             <CheckBox x:Name="CheckBox_SkipExisting" Grid.Row="4" Content="Skip results this solver already stored" ToolTip="Steps over a building and radius that already carry a result of the current solver version - resumes an interrupted run and keeps what the viewer stored. Clear it to solve everything again." Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
-            <UniformGrid Grid.Row="5" Rows="3" Columns="2">
+            <UniformGrid Grid.Row="5" Rows="4" Columns="2">
                 <controls:TextBoxControl x:Name="TextBoxControl_BatchSize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Batch size (buildings)" Value="" />
                 <controls:TextBoxControl x:Name="TextBoxControl_TileSize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Tile size in m" Value="" />
                 <controls:TextBoxControl x:Name="TextBoxControl_ReceiverCountMax" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Receivers per building, max" Value="" />
                 <controls:TextBoxControl x:Name="TextBoxControl_CasterTriangleCountMax" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Shading triangles, max" Value="" />
                 <controls:TextBoxControl x:Name="TextBoxControl_CommandTimeout" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Timeout in s (0 = none)" ToolTip="Command timeout in seconds applied to every statement; 0 disables it" Value="" />
                 <controls:TextBoxControl x:Name="TextBoxControl_BuildingCountMax" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Buildings per part, max" ToolTip="Empty solves every building. Otherwise at most this many buildings per county part - only those still pending, in tile order, so a pilot is a compact cluster - and a repeat run with skip-existing continues with the next ones." Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_MaxDegreeOfParallelism" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Parallel solves (0 = auto)" ToolTip="How many building and radius solves run at once. 0 uses half the logical processors - the solver also works in parallel inside each solve; 1 solves one at a time, as before. The stored results do not depend on it." Value="" />
             </UniformGrid>
         </Grid>
 

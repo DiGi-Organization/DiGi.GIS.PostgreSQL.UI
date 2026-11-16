@@ -11,6 +11,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     /// Interaction logic for PostgreSQLBuildingSolarRadiationSolveOptionsWindow.xaml
     /// <para>Asks for everything that decides what a batch solar radiation solve costs and stores: the county parts, the neighbour radii every building is solved for, whether results already stored are stepped over, and the batch, tile, ceiling and timeout settings (DiGi.GIS.PostgreSQL#136).</para>
     /// <para>An optional limit of buildings per county part runs a pilot: empty solves every building (DiGi.GIS.PostgreSQL.UI#45).</para>
+    /// <para>The number of solves run at once: 0 is automatic, half the logical processors; 1 is one at a time. It changes the run time only, never the stored results (DiGi.GIS.PostgreSQL.UI#46, DiGi.GIS.PostgreSQL#139).</para>
     /// <para>The counties matter most. A solve costs seconds per building and radius, so an unscoped run is the whole country several times over - the window never leaves with no county chosen.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.</para>
     /// </summary>
@@ -39,6 +40,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             TextBoxControl_ReceiverCountMax.Value = this.postgreSQLBuildingSolarRadiationSolveOptions.ReceiverCountMax.ToString(CultureInfo.CurrentCulture);
             TextBoxControl_CasterTriangleCountMax.Value = this.postgreSQLBuildingSolarRadiationSolveOptions.CasterTriangleCountMax.ToString(CultureInfo.CurrentCulture);
             TextBoxControl_CommandTimeout.Value = this.postgreSQLBuildingSolarRadiationSolveOptions.CommandTimeout.ToString(CultureInfo.CurrentCulture);
+            TextBoxControl_MaxDegreeOfParallelism.Value = this.postgreSQLBuildingSolarRadiationSolveOptions.MaxDegreeOfParallelism.ToString(CultureInfo.CurrentCulture);
 
             // Empty is "every building", not zero - the option is null then.
             int? buildingCountMax = this.postgreSQLBuildingSolarRadiationSolveOptions.BuildingCountMax;
@@ -141,6 +143,12 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
                 return;
             }
 
+            if (!TextBoxControl_MaxDegreeOfParallelism.TryGetValue(out int maxDegreeOfParallelism) || maxDegreeOfParallelism < 0)
+            {
+                MessageBox.Show("Parallel solves has to be a whole number, zero (automatic) or greater.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             int? buildingCountMax = null;
             if (!string.IsNullOrWhiteSpace(TextBoxControl_BuildingCountMax.Value))
             {
@@ -168,6 +176,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             postgreSQLBuildingSolarRadiationSolveOptions.CasterTriangleCountMax = casterTriangleCountMax;
             postgreSQLBuildingSolarRadiationSolveOptions.CommandTimeout = commandTimeout;
             postgreSQLBuildingSolarRadiationSolveOptions.BuildingCountMax = buildingCountMax;
+            postgreSQLBuildingSolarRadiationSolveOptions.MaxDegreeOfParallelism = maxDegreeOfParallelism;
 
             DialogResult = true;
             Close();
