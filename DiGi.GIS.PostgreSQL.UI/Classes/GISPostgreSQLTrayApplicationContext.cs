@@ -40,7 +40,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <para>The tray icon is animated while any client or server background task is running and returns to the static icon once every task has stopped - finished, failed or cancelled. A green dot blinks in its top-right corner over the same period.</para>
         /// </summary>
         public GISPostgreSQLTrayApplicationContext()
-            : base("GIS PostgreSQL", new DiGi.UI.Windows.Classes.TrayApplicationContextOptions() { ShowWindowOnStartup = false, HideOnMinimize = true, HideOnDeactivate = false })
+            : base("GIS PostgreSQL", new DiGi.UI.Windows.Classes.TrayApplicationContextOptions() { ShowWindowOnStartup = true, HideOnMinimize = true, HideOnDeactivate = false })
         {
             SetIcon(SmallIcon("DiGi.GIS.ico"));
 
@@ -80,16 +80,6 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             }
 
             UpdateAnimation();
-
-            // Show the window after the constructor (and the base class' hover-Popup allocation)
-            // has fully completed. Showing it synchronously from the base constructor races the
-            // Popup's HwndSource on slow integrated-GPU machines (e.g. Intel N150), where WPF throws
-            // "The root Visual of a VisualTarget cannot have a parent" from CompositionTarget.SetRootVisual.
-            // Deferring to the dispatcher lets the constructor finish and the dispatcher pump before
-            // the window's composition target is created, so the first Show() succeeds.
-            mainWindow.Dispatcher.BeginInvoke(
-                new Action(() => { mainWindow.Show(); mainWindow.Activate(); }),
-                System.Windows.Threading.DispatcherPriority.Loaded);
 
             static Icon? SmallIcon(string fileName)
             {
