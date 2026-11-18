@@ -126,7 +126,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <inheritdoc />
         protected override async Task<List<Building2DCentroid>?> ReadBuilding2DCentroidsAsync(int countyId, int commandTimeout, CancellationToken cancellationToken)
         {
-            return await gISWebAPIManager.Building2DCentroidsAsync(countyId, commandTimeout, cancellationToken: cancellationToken);
+            return await gISWebAPIManager.Building2DCentroidsByCountyIdAsync(countyId, commandTimeout, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc />
