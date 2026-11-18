@@ -525,35 +525,6 @@ The reason the pair cannot be used, or null when it can\.
 [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
 True when the pair can be used; otherwise false\.
 
-<a name='DiGi.GIS.PostgreSQL.UI.Query.MissingSolarSolveRoutesAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Threading.CancellationToken)'></a>
-
-## Query\.MissingSolarSolveRoutesAsync\(this GISWebAPIManager, CancellationToken\) Method
-
-Finds which of the GIS Web API routes a client\-side solar solve needs the host does not serve yet, by comparing the host's `information/endpoints` catalogue with the routes this build was compiled against \(DiGi\.GIS\.PostgreSQL\.UI\#48\)\.
-
-TODO [SolarSolveEndpointsDeployed]: remove this check, and its call in [WebAPIBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.WebAPIBuildingSolarRadiationSolveTask'), once DiGi-Organization/DiGi.GIS.WebAPI#94 is closed and `information/endpoints` on api.digiproject.uk lists every route named here. Until then a run against a host that lacks one would fail every county part, or - before the itemsbyreferences fix of the same build - count every building as not solvable.
-
-```csharp
-public static System.Threading.Tasks.Task<System.Collections.Generic.List<string>?> MissingSolarSolveRoutesAsync(this DiGi.GIS.WebAPI.Classes.GISWebAPIManager? gISWebAPIManager, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
-```
-#### Parameters
-
-<a name='DiGi.GIS.PostgreSQL.UI.Query.MissingSolarSolveRoutesAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Threading.CancellationToken).gISWebAPIManager'></a>
-
-`gISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
-
-The manager that creates the HTTP client\.
-
-<a name='DiGi.GIS.PostgreSQL.UI.Query.MissingSolarSolveRoutesAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,System.Threading.CancellationToken).cancellationToken'></a>
-
-`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
-
-The [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken') to observe for cancellation requests\.
-
-#### Returns
-[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
-A task whose result contains the routes the host does not list \(empty when every one is served\), or null when the catalogue cannot be read \- never read null as "all deployed"\.
-
 <a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingImportOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions)'></a>
 
 ## Query\.OpenBuildingImportOptionsMessage\(PostgreSQLOpenBuildingImportTaskOptions\) Method

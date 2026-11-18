@@ -12,7 +12,6 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 {
     /// <summary>
     /// A solar radiation solve run on this machine through the GIS Web API and scoped from the user interface (DiGi.GIS.PostgreSQL.UI#48): the county parts, radii, ceilings, tile, batch and timeout settings are asked for through the same <see cref="PostgreSQLBuildingSolarRadiationSolveOptionsWindow"/> the server row uses, then a user signs in through <see cref="UserSignInWindow"/>, and only then is the run handed to <see cref="WebAPIBuildingSolarRadiationSolveTask"/>.
-    /// <para>The host's endpoint catalogue is checked before either dialog opens, so nobody is asked for a scope and a password while the endpoints the run needs are not deployed (TODO [SolarSolveEndpointsDeployed]: remove the check here and in <see cref="WebAPIBuildingSolarRadiationSolveTask"/> once DiGi-Organization/DiGi.GIS.WebAPI#94 is closed).</para>
     /// <para>The password goes from the window straight into one sign-in request on this thread and is not kept; the token lives on the task for the run and is renewed by it. A refused sign-in ends the run with nothing solved.</para>
     /// </summary>
     public class UIWebAPIBuildingSolarRadiationSolveTask : WebAPIBuildingSolarRadiationSolveTask, IGISPostgreSQLUIObject
@@ -29,14 +28,6 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <inheritdoc />
         protected override async Task<bool> ExecuteAsync(IProgress<long> progress, CancellationToken cancellationToken)
         {
-            // TODO [SolarSolveEndpointsDeployed]: remove this check once DiGi-Organization/DiGi.GIS.WebAPI#94 is closed and information/endpoints on api.digiproject.uk lists every route of Query.MissingSolarSolveRoutesAsync.
-            List<string>? routes_Missing = await gISWebAPIManager.MissingSolarSolveRoutesAsync(cancellationToken);
-            if (routes_Missing is null || routes_Missing.Count != 0)
-            {
-                Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: the GIS Web API does not serve {Routes} yet (DiGi.GIS.WebAPI#94) - nothing was asked for or solved", nameof(UIWebAPIBuildingSolarRadiationSolveTask), routes_Missing is null ? "a readable endpoint catalogue" : string.Join(", ", routes_Missing));
-                return false;
-            }
-
             // The dialogs are windows, and this runs on a thread pool thread, where a window cannot be created at all.
             // Without an application there is no user interface thread to move them to.
             if (System.Windows.Application.Current is not System.Windows.Application application)

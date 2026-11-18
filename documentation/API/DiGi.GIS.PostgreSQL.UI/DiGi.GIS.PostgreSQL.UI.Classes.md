@@ -3138,8 +3138,6 @@ A task that represents the asynchronous operation\. The task result is true if t
 
 A solar radiation solve run on this machine through the GIS Web API and scoped from the user interface \(DiGi\.GIS\.PostgreSQL\.UI\#48\): the county parts, radii, ceilings, tile, batch and timeout settings are asked for through the same [PostgreSQLBuildingSolarRadiationSolveOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLBuildingSolarRadiationSolveOptionsWindow') the server row uses, then a user signs in through [UserSignInWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.UserSignInWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.UserSignInWindow'), and only then is the run handed to [WebAPIBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.WebAPIBuildingSolarRadiationSolveTask')\.
 
-The host's endpoint catalogue is checked before either dialog opens, so nobody is asked for a scope and a password while the endpoints the run needs are not deployed (TODO [SolarSolveEndpointsDeployed]: remove the check here and in [WebAPIBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.WebAPIBuildingSolarRadiationSolveTask') once DiGi-Organization/DiGi.GIS.WebAPI#94 is closed).
-
 The password goes from the window straight into one sign-in request on this thread and is not kept; the token lives on the task for the run and is renewed by it. A refused sign-in ends the run with nothing solved.
 
 ```csharp
@@ -3605,33 +3603,6 @@ public string? TokenString { get; set; }
 #### Property Value
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
 ### Methods
-
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
-
-## WebAPIBuildingSolarRadiationSolveTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
-
-Executes the background task that solves and stores the annual solar radiation of every building of the county parts in scope\.
-
-```csharp
-protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
-```
-#### Parameters
-
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
-
-`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
-
-A progress reporter for reporting the number of buildings considered\.
-
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
-
-`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
-
-A cancellation token that can be used to cancel the operation\.
-
-#### Returns
-[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
-A task representing the asynchronous operation\. Returns true when every county part in scope was processed without error; otherwise, false\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.PostOptions(int)'></a>
 

@@ -52,26 +52,6 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         public string? TokenString { get; set; }
 
         /// <inheritdoc />
-        protected override async Task<bool> ExecuteAsync(IProgress<long> progress, CancellationToken cancellationToken)
-        {
-            // TODO [SolarSolveEndpointsDeployed]: remove this check once DiGi-Organization/DiGi.GIS.WebAPI#94 is closed and information/endpoints on api.digiproject.uk lists every route of Query.MissingSolarSolveRoutesAsync.
-            List<string>? routes_Missing = await gISWebAPIManager.MissingSolarSolveRoutesAsync(cancellationToken);
-            if (routes_Missing is null)
-            {
-                Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: the GIS Web API endpoint catalogue could not be read - it cannot be told whether the solve endpoints are deployed", GetType().Name);
-                return false;
-            }
-
-            if (routes_Missing.Count != 0)
-            {
-                Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: the GIS Web API does not serve {Routes} yet (DiGi.GIS.WebAPI#94) - nothing was solved", GetType().Name, string.Join(", ", routes_Missing));
-                return false;
-            }
-
-            return await base.ExecuteAsync(progress, cancellationToken);
-        }
-
-        /// <inheritdoc />
         protected override async Task<List<BuildingModel?>?> ReadBuildingModelsAsync(int countyId, List<string> references, int commandTimeout, CancellationToken cancellationToken)
         {
             string? path = DiGi.WebAPI.Query.Path<BuildingModelController>(nameof(BuildingModelController.GetItemsByReferencesAsync));
