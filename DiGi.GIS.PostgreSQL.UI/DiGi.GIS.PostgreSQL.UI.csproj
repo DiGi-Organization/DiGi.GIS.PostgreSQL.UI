@@ -150,6 +150,23 @@
     <Reference Include="DiGi.Weather">
       <HintPath>..\..\DiGi.Weather\bin\DiGi.Weather.dll</HintPath>
     </Reference>
+    <!-- The batch heat demand run and its closure (DiGi.GIS.PostgreSQL#143, DiGi.GIS.PostgreSQL.UI#49): it reaches the
+         solar stack too, whose NuGet packages are re-declared above. -->
+    <Reference Include="DiGi.Analytical.Building.Energy">
+      <HintPath>..\..\DiGi.Analytical\bin\DiGi.Analytical.Building.Energy.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Analytical.Building.Regulation">
+      <HintPath>..\..\DiGi.Analytical\bin\DiGi.Analytical.Building.Regulation.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.GIS.Analytical.Energy">
+      <HintPath>..\..\DiGi.GIS.Analytical\bin\DiGi.GIS.Analytical.Energy.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.GIS.PostgreSQL.Energy">
+      <HintPath>..\..\DiGi.GIS.PostgreSQL\bin\DiGi.GIS.PostgreSQL.Energy.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Unit.IO">
+      <HintPath>..\..\DiGi.Unit\bin\DiGi.Unit.IO.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.GIS.WebAPI">
       <HintPath>..\..\DiGi.GIS.WebAPI\bin\DiGi.GIS.WebAPI.dll</HintPath>
     </Reference>

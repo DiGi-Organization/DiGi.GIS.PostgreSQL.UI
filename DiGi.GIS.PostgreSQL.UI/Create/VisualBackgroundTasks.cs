@@ -81,6 +81,11 @@ namespace DiGi.GIS.PostgreSQL.UI
                     result.Add(Visual(new UIPostgreSQLBuildingDataSolarRadiationUpdateTask(gISPostgreSQLConverterManager), "Update building data solar summary", "Writes the yearly solar radiation summary columns of building_data from the stored solar radiation. The counties and the radius (empty = the latest result of any radius) are asked for when the task is started. Solve building solar radiation first"));
                     result.Add(Visual(new UIPostgreSQLBuildingSolarRadiationContextExportTask(gISPostgreSQLConverterManager), "Export solar urban-context table", "Writes one CSV per county part with the irradiation per radius and its shortfall against the isolated building. The counties, radii and output folder are asked for when the task is started. Solve building solar radiation first"));
 
+                    // Monthly heat demand (DiGi.GIS.PostgreSQL#143, DiGi.GIS.PostgreSQL.UI#49): reads the stored solar
+                    // results when there are any, so it sits after the solar tasks; scoped from a dialog - unscoped,
+                    // it is every building in the country.
+                    result.Add(Visual(new UIPostgreSQLBuildingHeatDemandSolveTask(gISPostgreSQLConverterManager), "Solve building heat demand", "Calculates the monthly heat demand of every building in the chosen county parts and stores it in building_heat_demand, with its summary in building_data. The counties, the constructions (typical as built or regulation), the solar radius, the skip of buildings already calculated, the batch size, the ceiling per part, the parallelism and the timeout are asked for when the task is started. Needs stored building models, EPW files and the year built; a building without a stored solar result is calculated unshaded"));
+
                     Building2DPostgreSQLConverter? building2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<Building2DPostgreSQLConverter>();
                     if (building2DPostgreSQLConverter is not null)
                     {

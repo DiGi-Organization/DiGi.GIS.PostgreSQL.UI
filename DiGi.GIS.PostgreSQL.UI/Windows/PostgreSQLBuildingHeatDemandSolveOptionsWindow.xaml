@@ -1,0 +1,66 @@
+<Window x:Class="DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DiGi.GIS.PostgreSQL.UI.Windows"
+        xmlns:controls="clr-namespace:DiGi.UI.WPF.Controls;assembly=DiGi.UI.WPF"
+        mc:Ignorable="d"
+        Title="Solve building heat demand" Height="600" Width="860" MinHeight="500" MinWidth="720"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="SingleBorderWindow"
+        Icon="pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/DiGi.GIS.ico">
+    <Grid Margin="5,5,5,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="33" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label x:Name="Label_Counties" Grid.Row="0" Content="Counties - one entry per piece of a county" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <controls:ListBoxControl x:Name="ListBoxControl_Counties" Grid.Row="1" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="180" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label x:Name="Label_ConstructionFlavour" Grid.Row="0" Content="Constructions" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <ComboBox x:Name="ComboBox_ConstructionFlavour" Grid.Row="1" Margin="10,0,10,0" VerticalAlignment="Center" ToolTip="Typical as built: the TABULA constructions of the year built. Regulation: the thermal limits of the regulation in force when the building was designed. The typology data is the typical-as-built set's either way.">
+                <ComboBoxItem Content="Typical as built (TABULA, by year built)" />
+                <ComboBoxItem Content="Regulation (thermal limits in force)" />
+            </ComboBox>
+
+            <CheckBox x:Name="CheckBox_SkipCompleted" Grid.Row="2" Content="Skip buildings already calculated" ToolTip="Steps over a building that already carries a result of the current method version - resumes an interrupted run. Clear it to calculate everything again." Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+
+            <UniformGrid Grid.Row="3" Rows="3" Columns="2">
+                <controls:TextBoxControl x:Name="TextBoxControl_SolarRadius" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Solar radius in m" ToolTip="The neighbour radius of the stored solar result to take the irradiation from. A building without a result of this radius takes its latest result of any radius, and a building without any result the unshaded irradiation." Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_BatchSize" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Batch size (buildings)" Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_CommandTimeout" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Timeout in s (0 = none)" ToolTip="Command timeout in seconds applied to every statement; 0 disables it" Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_BuildingCountMax" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Buildings per part, max" ToolTip="Empty calculates every building. Otherwise at most this many buildings per county part, in tile order, so a pilot is a compact cluster - and a repeat run with skip continues with the next ones." Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_MaxDegreeOfParallelism" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Parallel buildings (0 = auto)" ToolTip="How many buildings are calculated at once. 0 uses half the logical processors; 1 calculates one at a time. The stored results do not depend on it." Value="" />
+            </UniformGrid>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
+            <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
+            <Button x:Name="Button_Cancel" Content="Cancel" Width="70" Height="23" Margin="5,0,5,0" IsCancel="True" Click="Button_Cancel_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
