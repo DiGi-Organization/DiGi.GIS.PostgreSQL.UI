@@ -3132,6 +3132,70 @@ The token to monitor for cancellation requests\.
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
 A task that represents the asynchronous operation\. The task result is true if the update was successful; otherwise, false\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIWebAPIBuildingSolarRadiationSolveTask'></a>
+
+## UIWebAPIBuildingSolarRadiationSolveTask Class
+
+A solar radiation solve run on this machine through the GIS Web API and scoped from the user interface \(DiGi\.GIS\.PostgreSQL\.UI\#48\): the county parts, radii, ceilings, tile, batch and timeout settings are asked for through the same [PostgreSQLBuildingSolarRadiationSolveOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLBuildingSolarRadiationSolveOptionsWindow') the server row uses, then a user signs in through [UserSignInWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.UserSignInWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.UserSignInWindow'), and only then is the run handed to [WebAPIBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.WebAPIBuildingSolarRadiationSolveTask')\.
+
+The host's endpoint catalogue is checked before either dialog opens, so nobody is asked for a scope and a password while the endpoints the run needs are not deployed (TODO [SolarSolveEndpointsDeployed]: remove the check here and in [WebAPIBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.WebAPIBuildingSolarRadiationSolveTask') once DiGi-Organization/DiGi.GIS.WebAPI#94 is closed).
+
+The password goes from the window straight into one sign-in request on this thread and is not kept; the token lives on the task for the run and is renewed by it. A refused sign-in ends the run with nothing solved.
+
+```csharp
+public class UIWebAPIBuildingSolarRadiationSolveTask : DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → [DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.BuildingSolarRadiationSolveTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.solar.classes.buildingsolarradiationsolvetask 'DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.BuildingSolarRadiationSolveTask') → [WebAPIBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.WebAPIBuildingSolarRadiationSolveTask') → UIWebAPIBuildingSolarRadiationSolveTask
+
+Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIWebAPIBuildingSolarRadiationSolveTask.UIWebAPIBuildingSolarRadiationSolveTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager)'></a>
+
+## UIWebAPIBuildingSolarRadiationSolveTask\(GISWebAPIManager\) Constructor
+
+Initializes a new instance of the [UIWebAPIBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIWebAPIBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIWebAPIBuildingSolarRadiationSolveTask') class\.
+
+```csharp
+public UIWebAPIBuildingSolarRadiationSolveTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager gISWebAPIManager);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIWebAPIBuildingSolarRadiationSolveTask.UIWebAPIBuildingSolarRadiationSolveTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager).gISWebAPIManager'></a>
+
+`gISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
+
+The GIS Web API manager used to sign in, read the counties, buildings, models and weather and to write the results\.
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIWebAPIBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
+
+## UIWebAPIBuildingSolarRadiationSolveTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
+
+Executes the background task that solves and stores the annual solar radiation of every building of the county parts in scope\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIWebAPIBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
+
+`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
+
+A progress reporter for reporting the number of buildings considered\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIWebAPIBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+A cancellation token that can be used to cancel the operation\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task representing the asynchronous operation\. Returns true when every county part in scope was processed without error; otherwise, false\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.UIYearBuiltDatasFromFilePostTask'></a>
 
 ## UIYearBuiltDatasFromFilePostTask Class
@@ -3476,6 +3540,9 @@ public class WebAPIBuildingSolarRadiationSolveTask : DiGi.GIS.PostgreSQL.Solar.C
 ```
 
 Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → [DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.BuildingSolarRadiationSolveTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.solar.classes.buildingsolarradiationsolvetask 'DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.BuildingSolarRadiationSolveTask') → WebAPIBuildingSolarRadiationSolveTask
+
+Derived  
+↳ [UIWebAPIBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIWebAPIBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIWebAPIBuildingSolarRadiationSolveTask')
 ### Constructors
 
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.WebAPIBuildingSolarRadiationSolveTask(DiGi.GIS.WebAPI.Classes.GISWebAPIManager)'></a>

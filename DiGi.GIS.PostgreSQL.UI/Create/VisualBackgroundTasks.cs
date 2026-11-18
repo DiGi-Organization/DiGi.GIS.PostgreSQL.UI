@@ -252,6 +252,11 @@ namespace DiGi.GIS.PostgreSQL.UI
                     },
                     "Create BuildingModels from database", "Creates BuildingModels for Building2Ds from database based on CityGML Buildings stored in database - the counties, resume and the report directory are asked for when the task starts"));
 
+                    // The solar solve run on this machine instead of the database server (DiGi.GIS.PostgreSQL.UI#48): the same run
+                    // and options dialog as the server row, read and written through the GIS Web API by a signed-in user.
+                    // Offered whether or not a converter manager is configured - a Client machine has none.
+                    result.Add(Visual(new UIWebAPIBuildingSolarRadiationSolveTask(gISWebAPIManager), "Solve building solar radiation (client)", "Solves the annual solar radiation of every building in the chosen county parts on this machine for each neighbour radius (0 = the isolated building) and stores it through the GIS Web API. The counties, radii, ceilings, tile and batch size and a sign-in are asked for when the task is started. Needs stored building models and EPW files, and a user allowed to write solar radiation"));
+
                     // The acceptance run for the national pass: every voivodeship, 200 references per county.
                     // Missing is a real gate again once the table has been truncated - no legacy row can answer for
                     // a building the regeneration skipped - so it should come back 0.

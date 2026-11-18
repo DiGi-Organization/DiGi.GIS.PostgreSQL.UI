@@ -45,6 +45,7 @@ Derived
 ↳ [UIPostgreSQLUpdateOccupancyTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLUpdateOccupancyTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLUpdateOccupancyTask')  
 ↳ [UIPostgreSQLUserCreateTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLUserCreateTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLUserCreateTask')  
 ↳ [UIUpdateFromFilePostTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIUpdateFromFilePostTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIUpdateFromFilePostTask')  
+↳ [UIWebAPIBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIWebAPIBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIWebAPIBuildingSolarRadiationSolveTask')  
 ↳ [UIYearBuiltDatasFromFilePostTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIYearBuiltDatasFromFilePostTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIYearBuiltDatasFromFilePostTask')  
 ↳ [UIYearBuiltPredictionsTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIYearBuiltPredictionsTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIYearBuiltPredictionsTask')  
 ↳ [UIYOLOTrainingTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIYOLOTrainingTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIYOLOTrainingTask')  
