@@ -3586,6 +3586,19 @@ private const int referencesQueryLengthMax = 2000;
 
 #### Field Value
 [System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.tokenString'></a>
+
+## WebAPIBuildingSolarRadiationSolveTask\.tokenString Field
+
+The backing field of [TokenString](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.TokenString 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.WebAPIBuildingSolarRadiationSolveTask\.TokenString'); volatile because the renewal loop replaces it while the solve reads it\.
+
+```csharp
+private volatile string? tokenString;
+```
+
+#### Field Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
 ### Properties
 
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.TokenString'></a>
@@ -3594,7 +3607,7 @@ private const int referencesQueryLengthMax = 2000;
 
 Gets or sets the signed\-in user's bearer token the results are written with; never stored or logged\.
 
-A token lives an hour and a run takes many, so before each write a token within [RefreshMargin](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshMargin 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.UserSession\.RefreshMargin') of its expiry is exchanged for a new one ([RefreshedUserTokenStringAsync\(this GISWebAPIManager, string, CancellationToken\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.RefreshedUserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,System.Threading.CancellationToken) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.RefreshedUserTokenStringAsync\(this DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager, string, System\.Threading\.CancellationToken\)')) and replaces this value. A renewal that fails leaves the old token in use while it is still valid; once it has expired, the write fails and so does its county part.
+A token lives an hour and a run takes many, and one batch may solve for longer than an hour without writing. So for the whole run a loop checks the token every [RefreshCheckInterval](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshCheckInterval 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.UserSession\.RefreshCheckInterval') and, once it is within [RefreshMargin](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshMargin 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.UserSession\.RefreshMargin') of its expiry, exchanges it for a new one ([RefreshedUserTokenStringAsync\(this GISWebAPIManager, string, CancellationToken\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.RefreshedUserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,System.Threading.CancellationToken) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.RefreshedUserTokenStringAsync\(this DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager, string, System\.Threading\.CancellationToken\)')) that replaces this value. The loop is the only renewer, so no two renewals race. A renewal that fails is retried while the old token is still valid; once it has expired, the next write fails and so does its county part.
 
 ```csharp
 public string? TokenString { get; set; }
@@ -3603,6 +3616,33 @@ public string? TokenString { get; set; }
 #### Property Value
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
 ### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
+
+## WebAPIBuildingSolarRadiationSolveTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
+
+Executes the background task that solves and stores the annual solar radiation of every building of the county parts in scope\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
+
+`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
+
+A progress reporter for reporting the number of buildings considered\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+A cancellation token that can be used to cancel the operation\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task representing the asynchronous operation\. Returns true when every county part in scope was processed without error; otherwise, false\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.PostOptions(int)'></a>
 
@@ -3894,6 +3934,27 @@ A cancellation token that can be used to cancel the operation\.
 #### Returns
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Collections\.Generic\.HashSet&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1 'System\.Collections\.Generic\.HashSet\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1 'System\.Collections\.Generic\.HashSet\`1')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
 A task whose result contains the references \(empty when none is stored\), or null when the read failed \- never read a failure as nothing solved\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.RenewTokenStringAsync(System.Threading.CancellationToken)'></a>
+
+## WebAPIBuildingSolarRadiationSolveTask\.RenewTokenStringAsync\(CancellationToken\) Method
+
+Keeps [TokenString](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.TokenString 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.WebAPIBuildingSolarRadiationSolveTask\.TokenString') valid for the whole run: every [RefreshCheckInterval](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshCheckInterval 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.UserSession\.RefreshCheckInterval') it renews a token within [RefreshMargin](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshMargin 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.UserSession\.RefreshMargin') of its expiry, and stops once the token has expired unrenewed or has no readable expiry\.
+
+```csharp
+private System.Threading.Tasks.Task RenewTokenStringAsync(System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.RenewTokenStringAsync(System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+Cancelled when the run ends; the loop then returns without throwing\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task 'System\.Threading\.Tasks\.Task')  
+A task that completes when the loop stops; it never faults\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.WebAPIBuildingSolarRadiationSolveTask.TryInitialize()'></a>
 

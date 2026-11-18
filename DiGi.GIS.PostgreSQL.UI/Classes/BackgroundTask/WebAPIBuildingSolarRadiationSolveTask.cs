@@ -37,6 +37,11 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         protected readonly GISWebAPIManager gISWebAPIManager;
 
         /// <summary>
+        /// The backing field of <see cref="TokenString"/>; volatile because the renewal loop replaces it while the solve reads it.
+        /// </summary>
+        private volatile string? tokenString;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="WebAPIBuildingSolarRadiationSolveTask"/> class.
         /// </summary>
         /// <param name="gISWebAPIManager">The GIS Web API manager used to read the counties, buildings, models and weather and to write the results.</param>
@@ -47,9 +52,31 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
         /// <summary>
         /// Gets or sets the signed-in user's bearer token the results are written with; never stored or logged.
-        /// <para>A token lives an hour and a run takes many, so before each write a token within <see cref="Constants.UserSession.RefreshMargin"/> of its expiry is exchanged for a new one (<see cref="Query.RefreshedUserTokenStringAsync"/>) and replaces this value. A renewal that fails leaves the old token in use while it is still valid; once it has expired, the write fails and so does its county part.</para>
+        /// <para>A token lives an hour and a run takes many, and one batch may solve for longer than an hour without writing. So for the whole run a loop checks the token every <see cref="Constants.UserSession.RefreshCheckInterval"/> and, once it is within <see cref="Constants.UserSession.RefreshMargin"/> of its expiry, exchanges it for a new one (<see cref="Query.RefreshedUserTokenStringAsync"/>) that replaces this value. The loop is the only renewer, so no two renewals race. A renewal that fails is retried while the old token is still valid; once it has expired, the next write fails and so does its county part.</para>
         /// </summary>
-        public string? TokenString { get; set; }
+        public string? TokenString
+        {
+            get => tokenString;
+            set => tokenString = value;
+        }
+
+        /// <inheritdoc />
+        protected override async Task<bool> ExecuteAsync(IProgress<long> progress, CancellationToken cancellationToken)
+        {
+            // The renewal runs beside the solve, not inside the writes: a batch can solve for longer than a token lives.
+            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            Task task_Renewal = RenewTokenStringAsync(cancellationTokenSource.Token);
+
+            try
+            {
+                return await base.ExecuteAsync(progress, cancellationToken);
+            }
+            finally
+            {
+                cancellationTokenSource.Cancel();
+                await task_Renewal;
+            }
+        }
 
         /// <inheritdoc />
         protected override async Task<List<BuildingModel?>?> ReadBuildingModelsAsync(int countyId, List<string> references, int commandTimeout, CancellationToken cancellationToken)
@@ -214,27 +241,65 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <inheritdoc />
         protected override async Task<int?> WriteAsync(int countyId, List<GIS.Classes.BuildingSolarRadiationResult> buildingSolarRadiationResults, int commandTimeout, CancellationToken cancellationToken)
         {
-            // Renewed here, not on a timer: writes are the only requests that carry the token, and they run one at a time.
-            if (Query.TokenExpiresAt(TokenString) is DateTimeOffset expiresAt && expiresAt - DateTimeOffset.UtcNow <= Constants.UserSession.RefreshMargin)
+            // The renewal loop (ExecuteAsync) keeps the token fresh; a token it could not renew in time is not sent.
+            if (Query.TokenExpiresAt(TokenString) is DateTimeOffset expiresAt && expiresAt <= DateTimeOffset.UtcNow)
             {
-                string? tokenString_Refreshed = await gISWebAPIManager.RefreshedUserTokenStringAsync(TokenString, cancellationToken);
-                if (tokenString_Refreshed is not null)
-                {
-                    TokenString = tokenString_Refreshed;
-                    Serilog.Modify.Log("{Type}: the session was renewed", GetType().Name);
-                }
-                else if (expiresAt <= DateTimeOffset.UtcNow)
-                {
-                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: the session expired and could not be renewed - sign in again and rerun; the stored results are skipped", GetType().Name);
-                    return null;
-                }
-                else
-                {
-                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "{Type}: the session could not be renewed - writing with the current token until it expires at {ExpiresAt}", GetType().Name, expiresAt);
-                }
+                Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: the session expired at {ExpiresAt} and could not be renewed - sign in again and rerun; the stored results are skipped", GetType().Name, expiresAt);
+                return null;
             }
 
             return await gISWebAPIManager.SetBuildingSolarRadiationsAsync(buildingSolarRadiationResults, TokenString, commandTimeout, cancellationToken: cancellationToken);
+        }
+
+        /// <summary>
+        /// Keeps <see cref="TokenString"/> valid for the whole run: every <see cref="Constants.UserSession.RefreshCheckInterval"/> it renews a token within <see cref="Constants.UserSession.RefreshMargin"/> of its expiry, and stops once the token has expired unrenewed or has no readable expiry.
+        /// </summary>
+        /// <param name="cancellationToken">Cancelled when the run ends; the loop then returns without throwing.</param>
+        /// <returns>A task that completes when the loop stops; it never faults.</returns>
+        private async Task RenewTokenStringAsync(CancellationToken cancellationToken)
+        {
+            string type = GetType().Name;
+
+            try
+            {
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    string? tokenString_Current = TokenString;
+                    if (Query.TokenExpiresAt(tokenString_Current) is not DateTimeOffset expiresAt)
+                    {
+                        // No token, or no readable expiry: nothing to schedule a renewal by.
+                        return;
+                    }
+
+                    if (expiresAt - DateTimeOffset.UtcNow <= Constants.UserSession.RefreshMargin)
+                    {
+                        string? tokenString_Refreshed = await gISWebAPIManager.RefreshedUserTokenStringAsync(tokenString_Current, cancellationToken);
+                        if (tokenString_Refreshed is not null)
+                        {
+                            TokenString = tokenString_Refreshed;
+                            Serilog.Modify.Log("{Type}: the session was renewed", type);
+                            continue;
+                        }
+
+                        // A refresh needs a still valid token, so once it has expired no retry can succeed.
+                        if (expiresAt <= DateTimeOffset.UtcNow)
+                        {
+                            Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: the session expired at {ExpiresAt} and could not be renewed - the next write fails; sign in again and rerun", type, expiresAt);
+                            return;
+                        }
+                    }
+
+                    await Task.Delay(Constants.UserSession.RefreshCheckInterval, cancellationToken);
+                }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // The run ended; nothing is left to renew for.
+            }
+            catch (Exception exception)
+            {
+                Serilog.Modify.Log(exception, "{Type}: the session renewal stopped - the run writes until the current token expires", type);
+            }
         }
 
         /// <summary>

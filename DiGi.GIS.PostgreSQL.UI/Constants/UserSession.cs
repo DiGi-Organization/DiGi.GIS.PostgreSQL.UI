@@ -18,9 +18,14 @@ namespace DiGi.GIS.PostgreSQL.UI.Constants
         public const string RefreshRoute = "user/session/refresh";
 
         /// <summary>
-        /// Gets how long before its expiry a token is replaced. A token lives an hour (<c>DiGi.User.WebAPI</c> <c>Constants.Session.TokenLifetime</c>) and a write may take minutes, so it is renewed well before a request could carry an expired one.
+        /// Gets how often a running task checks whether its token is due for renewal. The check reads the token's expiry only; a request is sent once the token is within <see cref="RefreshMargin"/>, and while a renewal keeps failing it is retried at this interval.
         /// </summary>
-        public static readonly TimeSpan RefreshMargin = TimeSpan.FromMinutes(5);
+        public static readonly TimeSpan RefreshCheckInterval = TimeSpan.FromSeconds(30);
+
+        /// <summary>
+        /// Gets how long before its expiry a token is replaced. A token lives an hour (<c>DiGi.User.WebAPI</c> <c>Constants.Session.TokenLifetime</c>) and a renewal needs a still valid token, so it is renewed early enough for <see cref="RefreshCheckInterval"/> retries to outlast a short outage.
+        /// </summary>
+        public static readonly TimeSpan RefreshMargin = TimeSpan.FromMinutes(10);
 
         /// <summary>
         /// Gets the timeout of a sign-in or refresh request.

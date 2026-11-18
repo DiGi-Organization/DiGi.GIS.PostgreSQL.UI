@@ -379,11 +379,24 @@ public const string LoginRoute = "user/login";
 #### Field Value
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshCheckInterval'></a>
+
+## UserSession\.RefreshCheckInterval Field
+
+Gets how often a running task checks whether its token is due for renewal\. The check reads the token's expiry only; a request is sent once the token is within [RefreshMargin](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshMargin 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.UserSession\.RefreshMargin'), and while a renewal keeps failing it is retried at this interval\.
+
+```csharp
+public static readonly TimeSpan RefreshCheckInterval;
+```
+
+#### Field Value
+[System\.TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan 'System\.TimeSpan')
+
 <a name='DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshMargin'></a>
 
 ## UserSession\.RefreshMargin Field
 
-Gets how long before its expiry a token is replaced\. A token lives an hour \(`DiGi.User.WebAPI``Constants.Session.TokenLifetime`\) and a write may take minutes, so it is renewed well before a request could carry an expired one\.
+Gets how long before its expiry a token is replaced\. A token lives an hour \(`DiGi.User.WebAPI``Constants.Session.TokenLifetime`\) and a renewal needs a still valid token, so it is renewed early enough for [RefreshCheckInterval](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshCheckInterval 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.UserSession\.RefreshCheckInterval') retries to outlast a short outage\.
 
 ```csharp
 public static readonly TimeSpan RefreshMargin;
