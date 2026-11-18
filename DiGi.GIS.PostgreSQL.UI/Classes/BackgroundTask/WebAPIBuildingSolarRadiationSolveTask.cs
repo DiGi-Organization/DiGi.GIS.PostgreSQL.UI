@@ -47,6 +47,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
         /// <summary>
         /// Gets or sets the signed-in user's bearer token the results are written with; never stored or logged.
+        /// <para>A token lives an hour and a run takes many, so before each write a token within <see cref="Constants.UserSession.RefreshMargin"/> of its expiry is exchanged for a new one (<see cref="Query.RefreshedUserTokenStringAsync"/>) and replaces this value. A renewal that fails leaves the old token in use while it is still valid; once it has expired, the write fails and so does its county part.</para>
         /// </summary>
         public string? TokenString { get; set; }
 
@@ -233,6 +234,26 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <inheritdoc />
         protected override async Task<int?> WriteAsync(int countyId, List<GIS.Classes.BuildingSolarRadiationResult> buildingSolarRadiationResults, int commandTimeout, CancellationToken cancellationToken)
         {
+            // Renewed here, not on a timer: writes are the only requests that carry the token, and they run one at a time.
+            if (Query.TokenExpiresAt(TokenString) is DateTimeOffset expiresAt && expiresAt - DateTimeOffset.UtcNow <= Constants.UserSession.RefreshMargin)
+            {
+                string? tokenString_Refreshed = await gISWebAPIManager.RefreshedUserTokenStringAsync(TokenString, cancellationToken);
+                if (tokenString_Refreshed is not null)
+                {
+                    TokenString = tokenString_Refreshed;
+                    Serilog.Modify.Log("{Type}: the session was renewed", GetType().Name);
+                }
+                else if (expiresAt <= DateTimeOffset.UtcNow)
+                {
+                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: the session expired and could not be renewed - sign in again and rerun; the stored results are skipped", GetType().Name);
+                    return null;
+                }
+                else
+                {
+                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "{Type}: the session could not be renewed - writing with the current token until it expires at {ExpiresAt}", GetType().Name, expiresAt);
+                }
+            }
+
             return await gISWebAPIManager.SetBuildingSolarRadiationsAsync(buildingSolarRadiationResults, TokenString, commandTimeout, cancellationToken: cancellationToken);
         }
 

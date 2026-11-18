@@ -353,6 +353,71 @@ public static readonly TimeSpan Timeout;
 #### Field Value
 [System\.TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan 'System\.TimeSpan')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.UserSession'></a>
+
+## UserSession Class
+
+Provides the routes and timings of a user session against the user Web API, which shares its host with the GIS Web API\.
+
+```csharp
+public static class UserSession
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → UserSession
+### Fields
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.UserSession.LoginRoute'></a>
+
+## UserSession\.LoginRoute Field
+
+Gets the route, relative to the host, that exchanges an email and password for a session token \(`DiGi.User.WebAPI``UserController.LoginAsync`\)\.
+
+```csharp
+public const string LoginRoute = "user/login";
+```
+
+#### Field Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshMargin'></a>
+
+## UserSession\.RefreshMargin Field
+
+Gets how long before its expiry a token is replaced\. A token lives an hour \(`DiGi.User.WebAPI``Constants.Session.TokenLifetime`\) and a write may take minutes, so it is renewed well before a request could carry an expired one\.
+
+```csharp
+public static readonly TimeSpan RefreshMargin;
+```
+
+#### Field Value
+[System\.TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan 'System\.TimeSpan')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshRoute'></a>
+
+## UserSession\.RefreshRoute Field
+
+Gets the route, relative to the host, that issues a new token for the identity of the presented one \(`UserController.Refresh`\)\.
+
+```csharp
+public const string RefreshRoute = "user/session/refresh";
+```
+
+#### Field Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RequestTimeout'></a>
+
+## UserSession\.RequestTimeout Field
+
+Gets the timeout of a sign\-in or refresh request\.
+
+```csharp
+public static readonly TimeSpan RequestTimeout;
+```
+
+#### Field Value
+[System\.TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan 'System\.TimeSpan')
+
 <a name='DiGi.GIS.PostgreSQL.UI.Constants.YearBuiltPrediction'></a>
 
 ## YearBuiltPrediction Class

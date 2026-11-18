@@ -707,6 +707,41 @@ The share of the county part's buildings carrying a predicted year built, as a f
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 `(>10%)` when the factor strictly exceeds the threshold; null when it does not, when it is not a number, or when it is unknown \- no marker, never a false "not run"\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.RefreshedUserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,System.Threading.CancellationToken)'></a>
+
+## Query\.RefreshedUserTokenStringAsync\(this GISWebAPIManager, string, CancellationToken\) Method
+
+Exchanges a still valid session token for a new one at the user Web API \(`user/session/refresh`\), so a run longer than a token's hour keeps writing\.
+
+The presented token stays valid until its own expiry; the new one starts an independent session. An expired or revoked token is refused with 401 and the user has to sign in again.
+
+```csharp
+public static System.Threading.Tasks.Task<string?> RefreshedUserTokenStringAsync(this DiGi.GIS.WebAPI.Classes.GISWebAPIManager? gISWebAPIManager, string? tokenString, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.RefreshedUserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,System.Threading.CancellationToken).gISWebAPIManager'></a>
+
+`gISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
+
+The manager whose GIS client reaches the host\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.RefreshedUserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,System.Threading.CancellationToken).tokenString'></a>
+
+`tokenString` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The current session token\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.RefreshedUserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+The [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken') to observe for cancellation requests\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task whose result contains the new token, or null when the token is blank, was refused or the request failed\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.RenderRefusal(string,object[])'></a>
 
 ## Query\.RenderRefusal\(string, object\[\]\) Method
@@ -802,6 +837,50 @@ Cancels every request, which on the server cancels the queries behind them\.
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Collections\.Generic\.Dictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[DiGi\.GIS\.PostgreSQL\.Classes\.TerrainPointDensityResult](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.terrainpointdensityresult 'DiGi\.GIS\.PostgreSQL\.Classes\.TerrainPointDensityResult')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
 The densities keyed by part id, or null when they could not be read\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TokenExpiresAt(string)'></a>
+
+## Query\.TokenExpiresAt\(string\) Method
+
+Reads when a session token expires from its `exp` claim, without validating it \- the server does that; the client only needs to know when to renew it\.
+
+```csharp
+public static System.Nullable<System.DateTimeOffset> TokenExpiresAt(string? tokenString);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TokenExpiresAt(string).tokenString'></a>
+
+`tokenString` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The JWT\. This value can be null\.
+
+#### Returns
+[System\.Nullable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.nullable-1 'System\.Nullable\`1')[System\.DateTimeOffset](https://learn.microsoft.com/en-us/dotnet/api/system.datetimeoffset 'System\.DateTimeOffset')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.nullable-1 'System\.Nullable\`1')  
+The expiry, or null when the value is not a three\-part JWT whose payload carries a numeric `exp`\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TokenString(string)'></a>
+
+## Query\.TokenString\(string\) Method
+
+Reads the session token out of the body a login or refresh of the user Web API answered with\.
+
+Both answer an anonymous object, which ASP.NET Core writes camelCase (`{"token":"…"}`), so the property is matched without regard to case rather than against the spelling either side uses today.
+
+```csharp
+public static string? TokenString(string? json);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.TokenString(string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The response body\. This value can be null\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The token, or null when the body is missing, is not an object or carries no non\-blank string token\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBoundingBoxes(string,System.Collections.Generic.List_DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox_,string)'></a>
 
 ## Query\.TryParseYOLOExclusionBoundingBoxes\(string, List\<YOLOExclusionBoundingBox\>, string\) Method
@@ -873,6 +952,47 @@ The reason the text is refused, or null when it is accepted\.
 #### Returns
 [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
 True when the text is empty or a usable buffer\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.UserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,string,System.Threading.CancellationToken)'></a>
+
+## Query\.UserTokenStringAsync\(this GISWebAPIManager, string, string, CancellationToken\) Method
+
+Signs a user in at the user Web API \(`user/login`, on the GIS Web API's host\) and answers the session token a write to the GIS Web API is authorized with\.
+
+The body is `{"Email":…,"Password":…}` with the names `DiGi.User.Classes.UserLogin` declares, sent with a length rather than chunked. The password is used for this one request and never logged; the login answers 401 for every kind of refusal, so a refusal is not told apart here either (`Coding - WebAPI Contracts.md` §4).
+
+```csharp
+public static System.Threading.Tasks.Task<string?> UserTokenStringAsync(this DiGi.GIS.WebAPI.Classes.GISWebAPIManager? gISWebAPIManager, string? email, string? password, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.UserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,string,System.Threading.CancellationToken).gISWebAPIManager'></a>
+
+`gISWebAPIManager` [DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.webapi.classes.giswebapimanager 'DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager')
+
+The manager whose GIS client reaches the host\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.UserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,string,System.Threading.CancellationToken).email'></a>
+
+`email` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The user's email\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.UserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,string,System.Threading.CancellationToken).password'></a>
+
+`password` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The user's password\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.UserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,string,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+The [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken') to observe for cancellation requests\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task whose result contains the session token, or null when an argument is blank, the credentials were refused or the request failed\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Query.YearBuiltPredictionConsoleAppPath(string,string)'></a>
 

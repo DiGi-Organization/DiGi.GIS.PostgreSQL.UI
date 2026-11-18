@@ -1361,6 +1361,75 @@ public void InitializeComponent();
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.UserSignInWindow'></a>
+
+## UserSignInWindow Class
+
+Interaction logic for UserSignInWindow\.xaml
+
+Asks for the email and password of the user a task writes through the GIS Web API as (DiGi.GIS.PostgreSQL.UI#48). The window only collects them: the task signs in with them on its own thread ([UserTokenStringAsync\(this GISWebAPIManager, string, string, CancellationToken\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.UserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,string,System.Threading.CancellationToken) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.UserTokenStringAsync\(this DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager, string, string, System\.Threading\.CancellationToken\)')), because a request must not block the user interface thread.
+
+Like [PostgreSQLUserCreateOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUserCreateOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLUserCreateOptionsWindow'), it carries no options object: the password reaches it as text, and an options instance would keep that text alive on the task for the life of the process. The task reads the values, signs in and lets the window go within one run.
+
+```csharp
+public class UserSignInWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [System\.Windows\.Threading\.DispatcherObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.threading.dispatcherobject 'System\.Windows\.Threading\.DispatcherObject') → [System\.Windows\.DependencyObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.dependencyobject 'System\.Windows\.DependencyObject') → [System\.Windows\.Media\.Visual](https://learn.microsoft.com/en-us/dotnet/api/system.windows.media.visual 'System\.Windows\.Media\.Visual') → [System\.Windows\.UIElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.uielement 'System\.Windows\.UIElement') → [System\.Windows\.FrameworkElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement 'System\.Windows\.FrameworkElement') → [System\.Windows\.Controls\.Control](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.control 'System\.Windows\.Controls\.Control') → [System\.Windows\.Controls\.ContentControl](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.contentcontrol 'System\.Windows\.Controls\.ContentControl') → [System\.Windows\.Window](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window 'System\.Windows\.Window') → UserSignInWindow
+
+Implements [System\.Windows\.Markup\.IComponentConnector](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector 'System\.Windows\.Markup\.IComponentConnector')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.UserSignInWindow.UserSignInWindow()'></a>
+
+## UserSignInWindow\(\) Constructor
+
+Initializes a new instance of the [UserSignInWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.UserSignInWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.UserSignInWindow') class\.
+
+```csharp
+public UserSignInWindow();
+```
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.UserSignInWindow.Email'></a>
+
+## UserSignInWindow\.Email Property
+
+Gets the email to sign in with\. It carries the value of the control only once the dialog has been closed with OK; until then, and after a cancellation, it is null\.
+
+```csharp
+public string? Email { get; }
+```
+
+#### Property Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.UserSignInWindow.Password'></a>
+
+## UserSignInWindow\.Password Property
+
+Gets the password to sign in with\. It exists only between the dialog being closed with OK and the sign\-in request, and is never written anywhere\.
+
+```csharp
+public string? Password { get; }
+```
+
+#### Property Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.UserSignInWindow.InitializeComponent()'></a>
+
+## UserSignInWindow\.InitializeComponent\(\) Method
+
+InitializeComponent
+
+```csharp
+public void InitializeComponent();
+```
+
+Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow'></a>
 
 ## YearBuiltPredictionsOptionsWindow Class

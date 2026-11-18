@@ -3529,6 +3529,8 @@ private const int referencesQueryLengthMax = 2000;
 
 Gets or sets the signed\-in user's bearer token the results are written with; never stored or logged\.
 
+A token lives an hour and a run takes many, so before each write a token within [RefreshMargin](DiGi.GIS.PostgreSQL.UI.Constants.md#DiGi.GIS.PostgreSQL.UI.Constants.UserSession.RefreshMargin 'DiGi\.GIS\.PostgreSQL\.UI\.Constants\.UserSession\.RefreshMargin') of its expiry is exchanged for a new one ([RefreshedUserTokenStringAsync\(this GISWebAPIManager, string, CancellationToken\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.RefreshedUserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,System.Threading.CancellationToken) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.RefreshedUserTokenStringAsync\(this DiGi\.GIS\.WebAPI\.Classes\.GISWebAPIManager, string, System\.Threading\.CancellationToken\)')) and replaces this value. A renewal that fails leaves the old token in use while it is still valid; once it has expired, the write fails and so does its county part.
+
 ```csharp
 public string? TokenString { get; set; }
 ```
