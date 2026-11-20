@@ -167,6 +167,16 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             IEnumerable<Variable> variables = Variables ?? Enum.GetValues<Variable>();
 
+            using (StatisticalDataCollectionFile statisticalDataCollectionFile = new(path))
+            {
+                List<string>? undecodableEntryNames = statisticalDataCollectionFile.GetUndecodableEntryNames();
+                if (undecodableEntryNames != null && undecodableEntryNames.Count != 0)
+                {
+                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: {Path} holds {EntryCount} collections keyed in a former reference format (e.g. {EntryName}) - migrate the file first; nothing fetched or written", nameof(UIStatisticalDataCollectionsWriteTask), path, undecodableEntryNames.Count, undecodableEntryNames[0]);
+                    return false;
+                }
+            }
+
             Serilog.Modify.Log("{Type}: writing {UnitCount} units to {Path}", nameof(UIStatisticalDataCollectionsWriteTask), statisticalUnits.Count, path);
 
             (int CollectionCount, List<(Variable Variable, int UnitLevel)> Failures)? result = await GIS.Modify.WriteByVariableAsync(statisticalUnits, path, variables, years_List, clientId, OverrideExisting, progress: progress, cancellationToken: cancellationToken);
