@@ -743,6 +743,8 @@ Nothing is uploaded and nothing is repaired - the task exists to name the affect
 
 Two files are written into [ReportDirectory](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIBuildingModelsCourtyardAuditTask.ReportDirectory 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIBuildingModelsCourtyardAuditTask\.ReportDirectory'): one row per reference in `BuildingModels_CourtyardAudit.csv`, and per-county plus national totals in `BuildingModels_CourtyardAudit_Summary.txt`, the latter carrying an `AffectedCountyIds:` line that is the ready-to-paste [CountyIds](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIBuildingModelsCourtyardAuditTask.CountyIds 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIBuildingModelsCourtyardAuditTask\.CountyIds') scope for the regeneration.
 
+A 404 or 204 from a read is a valid empty outcome, but any other failed read is never classified as `NoCourtyard` or `Missing` (DiGi.GIS.PostgreSQL.UI#51): a county whose references could not be read, and the references whose source or stored model could not, are left unclassified, listed under `FAILED` in the summary, leave their county uncheckpointed so a resumed run redoes it, and fail the run once the reports are written.
+
 ```csharp
 public class UIBuildingModelsCourtyardAuditTask : DiGi.Core.Classes.ReportableBackgroundTask<long>, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
 ```
@@ -1137,6 +1139,8 @@ The seed is combined with the county row identifier rather than shared across co
 Two files are written into [ReportDirectory](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIBuildingModelsVerificationTask.ReportDirectory 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIBuildingModelsVerificationTask\.ReportDirectory'): one row per reference in `BuildingModels_Verification.csv`, and per county plus national totals in `BuildingModels_Verification_Summary.txt`. The row file is flushed county by county, so a run interrupted late still leaves everything it had already measured.
 
 The CSV carries an `UnlocatedBuildingInformation` column, true for a model whose `BuildingInformation` carries no located coordinates and defined UTC offset - the state the [UIPostgreSQLBuildingModelBuildingInformationUpdateTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingModelBuildingInformationUpdateTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLBuildingModelBuildingInformationUpdateTask') exists to remove, so the column is 0 after the backfill and on freshly regenerated models. It is a separate column rather than a [DiGi\.GIS\.Analytical\.Enums\.BuildingModelValidationCode](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.analytical.enums.buildingmodelvalidationcode 'DiGi\.GIS\.Analytical\.Enums\.BuildingModelValidationCode'), deliberately: a code would make every unstamped model invalid and break comparison with the 2026-08-11 enclosure baseline.
+
+A 404 from a read is a valid empty outcome - a county part with no buildings, a batch with no stored model - but any other failed read is never reported as empty or missing (DiGi.GIS.PostgreSQL.UI#51): a county whose references could not be read, and the references of a batch whose models could not, are left out of the counts, listed under `FAILED` in the summary, and fail the run once the reports are written.
 
 ```csharp
 public class UIBuildingModelsVerificationTask : DiGi.Core.Classes.ReportableBackgroundTask<long>, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
@@ -3731,7 +3735,7 @@ The options, with the result requested\.
 
 ## WebAPIBuildingSolarRadiationSolveTask\.ReadAsync\(string, int, CancellationToken\) Method
 
-Sends a GET whose 404 means "nothing stored there" rather than a failure, which `DiGi.WebAPI.Query.GetAsync` cannot tell apart\.
+Sends a GET whose 404 means "nothing stored there" rather than a failure, through [JsonResponseAsync\(this HttpClient, string, int, CancellationToken\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.JsonResponseAsync(thisSystem.Net.Http.HttpClient,string,int,System.Threading.CancellationToken) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.JsonResponseAsync\(this System\.Net\.Http\.HttpClient, string, int, System\.Threading\.CancellationToken\)')\.
 
 ```csharp
 private System.Threading.Tasks.Task<(bool Succeeded,string? Json)> ReadAsync(string requestUri, int commandTimeout, System.Threading.CancellationToken cancellationToken);

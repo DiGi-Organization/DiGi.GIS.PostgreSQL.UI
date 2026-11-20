@@ -525,6 +525,47 @@ The reason the pair cannot be used, or null when it can\.
 [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
 True when the pair can be used; otherwise false\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.JsonResponseAsync(thisSystem.Net.Http.HttpClient,string,int,System.Threading.CancellationToken)'></a>
+
+## Query\.JsonResponseAsync\(this HttpClient, string, int, CancellationToken\) Method
+
+Sends a GET whose 404 or 204 means "nothing stored there" rather than a failure, which `DiGi.WebAPI.Query.GetAsync` cannot tell apart: it throws for every unsuccessful answer, the valid 404 included \(DiGi\.GIS\.PostgreSQL\.UI\#51\)\.
+
+Any other unsuccessful answer is logged at Error with the request and its status, and a transport failure or the timeout elapsing is logged with its exception; both answer a failure, never an empty result. Only a cancellation through [cancellationToken](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.JsonResponseAsync(thisSystem.Net.Http.HttpClient,string,int,System.Threading.CancellationToken).cancellationToken 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.JsonResponseAsync\(this System\.Net\.Http\.HttpClient, string, int, System\.Threading\.CancellationToken\)\.cancellationToken') is rethrown.
+
+```csharp
+public static System.Threading.Tasks.Task<(bool Succeeded,string? Json)> JsonResponseAsync(this System.Net.Http.HttpClient? httpClient, string? requestUri, int commandTimeout, System.Threading.CancellationToken cancellationToken=default(System.Threading.CancellationToken));
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.JsonResponseAsync(thisSystem.Net.Http.HttpClient,string,int,System.Threading.CancellationToken).httpClient'></a>
+
+`httpClient` [System\.Net\.Http\.HttpClient](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient 'System\.Net\.Http\.HttpClient')
+
+The HTTP client the request is sent with\. A null client answers a failure\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.JsonResponseAsync(thisSystem.Net.Http.HttpClient,string,int,System.Threading.CancellationToken).requestUri'></a>
+
+`requestUri` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The request URI, relative to the client's base address\. A blank URI answers a failure\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.JsonResponseAsync(thisSystem.Net.Http.HttpClient,string,int,System.Threading.CancellationToken).commandTimeout'></a>
+
+`commandTimeout` [System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')
+
+The timeout in seconds of the request; 0 or less leaves it unbounded here\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.JsonResponseAsync(thisSystem.Net.Http.HttpClient,string,int,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+A cancellation token that can be used to cancel the request\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[,](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task whose result is \(true, body\) for a 2xx answer with a body, \(true, null\) for 404, 204 or an empty body, and \(false, null\) for any other answer or a transport failure\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingImportOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions)'></a>
 
 ## Query\.OpenBuildingImportOptionsMessage\(PostgreSQLOpenBuildingImportTaskOptions\) Method
@@ -677,6 +718,29 @@ The share of the county part's buildings carrying a predicted year built, as a f
 #### Returns
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 `(>10%)` when the factor strictly exceeds the threshold; null when it does not, when it is not a number, or when it is unknown \- no marker, never a false "not run"\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.References(string)'></a>
+
+## Query\.References\(string\) Method
+
+Reads the references a `building2d/referencesbycountyid` read answered with, as returned by [JsonResponseAsync\(this HttpClient, string, int, CancellationToken\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.JsonResponseAsync(thisSystem.Net.Http.HttpClient,string,int,System.Threading.CancellationToken) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.JsonResponseAsync\(this System\.Net\.Http\.HttpClient, string, int, System\.Threading\.CancellationToken\)')\.
+
+No body - the 404 or 204 of a county part with no buildings - is no reference, so the result is empty; a body that is not a JSON array of strings is a failed read, so the result is null and never empty (DiGi.GIS.PostgreSQL.UI#51).
+
+```csharp
+public static System.Collections.Generic.List<string>? References(string? json);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.References(string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The response body\. This value can be null\.
+
+#### Returns
+[System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')  
+The references, empty when there is no body, or null when the body does not parse\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Query.RefreshedUserTokenStringAsync(thisDiGi.GIS.WebAPI.Classes.GISWebAPIManager,string,System.Threading.CancellationToken)'></a>
 

@@ -25,6 +25,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
     /// <para>For every county in scope it walks every 2D building reference and classifies it against the defect fixed by DiGi.Geometry#7: the source CityGML <see cref="CityGML.Classes.Building"/> carries a <c>GroundSurface</c> with an interior ring (a courtyard) while the stored <see cref="BuildingModel"/> reports no internal edge on its <c>Footprints</c>. That is the model that renders a floor over the courtyard and drives the terrain cut DiGi.GIS.WebAPI.UI#45 reported.</para>
     /// <para>Nothing is uploaded and nothing is repaired - the task exists to name the affected set and tally it per county, which is the scope the regeneration (DiGi.GIS.PostgreSQL.UI#13) must run against. A county's tally is recorded only once every reference of it has been audited, so a county interrupted part way is not checkpointed and is redone in full on the next run rather than left half-counted.</para>
     /// <para>Two files are written into <see cref="ReportDirectory"/>: one row per reference in <c>BuildingModels_CourtyardAudit.csv</c>, and per-county plus national totals in <c>BuildingModels_CourtyardAudit_Summary.txt</c>, the latter carrying an <c>AffectedCountyIds:</c> line that is the ready-to-paste <see cref="CountyIds"/> scope for the regeneration.</para>
+    /// <para>A 404 or 204 from a read is a valid empty outcome, but any other failed read is never classified as <c>NoCourtyard</c> or <c>Missing</c> (DiGi.GIS.PostgreSQL.UI#51): a county whose references could not be read, and the references whose source or stored model could not, are left unclassified, listed under <c>FAILED</c> in the summary, leave their county uncheckpointed so a resumed run redoes it, and fail the run once the reports are written.</para>
     /// </summary>
     public class UIBuildingModelsCourtyardAuditTask : ReportableBackgroundTask<long>, IGISPostgreSQLUIObject
     {
@@ -179,6 +180,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             PostOptions postOptions = new() { RequestResult = true };
 
+            // The per-county reads keep the bound GetAsync gave them, but go through the status-aware read so a 404 or 204 stays empty and a failure stays a failure (DiGi.GIS.PostgreSQL.UI#51).
+            int requestTimeout = (int)postOptions.Delay.TotalSeconds;
+
             // The endpoint is a HttpGet action and its administrativearealtype parameter is not nullable - omitting it binds to Country, not County.
             string requestUri_AdministrativeAreal2D = new UrlBuilder(path_AdministrativeAreal2D).AddParameter("administrativearealtype", (int)AdministrativeArealType.County).ToString();
 
@@ -249,7 +253,11 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             long count_Ok = 0;
             long count_Missing = 0;
             long count_NoCourtyard = 0;
+            long count_Unread = 0;
             List<int> countyIds_Affected = [];
+
+            // One row per failed read - a county whose references could not be read, or the references of a batch whose sources or models could not - so a failure is listed, never classified as NoCourtyard or Missing.
+            List<string> lines_Failed = [];
 
             using StreamWriter streamWriter = new(System.IO.Path.Combine(directory, "BuildingModels_CourtyardAudit.csv"), false, Encoding.UTF8);
             await streamWriter.WriteLineAsync("Code;CountyId;Reference;SourceHasRing;StoredModelPresent;StoredHasHole;Classification");
@@ -275,18 +283,17 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
                 string requestUri_References = new UrlBuilder(path_References).AddParameter("countyid", countyId).ToString();
 
-                List<string>? references = null;
-                try
+                (bool succeeded_References, string? json_References) = await Query.JsonResponseAsync(httpClient_References, requestUri_References, requestTimeout, cancellationToken);
+                List<string>? references = succeeded_References ? Query.References(json_References) : null;
+                if (references is null)
                 {
-                    PostResponse<List<string>?> postResponse_References = await DiGi.WebAPI.Query.GetAsync<List<string>>(httpClient_References, requestUri_References, postOptions);
-                    references = postResponse_References is not null && postResponse_References.Succeeded ? postResponse_References.Result : null;
-                }
-                catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
-                {
-                    Serilog.Modify.Log(exception, "Building2D references request failed for county {CountyId}", countyId);
+                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: Building2D references of county {Code} (id {CountyId}) could not be read - the county is not audited", nameof(UIBuildingModelsCourtyardAuditTask), code, countyId);
+                    lines_Failed.Add($"{code};{countyId};References;");
+                    continue;
                 }
 
-                if (references is null || references.Count == 0)
+                // A 404 is a county part with no buildings (DiGi.GIS.WebAPI#97) - a valid, empty outcome.
+                if (references.Count == 0)
                 {
                     Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "No Building2D references for county {Code} (id {CountyId}) - nothing to audit", code, countyId);
                     continue;
@@ -307,6 +314,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 int count_Missing_County = 0;
                 int count_NoCourtyard_County = 0;
 
+                // A county with any failed read is not checkpointed, so a resumed run audits it again.
+                bool failed_County = false;
+
                 for (int i = 0; i < references.Count; i += batchSize)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -314,8 +324,10 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                     List<string> references_Batch = references.GetRange(i, Math.Min(batchSize, references.Count - i));
 
                     // The source pull is one request per building and independent, so it goes out in bounded
-                    // groups. A 204 (no stored CityGML building) is a success with a null result.
+                    // groups. A 204 or 404 (no stored CityGML building) is a success with a null source; a
+                    // failed read is flagged, so the reference is left unclassified rather than NoCourtyard.
                     CityGML.Classes.Building?[] sources = new CityGML.Classes.Building?[references_Batch.Count];
+                    bool[] bools_SourceFailed = new bool[references_Batch.Count];
                     for (int s = 0; s < references_Batch.Count; s += maxConcurrentRequests)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
@@ -328,19 +340,40 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
                             tasks.Add(Task.Run(async () =>
                             {
-                                try
+                                (bool succeeded_Building, string? json_Building) = await Query.JsonResponseAsync(httpClient_Building, requestUri_Building, requestTimeout, cancellationToken);
+                                if (!succeeded_Building)
                                 {
-                                    PostResponse<CityGML.Classes.Building?> postResponse_Building = await DiGi.WebAPI.Query.GetAsync<CityGML.Classes.Building>(httpClient_Building, requestUri_Building, postOptions);
-                                    sources[index] = postResponse_Building is not null && postResponse_Building.Succeeded ? postResponse_Building.Result : null;
+                                    bools_SourceFailed[index] = true;
+                                    return;
                                 }
-                                catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+
+                                if (json_Building is null)
                                 {
-                                    Serilog.Modify.Log(exception, "Building request failed for reference {Reference} in county {CountyId}", references_Batch[index], countyId);
+                                    return;
                                 }
+
+                                List<Core.Interfaces.ISerializableObject>? serializableObjects = Core.Convert.ToDiGi<Core.Interfaces.ISerializableObject>(json_Building);
+                                if (serializableObjects is not { Count: > 0 } || serializableObjects[0] is not CityGML.Classes.Building building)
+                                {
+                                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: the Building of reference {Reference} in county {CountyId} could not be parsed", nameof(UIBuildingModelsCourtyardAuditTask), references_Batch[index], countyId);
+                                    bools_SourceFailed[index] = true;
+                                    return;
+                                }
+
+                                sources[index] = building;
                             }, cancellationToken));
                         }
 
                         await Task.WhenAll(tasks);
+                    }
+
+                    int count_Failed_Source = Array.FindAll(bools_SourceFailed, x => x).Length;
+                    if (count_Failed_Source != 0)
+                    {
+                        Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: Buildings of {Count} references of county {Code} (id {CountyId}) could not be read - those references are not audited", nameof(UIBuildingModelsCourtyardAuditTask), count_Failed_Source, code, countyId);
+                        count_Unread += count_Failed_Source;
+                        lines_Failed.Add($"{code};{countyId};Buildings;{count_Failed_Source}");
+                        failed_County = true;
                     }
 
                     // Only the source-bearing references can be affected, so only those need the stored model
@@ -355,6 +388,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                     }
 
                     Dictionary<string, bool> storedHasHole_ByReference = [];
+                    bool failed_BuildingModels = false;
                     if (references_SourceHasRing.Count != 0)
                     {
                         // References repeat in the query string and UrlBuilder holds one value per name, so this part of the query is written directly rather than through it.
@@ -365,15 +399,17 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                             stringBuilder.Append("&references=").Append(WebUtility.UrlEncode(reference));
                         }
 
-                        List<DiGi.Analytical.Building.Classes.BuildingModel>? buildingModels = null;
-                        try
+                        // A 404 is a batch with no stored model, which leaves its references Missing. A failed
+                        // read leaves them unclassified - listed and counted as unread, never Missing.
+                        (bool succeeded_BuildingModels, string? json_BuildingModels) = await Query.JsonResponseAsync(httpClient_BuildingModel, stringBuilder.ToString(), requestTimeout, cancellationToken);
+                        List<DiGi.Analytical.Building.Classes.BuildingModel>? buildingModels = !succeeded_BuildingModels ? null : json_BuildingModels is null ? [] : Core.Convert.ToDiGi<DiGi.Analytical.Building.Classes.BuildingModel>(json_BuildingModels);
+                        if (buildingModels is null)
                         {
-                            PostResponse<List<DiGi.Analytical.Building.Classes.BuildingModel>?> postResponse_BuildingModels = await DiGi.WebAPI.Query.GetAsync<List<DiGi.Analytical.Building.Classes.BuildingModel>>(httpClient_BuildingModel, stringBuilder.ToString(), postOptions);
-                            buildingModels = postResponse_BuildingModels is not null && postResponse_BuildingModels.Succeeded ? postResponse_BuildingModels.Result : null;
-                        }
-                        catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
-                        {
-                            Serilog.Modify.Log(exception, "BuildingModels request failed for county {CountyId}", countyId);
+                            Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: BuildingModels of {Count} references of county {Code} (id {CountyId}) could not be read - those references are not audited", nameof(UIBuildingModelsCourtyardAuditTask), references_SourceHasRing.Count, code, countyId);
+                            count_Unread += references_SourceHasRing.Count;
+                            lines_Failed.Add($"{code};{countyId};BuildingModels;{references_SourceHasRing.Count}");
+                            failed_BuildingModels = true;
+                            failed_County = true;
                         }
 
                         foreach (DiGi.Analytical.Building.Classes.BuildingModel buildingModel in buildingModels ?? [])
@@ -388,9 +424,16 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                     for (int v = 0; v < references_Batch.Count; v++)
                     {
                         string reference = references_Batch[v];
+                        bool sourceHasRing = SourceHasRing(sources[v]);
+
+                        // An unread source, or a courtyard source whose stored model was not read, is not classified.
+                        if (bools_SourceFailed[v] || (sourceHasRing && failed_BuildingModels))
+                        {
+                            continue;
+                        }
+
                         count_Total_County++;
 
-                        bool sourceHasRing = SourceHasRing(sources[v]);
                         if (!sourceHasRing)
                         {
                             count_NoCourtyard_County++;
@@ -440,6 +483,13 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
                 summaryLines.Add($"{code};{countyId};{count_Total_County};{count_SourceHasRing_County};{count_Affected_County};{count_Ok_County};{count_Missing_County};{count_NoCourtyard_County}");
 
+                if (failed_County)
+                {
+                    // Not checkpointed: the failed reads left references unaudited, so a resumed run redoes the county.
+                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: county {Code} (id {CountyId}) had failed reads and is not checkpointed", nameof(UIBuildingModelsCourtyardAuditTask), code, countyId);
+                    continue;
+                }
+
                 // Recorded only once every reference of the county has been audited. A county interrupted part way is therefore not checkpointed and is redone in full on the next run.
                 await streamWriter_Checkpoint.WriteLineAsync(countyId.ToString(CultureInfo.CurrentCulture));
                 await streamWriter_Checkpoint.FlushAsync(cancellationToken);
@@ -455,14 +505,30 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             summaryLines.Add($"Ok (source courtyard, stored model keeps it): {count_Ok}");
             summaryLines.Add($"Missing (source courtyard, no stored model): {count_Missing}");
             summaryLines.Add($"No courtyard in source: {count_NoCourtyard}");
+            summaryLines.Add($"Unread references (failed source or model reads): {count_Unread}");
+            summaryLines.Add($"Failed reads: {lines_Failed.Count}");
             summaryLines.Add(string.Empty);
             summaryLines.Add($"AffectedCountyIds: {(countyIds_Affected.Count == 0 ? "none" : string.Join(", ", countyIds_Affected))}");
+            if (lines_Failed.Count != 0)
+            {
+                summaryLines.Add(string.Empty);
+                summaryLines.Add("=== FAILED ===");
+                summaryLines.Add("Code;CountyId;Stage;References");
+                summaryLines.AddRange(lines_Failed);
+            }
+
             summaryLines.Add(string.Empty);
             summaryLines.Add($"Ended: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
 
             await File.WriteAllLinesAsync(System.IO.Path.Combine(directory, "BuildingModels_CourtyardAudit_Summary.txt"), summaryLines, cancellationToken);
 
             Serilog.Modify.Log("Audit ended. Affected: {Affected}/{Total} across {Counties} counties", count_Affected, count_Total, countyIds_Affected.Count);
+
+            if (lines_Failed.Count != 0)
+            {
+                Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: {Count} reads failed ({Unread} references unread) - the report lists them under FAILED and the counties concerned are not checkpointed", nameof(UIBuildingModelsCourtyardAuditTask), lines_Failed.Count, count_Unread);
+                return false;
+            }
 
             return true;
         }

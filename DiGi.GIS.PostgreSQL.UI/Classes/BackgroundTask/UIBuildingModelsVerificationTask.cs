@@ -27,6 +27,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         /// <para>The seed is combined with the county row identifier rather than shared across counties, so a county draws the same sample whether it is verified on its own, with its voivodeship, or nationally. A single generator advanced across counties made every county's draw depend on how many references each preceding county held, which the 2026-08-14 county part repair changed - and with it the sample of every county after the repaired three.</para>
     /// <para>Two files are written into <see cref="ReportDirectory"/>: one row per reference in <c>BuildingModels_Verification.csv</c>, and per county plus national totals in <c>BuildingModels_Verification_Summary.txt</c>. The row file is flushed county by county, so a run interrupted late still leaves everything it had already measured.</para>
     /// <para>The CSV carries an <c>UnlocatedBuildingInformation</c> column, true for a model whose <c>BuildingInformation</c> carries no located coordinates and defined UTC offset - the state the <see cref="UIPostgreSQLBuildingModelBuildingInformationUpdateTask"/> exists to remove, so the column is 0 after the backfill and on freshly regenerated models. It is a separate column rather than a <see cref="BuildingModelValidationCode"/>, deliberately: a code would make every unstamped model invalid and break comparison with the 2026-08-11 enclosure baseline.</para>
+    /// <para>A 404 from a read is a valid empty outcome - a county part with no buildings, a batch with no stored model - but any other failed read is never reported as empty or missing (DiGi.GIS.PostgreSQL.UI#51): a county whose references could not be read, and the references of a batch whose models could not, are left out of the counts, listed under <c>FAILED</c> in the summary, and fail the run once the reports are written.</para>
     /// </summary>
     public class UIBuildingModelsVerificationTask : ReportableBackgroundTask<long>, IGISPostgreSQLUIObject
     {
@@ -118,6 +119,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             PostOptions postOptions = new() { RequestResult = true };
 
+            // The per-county reads keep the bound GetAsync gave them, but go through the status-aware read so a 404 stays empty and a failure stays a failure (DiGi.GIS.PostgreSQL.UI#51).
+            int requestTimeout = (int)postOptions.Delay.TotalSeconds;
+
             // The endpoint is a HttpGet action and its administrativearealtype parameter is not nullable - omitting it binds to Country, not County.
             string requestUri_AdministrativeAreal2D = new UrlBuilder(path_AdministrativeAreal2D).AddParameter("administrativearealtype", (int)AdministrativeArealType.County).ToString();
 
@@ -176,6 +180,10 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             long count_Valid = 0;
             long count_Invalid = 0;
             long count_Unlocated = 0;
+            long count_Unread = 0;
+
+            // One row per failed read - a county whose references could not be read, or a batch whose models could not - so a failure is listed, never written into the report as empty or missing.
+            List<string> lines_Failed = [];
 
             using StreamWriter streamWriter = new(System.IO.Path.Combine(directory, "BuildingModels_Verification.csv"), false, Encoding.UTF8);
             await streamWriter.WriteLineAsync("Code;CountyId;Reference;Status;SpaceCount;ComponentCount;ShellCount;EnclosedShellCount;MinEnclosingTolerance;MinZ;MaxZ;UnlocatedBuildingInformation;ValidationCodes");
@@ -196,19 +204,17 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
                 string requestUri_References = new UrlBuilder(path_References).AddParameter("countyid", countyId).ToString();
 
-                List<string>? references = null;
-
-                try
+                (bool succeeded_References, string? json_References) = await Query.JsonResponseAsync(httpClient_References, requestUri_References, requestTimeout, cancellationToken);
+                List<string>? references = succeeded_References ? Query.References(json_References) : null;
+                if (references is null)
                 {
-                    PostResponse<List<string>?> postResponse_References = await DiGi.WebAPI.Query.GetAsync<List<string>>(httpClient_References, requestUri_References, postOptions);
-                    references = postResponse_References is not null && postResponse_References.Succeeded ? postResponse_References.Result : null;
-                }
-                catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
-                {
-                    Serilog.Modify.Log(exception, "Building2D references request failed for county {CountyId}", countyId);
+                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: Building2D references of county {Code} (id {CountyId}) could not be read - the county is not verified", nameof(UIBuildingModelsVerificationTask), code, countyId);
+                    lines_Failed.Add($"{code};{countyId};References;");
+                    continue;
                 }
 
-                if (references is null || references.Count == 0)
+                // A 404 is a county part with no buildings (DiGi.GIS.WebAPI#97) - a valid, empty outcome.
+                if (references.Count == 0)
                 {
                     Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Warning, "No Building2D references for county {Code} (id {CountyId})", code, countyId);
                     summaryLines.Add($"{code};{countyId};0;0;0;0;0;0;0;0");
@@ -248,25 +254,24 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                         stringBuilder.Append("&references=").Append(WebUtility.UrlEncode(reference));
                     }
 
-                    List<DiGi.Analytical.Building.Classes.BuildingModel>? buildingModels = null;
-
-                    try
+                    // A batch matching nothing answers 404, which is a valid outcome here and leaves every
+                    // reference of the batch to be recorded as missing. A failed read records none of them:
+                    // the batch is counted as unread and listed, never reported as missing models.
+                    (bool succeeded_BuildingModels, string? json_BuildingModels) = await Query.JsonResponseAsync(httpClient_BuildingModel, stringBuilder.ToString(), requestTimeout, cancellationToken);
+                    List<DiGi.Analytical.Building.Classes.BuildingModel>? buildingModels = !succeeded_BuildingModels ? null : json_BuildingModels is null ? [] : Core.Convert.ToDiGi<DiGi.Analytical.Building.Classes.BuildingModel>(json_BuildingModels);
+                    if (buildingModels is null)
                     {
-                        PostResponse<List<DiGi.Analytical.Building.Classes.BuildingModel>?> postResponse_BuildingModels = await DiGi.WebAPI.Query.GetAsync<List<DiGi.Analytical.Building.Classes.BuildingModel>>(httpClient_BuildingModel, stringBuilder.ToString(), postOptions);
-
-                        // A batch matching nothing answers 404, which is a valid outcome here and leaves every
-                        // reference of the batch to be recorded as missing.
-                        buildingModels = postResponse_BuildingModels is not null && postResponse_BuildingModels.Succeeded ? postResponse_BuildingModels.Result : null;
-                    }
-                    catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
-                    {
-                        Serilog.Modify.Log(exception, "BuildingModels request failed for county {CountyId}", countyId);
+                        Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: BuildingModels of {Count} references of county {Code} (id {CountyId}) could not be read - the batch is not verified", nameof(UIBuildingModelsVerificationTask), references_Batch.Count, code, countyId);
+                        count_Unread += references_Batch.Count;
+                        lines_Failed.Add($"{code};{countyId};BuildingModels;{references_Batch.Count}");
+                        longProgressWrapper?.Increment(references_Batch.Count);
+                        continue;
                     }
 
                     Dictionary<string, BuildingModelValidationResult> buildingModelValidationResults_ByReference = [];
                     Dictionary<string, bool> unlocated_ByReference = [];
 
-                    foreach (DiGi.Analytical.Building.Classes.BuildingModel buildingModel in buildingModels ?? [])
+                    foreach (DiGi.Analytical.Building.Classes.BuildingModel buildingModel in buildingModels)
                     {
                         BuildingModelValidationResult? buildingModelValidationResult = Analytical.Create.BuildingModelValidationResult(buildingModel, Tolerance);
                         if (buildingModelValidationResult is null || string.IsNullOrWhiteSpace(buildingModelValidationResult.Reference))
@@ -367,6 +372,8 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             summaryLines.Add($"Valid models: {count_Valid}");
             summaryLines.Add($"Invalid models: {count_Invalid}");
             summaryLines.Add($"Unlocated BuildingInformation: {count_Unlocated}");
+            summaryLines.Add($"Unread references (failed model reads): {count_Unread}");
+            summaryLines.Add($"Failed reads: {lines_Failed.Count}");
             summaryLines.Add($"Enclosed shells: {count_Shell_Enclosed}/{count_Shell}{(count_Shell == 0 ? string.Empty : $" ({(100.0 * count_Shell_Enclosed / count_Shell).ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)} %)")}");
 
             summaryLines.Add(string.Empty);
@@ -386,12 +393,26 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 summaryLines.Add($"{Text(minEnclosingTolerance)};{counts_ByMinEnclosingTolerance[minEnclosingTolerance]}");
             }
 
+            if (lines_Failed.Count != 0)
+            {
+                summaryLines.Add(string.Empty);
+                summaryLines.Add("=== FAILED ===");
+                summaryLines.Add("Code;CountyId;Stage;References");
+                summaryLines.AddRange(lines_Failed);
+            }
+
             summaryLines.Add(string.Empty);
             summaryLines.Add($"Ended: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
 
             await File.WriteAllLinesAsync(System.IO.Path.Combine(directory, "BuildingModels_Verification_Summary.txt"), summaryLines, cancellationToken);
 
             Serilog.Modify.Log("Verification ended. Valid: {Valid}/{Requested}, invalid: {Invalid}, missing: {Missing}", count_Valid, count_Requested, count_Invalid, count_Missing);
+
+            if (lines_Failed.Count != 0)
+            {
+                Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: {Count} reads failed ({Unread} references unread) - the report lists them under FAILED and is incomplete", nameof(UIBuildingModelsVerificationTask), lines_Failed.Count, count_Unread);
+                return false;
+            }
 
             return true;
         }

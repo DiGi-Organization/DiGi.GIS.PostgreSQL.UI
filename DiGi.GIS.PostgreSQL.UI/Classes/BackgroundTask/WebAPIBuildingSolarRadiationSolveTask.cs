@@ -313,7 +313,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         }
 
         /// <summary>
-        /// Sends a GET whose 404 means "nothing stored there" rather than a failure, which <c>DiGi.WebAPI.Query.GetAsync</c> cannot tell apart.
+        /// Sends a GET whose 404 means "nothing stored there" rather than a failure, through <see cref="Query.JsonResponseAsync"/>.
         /// </summary>
         /// <param name="requestUri">The request URI, relative to the GIS Web API.</param>
         /// <param name="commandTimeout">The timeout in seconds of the request; 0 leaves it unbounded here.</param>
@@ -322,43 +322,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         private async Task<(bool Succeeded, string? Json)> ReadAsync(string requestUri, int commandTimeout, CancellationToken cancellationToken)
         {
             HttpClient? httpClient = gISWebAPIManager.CreateHttpClient(WebAPI.Constants.Name.Client.GIS);
-            if (httpClient is null)
-            {
-                return (false, null);
-            }
-
-            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            if (commandTimeout > 0)
-            {
-                cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(commandTimeout));
-            }
-
-            try
-            {
-                using HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(requestUri, cancellationTokenSource.Token);
-                if (httpResponseMessage.StatusCode == HttpStatusCode.NotFound || httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
-                {
-                    return (true, null);
-                }
-
-                if (!httpResponseMessage.IsSuccessStatusCode)
-                {
-                    Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "{Type}: {RequestUri} answered {StatusCode}", GetType().Name, requestUri, (int)httpResponseMessage.StatusCode);
-                    return (false, null);
-                }
-
-                string json = await httpResponseMessage.Content.ReadAsStringAsync(cancellationTokenSource.Token);
-                return string.IsNullOrWhiteSpace(json) ? (true, null) : (true, json);
-            }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-            {
-                throw;
-            }
-            catch (Exception exception)
-            {
-                Serilog.Modify.Log(exception, "{Type}: {RequestUri} could not be read", GetType().Name, requestUri);
-                return (false, null);
-            }
+            return await Query.JsonResponseAsync(httpClient, requestUri, commandTimeout, cancellationToken);
         }
     }
 }
