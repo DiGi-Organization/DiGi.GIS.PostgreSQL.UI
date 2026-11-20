@@ -45,6 +45,7 @@ Derived
 ↳ [UIPostgreSQLUnitInsertFromFileTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLUnitInsertFromFileTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLUnitInsertFromFileTask')  
 ↳ [UIPostgreSQLUpdateOccupancyTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLUpdateOccupancyTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLUpdateOccupancyTask')  
 ↳ [UIPostgreSQLUserCreateTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLUserCreateTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLUserCreateTask')  
+↳ [UIStatisticalDataCollectionsWriteTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIStatisticalDataCollectionsWriteTask')  
 ↳ [UIUpdateFromFilePostTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIUpdateFromFilePostTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIUpdateFromFilePostTask')  
 ↳ [UIWebAPIBuildingSolarRadiationSolveTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIWebAPIBuildingSolarRadiationSolveTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIWebAPIBuildingSolarRadiationSolveTask')  
 ↳ [UIYearBuiltDatasFromFilePostTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIYearBuiltDatasFromFilePostTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIYearBuiltDatasFromFilePostTask')  

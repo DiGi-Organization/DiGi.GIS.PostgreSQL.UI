@@ -218,6 +218,9 @@ namespace DiGi.GIS.PostgreSQL.UI
 
             if (mode == Mode.Client || mode == Mode.ServerAndClient)
             {
+                // Reads BDL and writes a local file - no Web API or database needed (DiGi-Organization/DiGi.GIS.PostgreSQL#149).
+                result.Add(Visual(new UIStatisticalDataCollectionsWriteTask(), "Write StatisticalDataCollections from BDL API", "Writes the BDL statistical data of every unit of a statistical unit file (*.suf) to a statistical data collection file (*.sdcf), fetching only the variables the file lacks, one variable per unit level at once. Asks for both files; the BDL client id is read from BDL.conf (ClientId) beside the application. Load the result with 'Populate StatisticalDataCollections from directory'."));
+
                 if (gISWebAPIManager is not null)
                 {
                     result.Add(Visual(new UIUpdateFromFilePostTask(gISWebAPIManager), "Upload Areal2Ds from BDOT10k file", "Upload AdministrativeAreal2Ds and/or Building2Ds from BDOT10k *.zip file"));

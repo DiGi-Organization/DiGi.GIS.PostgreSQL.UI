@@ -241,6 +241,29 @@ private const int Count_AutoResumeMax = 10;
 [System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')
 ### Methods
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.BDLClientId(string)'></a>
+
+## Query\.BDLClientId\(string\) Method
+
+Returns the BDL API client identifier of this machine: the `ClientId` key of `BDL.conf` beside the application, where the build copies the git\-ignored `user files` folder \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\#149\)\.
+
+A registered client id raises the BDL limits well above the anonymous ones, which stopped a full write after 8 units. The value is a secret: it is read, never written or logged.
+
+```csharp
+public static string? BDLClientId(string? path=null);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.BDLClientId(string).path'></a>
+
+`path` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The configuration file, or null for `BDL.conf` in [System\.AppContext\.BaseDirectory](https://learn.microsoft.com/en-us/dotnet/api/system.appcontext.basedirectory 'System\.AppContext\.BaseDirectory')\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The client identifier, or null when the file or the key is missing or empty\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.ConsoleAppDeployedPath(string,string)'></a>
 
 ## Query\.ConsoleAppDeployedPath\(string, string\) Method

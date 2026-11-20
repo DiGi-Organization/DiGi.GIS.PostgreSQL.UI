@@ -3138,6 +3138,170 @@ protected override System.Threading.Tasks.Task<bool> ExecuteAsync();
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
 True if the task succeeded; otherwise, false\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask'></a>
+
+## UIStatisticalDataCollectionsWriteTask Class
+
+Writes the BDL statistical data of every unit of a statistical unit file \(`*.suf`\) to a statistical data collection file \(`*.sdcf`\), the file [UIPostgreSQLStatisticalDataCollectionPopulateTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionPopulateTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLStatisticalDataCollectionPopulateTask') loads into the database \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\#149\)\. Moved here from the DiGi\.GIS\.UI application\.
+
+The variables missing from the file are fetched with `GIS.Modify.WriteByVariableAsync`: one variable for a whole unit level at once, about 40 requests for the gmina level, instead of one request per unit, which the BDL limits stopped after 8 of 4 684 units. The BDL client id comes from [ClientId](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.ClientId 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIStatisticalDataCollectionsWriteTask\.ClientId'), else from `BDL.conf` beside the application ([BDLClientId\(string\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.BDLClientId(string) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.BDLClientId\(string\)')); without one the anonymous limits apply and a warning is logged.
+
+The fetches that failed or were not attempted - a variable not published at a level, an exhausted quota, a blocked address - are counted and sampled, not dropped. The run is reported as failed only when it wrote nothing and something failed.
+
+```csharp
+public class UIStatisticalDataCollectionsWriteTask : DiGi.Core.Classes.ReportableBackgroundTask<long>, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → UIStatisticalDataCollectionsWriteTask
+
+Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.ClientId'></a>
+
+## UIStatisticalDataCollectionsWriteTask\.ClientId Property
+
+Gets or sets the BDL API client identifier, or null to read it from `BDL.conf`\.
+
+```csharp
+public string? ClientId { get; set; }
+```
+
+#### Property Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.CollectionCount'></a>
+
+## UIStatisticalDataCollectionsWriteTask\.CollectionCount Property
+
+Gets the number of collections the last run wrote\.
+
+```csharp
+public int CollectionCount { get; private set; }
+```
+
+#### Property Value
+[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.FailureCount'></a>
+
+## UIStatisticalDataCollectionsWriteTask\.FailureCount Property
+
+Gets the number of variable and unit level fetches the last run failed or did not attempt\.
+
+```csharp
+public int FailureCount { get; private set; }
+```
+
+#### Property Value
+[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.FailureSamples'></a>
+
+## UIStatisticalDataCollectionsWriteTask\.FailureSamples Property
+
+Gets up to 50 of the failed fetches of the last run, as "variable \(id\) at unit level n"\.
+
+```csharp
+public System.Collections.Generic.List<string> FailureSamples { get; }
+```
+
+#### Property Value
+[System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.OverrideExisting'></a>
+
+## UIStatisticalDataCollectionsWriteTask\.OverrideExisting Property
+
+Gets or sets a value indicating whether every variable is fetched again, whether or not the file holds it\.
+
+```csharp
+public bool OverrideExisting { get; set; }
+```
+
+#### Property Value
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.Path'></a>
+
+## UIStatisticalDataCollectionsWriteTask\.Path Property
+
+Gets or sets the statistical data collection file to write, or null to ask for it\.
+
+```csharp
+public string? Path { get; set; }
+```
+
+#### Property Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.StatisticalUnitFilePath'></a>
+
+## UIStatisticalDataCollectionsWriteTask\.StatisticalUnitFilePath Property
+
+Gets or sets the statistical unit file whose units are written, or null to ask for it\.
+
+```csharp
+public string? StatisticalUnitFilePath { get; set; }
+```
+
+#### Property Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.Variables'></a>
+
+## UIStatisticalDataCollectionsWriteTask\.Variables Property
+
+Gets or sets the variables to write, or null for every [DiGi\.BDL\.Enums\.Variable](https://learn.microsoft.com/en-us/dotnet/api/digi.bdl.enums.variable 'DiGi\.BDL\.Enums\.Variable')\.
+
+```csharp
+public System.Collections.Generic.IEnumerable<DiGi.BDL.Enums.Variable>? Variables { get; set; }
+```
+
+#### Property Value
+[System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.BDL\.Enums\.Variable](https://learn.microsoft.com/en-us/dotnet/api/digi.bdl.enums.variable 'DiGi\.BDL\.Enums\.Variable')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.Years'></a>
+
+## UIStatisticalDataCollectionsWriteTask\.Years Property
+
+Gets or sets the years to retrieve, or null for 2008 to the current year\.
+
+```csharp
+public DiGi.Core.Classes.Range<int>? Years { get; set; }
+```
+
+#### Property Value
+[DiGi\.Core\.Classes\.Range&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.range-1 'DiGi\.Core\.Classes\.Range\`1')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.range-1 'DiGi\.Core\.Classes\.Range\`1')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
+
+## UIStatisticalDataCollectionsWriteTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
+
+Asks for the unit file and the collection file when not set, then writes the collections\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
+
+`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
+
+Receives the number of variable and unit level fetches done\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIStatisticalDataCollectionsWriteTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+A cancellation token that can be used to cancel the operation\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+True when the run wrote a collection or nothing failed; otherwise, false\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.UIUpdateFromFilePostTask'></a>
 
 ## UIUpdateFromFilePostTask Class
