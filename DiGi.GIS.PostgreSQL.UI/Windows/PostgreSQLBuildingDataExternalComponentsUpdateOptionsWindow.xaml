@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DiGi.GIS.PostgreSQL.UI.Windows"
         xmlns:controls="clr-namespace:DiGi.UI.WPF.Controls;assembly=DiGi.UI.WPF"
         mc:Ignorable="d"
-        Title="Update external components area" Height="572" Width="560" MinHeight="360" MinWidth="440"
+        Title="Update external components area" Height="662" Width="560" MinHeight="360" MinWidth="440"
         WindowStartupLocation="CenterScreen"
         WindowStyle="SingleBorderWindow"
         Icon="pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/DiGi.GIS.ico">
@@ -17,6 +17,8 @@
             <RowDefinition Height="60" />
             <RowDefinition Height="60" />
             <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="60" />
             <RowDefinition Height="33" />
         </Grid.RowDefinitions>
 
@@ -30,7 +32,11 @@
 
         <CheckBox x:Name="CheckBox_SkipCompleted" Grid.Row="4" Content="Skip buildings already done - resumes an interrupted run" Margin="10,0,10,0" VerticalAlignment="Center" />
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
+        <CheckBox x:Name="CheckBox_PartyWalls" Grid.Row="5" Content="Party walls - measure the walls shared with neighbouring buildings (much slower)" Margin="10,0,10,0" VerticalAlignment="Center" />
+
+        <controls:TextBoxControl x:Name="TextBoxControl_MaxDegreeOfParallelism" Grid.Row="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Parallel batches - 0 = half of the processors, 1 = one at a time" ToolTip="How many batches of a county are read and written at once. 0 uses half of the logical processors, 1 processes one batch at a time as before. The stored rows do not depend on it; memory grows with the number of batches times the batch size." Value="" />
+
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
             <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
             <Button x:Name="Button_Cancel" Content="Cancel" Width="70" Height="23" Margin="5,0,5,0" IsCancel="True" Click="Button_Cancel_Click" />
         </StackPanel>

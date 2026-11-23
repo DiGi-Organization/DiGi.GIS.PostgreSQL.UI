@@ -402,9 +402,13 @@ Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/ap
 
 Interaction logic for PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow\.xaml
 
-Asks for the two settings that decide what a run touches and how long a statement may take - which counties, and the command timeout. The run reads the stored building models of the counties in scope, so the counties decide its reach and its cost; left unscoped it walks every county part in the country.
+Asks for the settings that decide what a run touches and how long it takes - which counties, the command timeout, the batch size, whether finished buildings are skipped, whether party walls are measured, and how many batches of a county run at once. The run reads the stored building models of the counties in scope, so the counties decide its reach and its cost; left unscoped it walks every county part in the country.
 
 Every county is selected by default, so opening the dialog confirms the national scope rather than inviting it; deselecting everything is still refused at OK, because an empty selection is not the same as no selection and neither is a safe thing to leave this window with by accident.
+
+Party walls decide most of the cost: with them the run also reads the outlines and the stored models of the neighbours of every batch, without them it only classifies the models of the counties in scope and leaves the party wall columns exactly as they were. The box starts from the options, so it is checked unless a run was configured otherwise.
+
+The parallel batches decide how many batches of one county are read, classified and written at once - 0 takes half of the logical processors, 1 is the sequential run. The stored rows and the counters do not depend on it, but the memory of the run grows with that number times the batch size, so it is worth no more than the host can hold.
 
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 

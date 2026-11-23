@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace DiGi.GIS.PostgreSQL.UI.Classes
 {
     /// <summary>
-    /// An external components area run that is scoped from the user interface: the counties and the statement timeout are asked for through <see cref="PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow"/> each time the task is started, and only then is the run handed to <see cref="PostgreSQLBuildingDataExternalComponentsUpdateTask"/>.
+    /// An external components area run that is scoped from the user interface: the counties, the statement timeout, the batch size, the skipping of finished buildings, the party walls and the number of parallel batches are asked for through <see cref="PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow"/> each time the task is started, and only then is the run handed to <see cref="PostgreSQLBuildingDataExternalComponentsUpdateTask"/>.
     /// <para>That is what the counties are worth asking for. The run reads every stored building model of the counties in scope and classifies their components into the wall, roof and floor area columns, so unscoped it walks all 406 county parts and their models, while over one county it is minutes. A county whose buildings carry no stored model is processed, not failed, so the scoping decides what is touched and how long it takes, not whether the run succeeds.</para>
     /// </summary>
     public class UIPostgreSQLBuildingDataExternalComponentsUpdateTask : PostgreSQLBuildingDataExternalComponentsUpdateTask, IGISPostgreSQLUIObject

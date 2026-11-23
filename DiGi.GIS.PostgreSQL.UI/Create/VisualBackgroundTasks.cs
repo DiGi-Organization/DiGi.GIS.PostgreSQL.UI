@@ -72,7 +72,7 @@ namespace DiGi.GIS.PostgreSQL.UI
                     // Reads the stored building models and writes the building data table directly from the storage
                     // database, so it sits on the server side beside the task it completes: that one fills the
                     // columns the models do not carry, and this one the columns they do.
-                    result.Add(Visual(new UIPostgreSQLBuildingDataExternalComponentsUpdateTask(gISPostgreSQLConverterManager), "Update external components area", "Populates the External Components Area columns of building_data (external wall / roof / floor areas by direction and roof tilt) from BuildingModels stored in building_model_component"));
+                    result.Add(Visual(new UIPostgreSQLBuildingDataExternalComponentsUpdateTask(gISPostgreSQLConverterManager), "Update external components area", "Populates the External Components Area columns of building_data (external wall / roof / floor areas by direction and roof tilt), the party wall columns when party walls are selected, and the calculated height from BuildingModels stored in building_model_component"));
 
                     // Solar urban-context effect (DiGi.GIS.PostgreSQL#107, #136): the solve stores one result per
                     // building and radius, then the summary and the export read what it stored. All three are scoped

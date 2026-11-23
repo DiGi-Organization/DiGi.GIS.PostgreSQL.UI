@@ -8,8 +8,10 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 {
     /// <summary>
     /// Interaction logic for PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.xaml
-    /// <para>Asks for the two settings that decide what a run touches and how long a statement may take - which counties, and the command timeout. The run reads the stored building models of the counties in scope, so the counties decide its reach and its cost; left unscoped it walks every county part in the country.</para>
+    /// <para>Asks for the settings that decide what a run touches and how long it takes - which counties, the command timeout, the batch size, whether finished buildings are skipped, whether party walls are measured, and how many batches of a county run at once. The run reads the stored building models of the counties in scope, so the counties decide its reach and its cost; left unscoped it walks every county part in the country.</para>
     /// <para>Every county is selected by default, so opening the dialog confirms the national scope rather than inviting it; deselecting everything is still refused at OK, because an empty selection is not the same as no selection and neither is a safe thing to leave this window with by accident.</para>
+    /// <para>Party walls decide most of the cost: with them the run also reads the outlines and the stored models of the neighbours of every batch, without them it only classifies the models of the counties in scope and leaves the party wall columns exactly as they were. The box starts from the options, so it is checked unless a run was configured otherwise.</para>
+    /// <para>The parallel batches decide how many batches of one county are read, classified and written at once - 0 takes half of the logical processors, 1 is the sequential run. The stored rows and the counters do not depend on it, but the memory of the run grows with that number times the batch size, so it is worth no more than the host can hold.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.</para>
     /// </summary>
     public partial class PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow : Window
@@ -32,6 +34,8 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             TextBoxControl_CommandTimeout.Value = this.postgreSQLBuildingDataExternalComponentsUpdateOptions.CommandTimeout.ToString(CultureInfo.CurrentCulture);
             TextBoxControl_BatchSize.Value = this.postgreSQLBuildingDataExternalComponentsUpdateOptions.BatchSize.ToString(CultureInfo.CurrentCulture);
             CheckBox_SkipCompleted.IsChecked = this.postgreSQLBuildingDataExternalComponentsUpdateOptions.SkipCompleted;
+            CheckBox_PartyWalls.IsChecked = this.postgreSQLBuildingDataExternalComponentsUpdateOptions.PartyWalls;
+            TextBoxControl_MaxDegreeOfParallelism.Value = this.postgreSQLBuildingDataExternalComponentsUpdateOptions.MaxDegreeOfParallelism.ToString(CultureInfo.CurrentCulture);
 
             // Subscribed before the list is filled - the text of an item is decided as it is added.
             ListBoxControl_Counties.ItemAdding += ListBoxControl_Counties_ItemAdding;
@@ -81,6 +85,14 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
                 return;
             }
 
+            if (!TextBoxControl_MaxDegreeOfParallelism.TryGetValue(out int maxDegreeOfParallelism) || maxDegreeOfParallelism < 0)
+            {
+                // Zero is legal - it is the option's own "half of the processors" - and so is 1, the sequential
+                // run; only a negative value or something that is not a whole number is refused.
+                MessageBox.Show("Parallel batches has to be a whole number, zero or greater.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             HashSet<int> countyIds = [];
             foreach (AdministrativeAreal2DReference administrativeAreal2DReference in administrativeAreal2DReferences)
             {
@@ -91,6 +103,8 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             postgreSQLBuildingDataExternalComponentsUpdateOptions.CommandTimeout = commandTimeout;
             postgreSQLBuildingDataExternalComponentsUpdateOptions.BatchSize = batchSize;
             postgreSQLBuildingDataExternalComponentsUpdateOptions.SkipCompleted = CheckBox_SkipCompleted.IsChecked == true;
+            postgreSQLBuildingDataExternalComponentsUpdateOptions.PartyWalls = CheckBox_PartyWalls.IsChecked == true;
+            postgreSQLBuildingDataExternalComponentsUpdateOptions.MaxDegreeOfParallelism = maxDegreeOfParallelism;
 
             DialogResult = true;
             Close();
