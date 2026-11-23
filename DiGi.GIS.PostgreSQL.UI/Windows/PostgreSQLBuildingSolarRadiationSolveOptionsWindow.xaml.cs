@@ -98,55 +98,79 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
         private void Button_OK_Click(object sender, RoutedEventArgs e)
         {
+            // The message box and the DialogResult stay here: a fact must be able to accept or refuse the dialog
+            // without ShowDialog (a DialogResult needs it) and without a modal box it could hang on.
+            if (!TryAccept(out string? message))
+            {
+                MessageBox.Show(message ?? string.Empty, Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DialogResult = true;
+            Close();
+        }
+
+        /// <summary>
+        /// Validates the controls and, when they hold together, carries them into the options the window holds: the
+        /// selected counties, the radii list as edited, and the batch, tile, ceiling, timeout, pilot-limit and
+        /// parallelism settings. On refusal nothing is written and the reason is returned for the caller to show
+        /// (DiGi.GIS.PostgreSQL#158).
+        /// </summary>
+        /// <param name="message">The reason the dialog cannot be accepted, or null when it can.</param>
+        /// <returns>True when the options were written; false when a control was refused, leaving them untouched.</returns>
+        internal bool TryAccept(out string? message)
+        {
+            message = null;
+
             List<AdministrativeAreal2DReference>? administrativeAreal2DReferences = ListBoxControl_Counties.GetItems<AdministrativeAreal2DReference>();
             if (administrativeAreal2DReferences is null || administrativeAreal2DReferences.Count == 0)
             {
                 // The task takes null as "every county" and an empty set as "none", so neither is a safe thing to
                 // leave this window with by accident.
-                MessageBox.Show("At least one county has to be selected.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                message = "At least one county has to be selected.";
+                return false;
             }
 
             if (radii.Count == 0)
             {
-                MessageBox.Show("At least one radius has to be given.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                message = "At least one radius has to be given.";
+                return false;
             }
 
             if (!TextBoxControl_BatchSize.TryGetValue(out int batchSize) || batchSize < 1)
             {
-                MessageBox.Show("Batch size has to be a whole number, 1 or greater.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                message = "Batch size has to be a whole number, 1 or greater.";
+                return false;
             }
 
             if (!TextBoxControl_TileSize.TryGetValue(out double tileSize) || !double.IsFinite(tileSize) || tileSize < 1)
             {
-                MessageBox.Show("Tile size has to be a number of metres, 1 or greater.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                message = "Tile size has to be a number of metres, 1 or greater.";
+                return false;
             }
 
             if (!TextBoxControl_ReceiverCountMax.TryGetValue(out int receiverCountMax) || receiverCountMax < 1)
             {
-                MessageBox.Show("The receiving surface ceiling has to be a whole number, 1 or greater.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                message = "The receiving surface ceiling has to be a whole number, 1 or greater.";
+                return false;
             }
 
             if (!TextBoxControl_CasterTriangleCountMax.TryGetValue(out int casterTriangleCountMax) || casterTriangleCountMax < 1)
             {
-                MessageBox.Show("The shading triangle ceiling has to be a whole number, 1 or greater.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                message = "The shading triangle ceiling has to be a whole number, 1 or greater.";
+                return false;
             }
 
             if (!TextBoxControl_CommandTimeout.TryGetValue(out int commandTimeout) || commandTimeout < 0)
             {
-                MessageBox.Show("Command timeout has to be a whole number of seconds, zero or greater.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                message = "Command timeout has to be a whole number of seconds, zero or greater.";
+                return false;
             }
 
             if (!TextBoxControl_MaxDegreeOfParallelism.TryGetValue(out int maxDegreeOfParallelism) || maxDegreeOfParallelism < 0)
             {
-                MessageBox.Show("Parallel solves has to be a whole number, zero (automatic) or greater.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                message = "Parallel solves has to be a whole number, zero (automatic) or greater.";
+                return false;
             }
 
             int? buildingCountMax = null;
@@ -154,8 +178,8 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             {
                 if (!TextBoxControl_BuildingCountMax.TryGetValue(out int buildingCountMax_Value) || buildingCountMax_Value < 1)
                 {
-                    MessageBox.Show("Buildings per part has to be empty or a whole number, 1 or greater.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
+                    message = "Buildings per part has to be empty or a whole number, 1 or greater.";
+                    return false;
                 }
 
                 buildingCountMax = buildingCountMax_Value;
@@ -178,8 +202,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             postgreSQLBuildingSolarRadiationSolveOptions.BuildingCountMax = buildingCountMax;
             postgreSQLBuildingSolarRadiationSolveOptions.MaxDegreeOfParallelism = maxDegreeOfParallelism;
 
-            DialogResult = true;
-            Close();
+            return true;
         }
 
         private void Button_RemoveRadii_Click(object sender, RoutedEventArgs e)

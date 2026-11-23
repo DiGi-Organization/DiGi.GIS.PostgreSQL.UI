@@ -903,6 +903,30 @@ public void InitializeComponent();
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.TryAccept(string)'></a>
+
+## PostgreSQLBuildingSolarRadiationSolveOptionsWindow\.TryAccept\(string\) Method
+
+Validates the controls and, when they hold together, carries them into the options the window holds: the
+selected counties, the radii list as edited, and the batch, tile, ceiling, timeout, pilot\-limit and
+parallelism settings\. On refusal nothing is written and the reason is returned for the caller to show
+\(DiGi\.GIS\.PostgreSQL\#158\)\.
+
+```csharp
+internal bool TryAccept(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.TryAccept(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the dialog cannot be accepted, or null when it can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options were written; false when a control was refused, leaving them untouched\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow'></a>
 
 ## PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow Class
