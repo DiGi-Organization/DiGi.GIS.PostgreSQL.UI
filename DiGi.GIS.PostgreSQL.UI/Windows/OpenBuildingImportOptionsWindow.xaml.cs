@@ -2,6 +2,7 @@ using DiGi.GIS.PostgreSQL.Classes;
 using DiGi.Geometry.Planar.Classes;
 using DiGi.UI.WPF;
 using DiGi.UI.WPF.Classes;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -86,14 +87,52 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
         private void Button_AddFiles_Click(object sender, RoutedEventArgs e)
         {
-            (string fileTypeName, string fileExtension) = FileFilter(postgreSQLOpenBuildingImportTaskOptions.DatasetKey);
+            // The filter comes from the dataset's file type, with All Files as the second entry (#55).
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = string.Format(CultureInfo.CurrentCulture, "Select {0}", Query.OpenBuildingFileType(postgreSQLOpenBuildingImportTaskOptions.DatasetKey).FileTypeName),
+                Filter = Query.OpenBuildingFileFilter(postgreSQLOpenBuildingImportTaskOptions.DatasetKey),
+                FilterIndex = 1,
+                Multiselect = true
+            };
 
-            string[]? paths_Added = this.Paths(fileTypeName, fileExtension);
-            if (paths_Added is null || paths_Added.Length == 0)
+            if (openFileDialog.ShowDialog(this) != true || openFileDialog.FileNames.Length == 0)
             {
                 return;
             }
 
+            AddSourcePaths(openFileDialog.FileNames);
+        }
+
+        private void Button_AddFolder_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolderDialog openFolderDialog = new()
+            {
+                Title = string.Format(CultureInfo.CurrentCulture, "Select the folder holding {0} files", Query.OpenBuildingFileType(postgreSQLOpenBuildingImportTaskOptions.DatasetKey).FileTypeName)
+            };
+
+            if (openFolderDialog.ShowDialog(this) != true)
+            {
+                return;
+            }
+
+            List<string>? paths_Added = Query.OpenBuildingSourcePaths(postgreSQLOpenBuildingImportTaskOptions.DatasetKey, openFolderDialog.FolderName);
+            if (paths_Added is null || paths_Added.Count == 0)
+            {
+                // Said, not ignored: an empty answer looks like a button that did nothing.
+                MessageBox.Show(this, "No file of this dataset's type was found below the folder.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            AddSourcePaths(paths_Added);
+        }
+
+        /// <summary>
+        /// Adds paths to the source list, skipping the ones it already holds, and keeps the list in the ordinal order the options keep.
+        /// </summary>
+        /// <param name="paths_Added">The paths to add.</param>
+        private void AddSourcePaths(IEnumerable<string> paths_Added)
+        {
             List<string> paths = ListBoxControl_SourcePaths.GetItems<string>(false) ?? [];
             HashSet<string> paths_HashSet = [.. paths];
 
@@ -215,26 +254,6 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             }
 
             ListBoxControl_SourcePaths.SetItems(paths);
-        }
-
-        /// <summary>
-        /// Maps a dataset key to the file type the add-files dialog is filtered by (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#38).
-        /// <para>The dialog always offers All Files as well, so the datasets released as two formats - GHS-OBAT comes as CSV with GeoPackage centroids - can still be picked in one pass.</para>
-        /// </summary>
-        /// <param name="datasetKey">The dataset key the row fixed, or null.</param>
-        /// <returns>The dialog's file type name and extension filter.</returns>
-        private static (string FileTypeName, string FileExtension) FileFilter(string? datasetKey)
-        {
-            return datasetKey?.Trim().ToUpperInvariant() switch
-            {
-                "EUBUCCO" => ("EUBUCCO GeoPackage", "gpkg"),
-                "OVERTURE" => ("Overture GeoParquet", "parquet"),
-                "OSM" => ("OpenStreetMap PBF", "pbf"),
-                "DBSM" => ("DBSM GeoPackage", "gpkg"),
-                "MICROSOFT" => ("Microsoft GeoJSON sequence", "geojsonl"),
-                "GHS_OBAT" => ("GHS-OBAT CSV", "csv"),
-                _ => ("Source file", "*")
-            };
         }
 
         /// <summary>

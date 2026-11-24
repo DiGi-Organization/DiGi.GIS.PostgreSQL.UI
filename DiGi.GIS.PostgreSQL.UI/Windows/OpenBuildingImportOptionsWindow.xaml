@@ -40,6 +40,7 @@
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="10,5,10,0">
             <Button x:Name="Button_AddFiles" Content="Add files..." Width="90" Height="23" Click="Button_AddFiles_Click" />
+            <Button x:Name="Button_AddFolder" Content="Add folder..." Width="90" Height="23" Margin="8,0,0,0" Click="Button_AddFolder_Click" ToolTip="Adds every file of this dataset's type below the folder, sub-folders included" />
             <Button x:Name="Button_RemoveFiles" Content="Remove" Width="80" Height="23" Margin="8,0,0,0" Click="Button_RemoveFiles_Click" />
         </StackPanel>
 

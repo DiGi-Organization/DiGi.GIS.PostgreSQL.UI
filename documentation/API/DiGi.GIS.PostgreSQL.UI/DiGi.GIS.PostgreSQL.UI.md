@@ -589,6 +589,54 @@ A cancellation token that can be used to cancel the request\.
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[,](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
 A task whose result is \(true, body\) for a 2xx answer with a body, \(true, null\) for 404, 204 or an empty body, and \(false, null\) for any other answer or a transport failure\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingFileFilter(string)'></a>
+
+## Query\.OpenBuildingFileFilter\(string\) Method
+
+Builds the filter string of the add\-files dialog for an open building dataset: its own file type first, then All Files, so a release published in a format nobody foresaw can still be picked \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#55\)\.
+
+The extensions come from [OpenBuildingFileType\(string\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingFileType(string) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OpenBuildingFileType\(string\)'); several of them share one entry (`*.gz;*.geojsonl`), which is how the open file dialog takes a list of patterns. A dataset with no known type gets All Files alone, not a duplicate of it.
+
+```csharp
+public static string OpenBuildingFileFilter(string? datasetKey);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingFileFilter(string).datasetKey'></a>
+
+`datasetKey` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The dataset key the tray row fixed, or null\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The filter in the `name|pattern|name|pattern` form the open file dialog expects\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingFileType(string)'></a>
+
+## Query\.OpenBuildingFileType\(string\) Method
+
+Maps an open building dataset key to the file type its release comes in: the name the add\-files dialog shows and the extensions it accepts \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#55\)\.
+
+The Microsoft release is a tree of `part-<n>-<guid>.c000.csv.gz` files holding gzipped line-delimited GeoJSON, so it accepts `gz` as well as `geojsonl` - the reader recognises gzip by its first bytes, not by the extension. GHS-OBAT lists its GeoPackage only: the release also ships a CSV of the same rows, and importing both would duplicate every row, so the CSV stays reachable through All Files but is never offered or collected by default.
+
+An unknown or empty key answers the wildcard, which makes the dialog and the folder read accept every file.
+
+```csharp
+public static (string FileTypeName,string[] Extensions) OpenBuildingFileType(string? datasetKey);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingFileType(string).datasetKey'></a>
+
+`datasetKey` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The dataset key the tray row fixed, or null\. Case and surrounding white space are ignored\.
+
+#### Returns
+[&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[,](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[\[\]](https://learn.microsoft.com/en-us/dotnet/api/system.array 'System\.Array')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')  
+The type name and the extensions without the leading dot, lower case; the single extension `*` when the key names no known dataset\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingImportOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions)'></a>
 
 ## Query\.OpenBuildingImportOptionsMessage\(PostgreSQLOpenBuildingImportTaskOptions\) Method
@@ -613,6 +661,35 @@ The options to check, or null\.
 #### Returns
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 The message naming the first problem found, or null when the options can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingSourcePaths(string,string)'></a>
+
+## Query\.OpenBuildingSourcePaths\(string, string\) Method
+
+Collects the source files of an open building dataset below a folder, so a release that comes as a tree \- Microsoft ships one file in each of its `quadkey=<digits>` folders \- is added in one step \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#55\)\.
+
+Only the files of the dataset's type are returned ([OpenBuildingFileType\(string\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingFileType(string) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OpenBuildingFileType\(string\)')): the Microsoft catalog `dataset-links.csv` beside the release folders is not one, and neither is a manifest or a report. The extension is compared without regard to case, a folder that cannot be read is skipped rather than failing the whole read, and the paths come back sorted by ordinal comparison, the order the options list keeps.
+
+```csharp
+public static System.Collections.Generic.List<string>? OpenBuildingSourcePaths(string? datasetKey, string? directory);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingSourcePaths(string,string).datasetKey'></a>
+
+`datasetKey` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The dataset key the tray row fixed, or null\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingSourcePaths(string,string).directory'></a>
+
+`directory` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The folder to read, with all its sub\-folders\.
+
+#### Returns
+[System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')  
+The full paths of the matching files, or null when the folder is empty text or does not exist\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Query.OrtoDataAcquisitionCoverageResultsAsync(DiGi.GIS.PostgreSQL.Classes.OrtoDatasPostgreSQLConverter,System.Collections.Generic.IEnumerable_int_,System.Threading.CancellationToken)'></a>
 

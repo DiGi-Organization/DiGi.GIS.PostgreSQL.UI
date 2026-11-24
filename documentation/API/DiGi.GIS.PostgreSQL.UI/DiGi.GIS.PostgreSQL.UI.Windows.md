@@ -238,6 +238,23 @@ public DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions Postg
 [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingimporttaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions')
 ### Methods
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.AddSourcePaths(System.Collections.Generic.IEnumerable_string_)'></a>
+
+## OpenBuildingImportOptionsWindow\.AddSourcePaths\(IEnumerable\<string\>\) Method
+
+Adds paths to the source list, skipping the ones it already holds, and keeps the list in the ordinal order the options keep\.
+
+```csharp
+private void AddSourcePaths(System.Collections.Generic.IEnumerable<string> paths_Added);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.AddSourcePaths(System.Collections.Generic.IEnumerable_string_).paths_Added'></a>
+
+`paths_Added` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The paths to add\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.DisplayName(string)'></a>
 
 ## OpenBuildingImportOptionsWindow\.DisplayName\(string\) Method
@@ -258,29 +275,6 @@ The dataset key the row fixed, or null\.
 #### Returns
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 The display name, including the key itself so the two cannot be read apart\.
-
-<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.FileFilter(string)'></a>
-
-## OpenBuildingImportOptionsWindow\.FileFilter\(string\) Method
-
-Maps a dataset key to the file type the add\-files dialog is filtered by \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#38\)\.
-
-The dialog always offers All Files as well, so the datasets released as two formats - GHS-OBAT comes as CSV with GeoPackage centroids - can still be picked in one pass.
-
-```csharp
-private static (string FileTypeName,string FileExtension) FileFilter(string? datasetKey);
-```
-#### Parameters
-
-<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.FileFilter(string).datasetKey'></a>
-
-`datasetKey` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
-
-The dataset key the row fixed, or null\.
-
-#### Returns
-[&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[,](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')  
-The dialog's file type name and extension filter\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.InitializeComponent()'></a>
 
