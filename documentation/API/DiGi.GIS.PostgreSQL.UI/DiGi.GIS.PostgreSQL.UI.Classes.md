@@ -1764,6 +1764,8 @@ A task whose result is true when every source file was hashed and the value stor
 
 Writes the run report next to this application: the release, the scope, the source files, the tallies and the register row id \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#38\)\.
 
+The rejections are additionally broken down per [DiGi\.GIS\.PostgreSQL\.Enums\.UpdateRejectionReason](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.enums.updaterejectionreason 'DiGi\.GIS\.PostgreSQL\.Enums\.UpdateRejectionReason') - one indented line per reason in enum order with zeros omitted, followed by up to the first ten source ids the run's sample holds for that reason (DiGi-Organization/DiGi.GIS.PostgreSQL#172).
+
 The report is written for a refused or cancelled run as well - a run that stored nothing is exactly when the reason belongs on disk - and a failure to write it is logged rather than thrown, so a read-only output directory cannot turn a finished import into a failed one.
 
 ```csharp

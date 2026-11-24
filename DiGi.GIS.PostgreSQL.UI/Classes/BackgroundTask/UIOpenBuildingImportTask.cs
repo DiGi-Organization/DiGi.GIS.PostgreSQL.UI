@@ -199,6 +199,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
         /// <summary>
         /// Writes the run report next to this application: the release, the scope, the source files, the tallies and the register row id (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#38).
+        /// <para>The rejections are additionally broken down per <see cref="UpdateRejectionReason"/> - one indented line per reason in enum order with zeros omitted, followed by up to the first ten source ids the run's sample holds for that reason (DiGi-Organization/DiGi.GIS.PostgreSQL#172).</para>
         /// <para>The report is written for a refused or cancelled run as well - a run that stored nothing is exactly when the reason belongs on disk - and a failure to write it is logged rather than thrown, so a read-only output directory cannot turn a finished import into a failed one.</para>
         /// </summary>
         /// <param name="started">When the run started, for the report's duration.</param>
@@ -291,6 +292,38 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 lines.Add(string.Create(CultureInfo.InvariantCulture, $"Rows written: {RowCount}"));
                 lines.Add(string.Create(CultureInfo.InvariantCulture, $"Out of scope (filtered): {FilteredCount}"));
                 lines.Add(string.Create(CultureInfo.InvariantCulture, $"Rejected before the database: {RejectionCount}"));
+
+                // The reasons behind that number, in enum order, zeros omitted, with up to the first ten
+                // source ids per reason from the run's capped sample - so a rejected footprint can be looked
+                // up in the source file (DiGi.GIS.PostgreSQL#172). A reason whose rejections all fall after
+                // the first 1000 in read order has a count here and no ids under it.
+                foreach (UpdateRejectionReason updateRejectionReason in System.Enum.GetValues<UpdateRejectionReason>())
+                {
+                    if (!RejectionCounts.TryGetValue(updateRejectionReason, out long count) || count <= 0)
+                    {
+                        continue;
+                    }
+
+                    lines.Add(string.Create(CultureInfo.InvariantCulture, $"  {Core.Query.Description(updateRejectionReason)}: {count}"));
+
+                    int sample = 0;
+                    foreach (Rejection rejection in Rejections)
+                    {
+                        if (sample >= 10)
+                        {
+                            break;
+                        }
+
+                        if (rejection.UpdateRejectionReason != updateRejectionReason)
+                        {
+                            continue;
+                        }
+
+                        lines.Add($"    {rejection.Reference ?? "(null)"}");
+                        sample++;
+                    }
+                }
+
                 lines.Add(string.Create(CultureInfo.InvariantCulture, $"Refused by the readers: {ReaderRejectionCount}"));
                 lines.Add($"Register row id: {(DatasetId is int datasetId ? System.Convert.ToString(datasetId, CultureInfo.InvariantCulture) : "(none)")}");
                 lines.Add($"Cancelled: {cancellationToken.IsCancellationRequested}");
