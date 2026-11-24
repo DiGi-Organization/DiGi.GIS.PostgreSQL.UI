@@ -275,6 +275,17 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                     }
                 }
 
+                // The files the run left unread because their own extent cannot reach the scope (DiGi.GIS.PostgreSQL#170):
+                // their footprints are counted nowhere, so the counts below describe the other files only.
+                lines.Add(string.Create(CultureInfo.InvariantCulture, $"Source files left unread (cannot reach the scope): {SkippedSourcePaths.Count}"));
+                List<string> paths_Skipped = [.. SkippedSourcePaths];
+                paths_Skipped.Sort(StringComparer.Ordinal);
+                foreach (string path in paths_Skipped)
+                {
+                    lines.Add($"  {path}");
+                }
+
+                lines.Add(string.Create(CultureInfo.InvariantCulture, $"Max degree of parallelism: {PostgreSQLOpenBuildingImportTaskOptions.MaxDegreeOfParallelism} (0 = half the processors)"));
                 lines.Add($"Started: {started.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
                 lines.Add($"Finished: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
                 lines.Add(string.Create(CultureInfo.InvariantCulture, $"Rows written: {RowCount}"));

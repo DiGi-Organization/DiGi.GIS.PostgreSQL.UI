@@ -22,6 +22,12 @@
 		<PublishSingleFile>true</PublishSingleFile>
 		<PublishReadyToRun>true</PublishReadyToRun>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+		<!-- Server GC (DiGi-Organization/DiGi.GIS.PostgreSQL#170): the background tasks convert in parallel and allocate
+		     heavily per item, and under the workstation GC the workers queue on one heap - the open building import
+		     converted 1.35x faster on 16 workers than on one, 7.4x under server GC (wiki Benchmark.md). Since .NET 9 the
+		     server GC adapts its heap count to the load (DATAS), so an idle tray does not hold one heap per core. -->
+		<ServerGarbageCollection>true</ServerGarbageCollection>
 	</PropertyGroup>
 
 	<ItemGroup>

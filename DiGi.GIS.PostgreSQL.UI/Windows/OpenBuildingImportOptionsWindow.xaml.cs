@@ -48,6 +48,8 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             TextBoxControl_SourceObservationDate.Value = this.postgreSQLOpenBuildingImportTaskOptions.SourceObservationDate ?? string.Empty;
             TextBoxControl_FileName.Value = this.postgreSQLOpenBuildingImportTaskOptions.FileName ?? string.Empty;
             TextBoxControl_Quadkey.Value = this.postgreSQLOpenBuildingImportTaskOptions.Quadkey ?? string.Empty;
+            CheckBox_SkipSourcesOutOfScope.IsChecked = this.postgreSQLOpenBuildingImportTaskOptions.SkipSourcesOutOfScope;
+            TextBoxControl_MaxDegreeOfParallelism.Value = this.postgreSQLOpenBuildingImportTaskOptions.MaxDegreeOfParallelism.ToString(CultureInfo.InvariantCulture);
 
             // The scope radios carry no IsChecked in the markup: setting it there raises Checked while the
             // window is still being parsed, before the panels the handler switches exist. The state is set
@@ -212,6 +214,15 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
                 downloadDate = downloadDate_Temp;
             }
 
+            // Zero is the default and means half the processors; a blank field keeps it.
+            int maxDegreeOfParallelism = 0;
+            string? maxDegreeOfParallelism_Text = TrimOrNull(TextBoxControl_MaxDegreeOfParallelism.Value);
+            if (maxDegreeOfParallelism_Text is not null && (!int.TryParse(maxDegreeOfParallelism_Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out maxDegreeOfParallelism) || maxDegreeOfParallelism < 0))
+            {
+                MessageBox.Show("The max degree of parallelism has to be a whole number, 0 or more (0 uses half the processors).", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             options.Version = TrimOrNull(TextBoxControl_Version.Value);
             options.DownloadDate = downloadDate;
             options.Licence = TrimOrNull(TextBoxControl_Licence.Value);
@@ -219,6 +230,8 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             options.SourceObservationDate = TrimOrNull(TextBoxControl_SourceObservationDate.Value);
             options.FileName = TrimOrNull(TextBoxControl_FileName.Value);
             options.Quadkey = TrimOrNull(TextBoxControl_Quadkey.Value);
+            options.SkipSourcesOutOfScope = CheckBox_SkipSourcesOutOfScope.IsChecked == true;
+            options.MaxDegreeOfParallelism = maxDegreeOfParallelism;
             options.CountyIds = countyIds;
             options.BoundingBox2D = boundingBox2D;
 
