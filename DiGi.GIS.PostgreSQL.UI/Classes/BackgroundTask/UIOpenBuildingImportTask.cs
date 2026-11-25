@@ -145,7 +145,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
         /// <summary>
         /// Computes the release's SHA-256 from the source files and stores it on the options - never typed, always derived from what is actually imported.
-        /// <para>One source file answers its bare lowercase hex digest, the form <c>BuildingDatasetRelease</c> documents. Several files - GHS-OBAT comes as CSV with GeoPackage centroids - answer one <c>digest␣␣file name</c> line per file in ordinal path order, the sha256sum format, so every line of the stored value can be verified against its file with a stock tool.</para>
+        /// <para>One source file answers its bare lowercase hex digest, the form <c>BuildingDatasetRelease</c> documents. Several files - the Microsoft release comes as one gzipped part per quadkey folder - answer one <c>digest␣␣file name</c> line per file in ordinal path order, the sha256sum format, so every line of the stored value can be verified against its file with a stock tool.</para>
         /// <para>A file that cannot be hashed refuses the run: a release stored without provenance is worse than no run, and the failure is logged with the path that caused it.</para>
         /// </summary>
         /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>

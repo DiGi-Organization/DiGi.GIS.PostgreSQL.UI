@@ -1739,7 +1739,7 @@ A task representing the asynchronous operation\. Returns true unless the run was
 
 Computes the release's SHA\-256 from the source files and stores it on the options \- never typed, always derived from what is actually imported\.
 
-One source file answers its bare lowercase hex digest, the form `BuildingDatasetRelease` documents. Several files - GHS-OBAT comes as CSV with GeoPackage centroids - answer one `digest␣␣file name` line per file in ordinal path order, the sha256sum format, so every line of the stored value can be verified against its file with a stock tool.
+One source file answers its bare lowercase hex digest, the form `BuildingDatasetRelease` documents. Several files - the Microsoft release comes as one gzipped part per quadkey folder - answer one `digest␣␣file name` line per file in ordinal path order, the sha256sum format, so every line of the stored value can be verified against its file with a stock tool.
 
 A file that cannot be hashed refuses the run: a release stored without provenance is worse than no run, and the failure is logged with the path that caused it.
 
