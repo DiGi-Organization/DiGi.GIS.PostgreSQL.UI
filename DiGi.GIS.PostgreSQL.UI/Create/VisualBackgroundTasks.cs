@@ -152,6 +152,12 @@ namespace DiGi.GIS.PostgreSQL.UI
                     result.Add(Visual(new UIOpenBuildingImportTask(gISPostgreSQLConverterManager) { DatasetKey = "microsoft" }, "Import Microsoft buildings", "Imports Microsoft Global ML building footprints from a GeoJSON sequence (EPSG:4326) into microsoft_building_2d. Replaces the previous snapshot in scope. The source files, the scope (county parts or a bounding box), the release metadata and, for a file outside a quadkey=<digits> folder, its quadkey are asked for when the task is started; the SHA-256 is computed from the source files"));
                     result.Add(Visual(new UIOpenBuildingImportTask(gISPostgreSQLConverterManager) { DatasetKey = "ghs_obat" }, "Import GHS-OBAT attributes", "Imports GHS-OBAT attributes (CSV with GeoPackage centroids) into ghs_obat_building. Replaces the previous snapshot in scope. The source files, the scope (county parts or a bounding box) and the release metadata are asked for when the task is started; the SHA-256 is computed from the source files"));
 
+                    // Matching the open building footprints to BDOT10k (DiGi-Organization/DiGi.GIS.PostgreSQL#127,
+                    // DiGi-Organization/DiGi.GIS.PostgreSQL.UI#57): one row for all five footprint datasets. The datasets,
+                    // the scope, the rule parameters and whether the links replace the stored snapshot are asked when
+                    // the task starts; it reads BDOT10k on Main and the footprints on Storage.
+                    result.Add(Visual(new UIOpenBuildingMatchTask(gISPostgreSQLConverterManager), "Match open buildings to BDOT10k", "Matches the open building footprints (EUBUCCO, Overture, OSM, DBSM, Microsoft) to BDOT10k and replaces the links in building_dataset_match for the county groups in scope. The datasets, the scope (county parts or a bounding box), the rule parameters and whether to store the links are asked for when the task is started. Import the datasets first"));
+
                     // A permanent repair path, in contrast to the temporary county part repair of issue
                     // DiGi-Organization/DiGi.GIS.PostgreSQL#68, which was deleted once the mismatches it chased
                     // were gone: the unique_id-keyed tables stay keyed on (county_id, reference), so a row

@@ -1,0 +1,120 @@
+<Window x:Class="DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:DiGi.UI.WPF.Controls;assembly=DiGi.UI.WPF"
+        mc:Ignorable="d"
+        Title="Match open buildings to BDOT10k" Height="840" Width="1100" MinHeight="820" MinWidth="1000"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="SingleBorderWindow"
+        Icon="pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/DiGi.GIS.ico">
+    <Grid Margin="5,5,5,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="33" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="440" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label x:Name="Label_Datasets" Grid.Row="0" Content="Datasets - each one is matched to BDOT10k on its own" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="10,0,10,0">
+                <CheckBox x:Name="CheckBox_EUBUCCO" Content="EUBUCCO" Margin="0,3,18,3" VerticalAlignment="Center" />
+                <CheckBox x:Name="CheckBox_Overture" Content="Overture" Margin="0,3,18,3" VerticalAlignment="Center" />
+                <CheckBox x:Name="CheckBox_OSM" Content="OpenStreetMap" Margin="0,3,18,3" VerticalAlignment="Center" />
+                <CheckBox x:Name="CheckBox_DBSM" Content="DBSM" Margin="0,3,18,3" VerticalAlignment="Center" />
+                <CheckBox x:Name="CheckBox_Microsoft" Content="Microsoft" Margin="0,3,18,3" VerticalAlignment="Center" />
+            </WrapPanel>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5,8,5,0">
+                <RadioButton x:Name="RadioButton_CountyParts" Content="Scope: county parts" Checked="Scope_Changed" Margin="5,0,15,0" VerticalAlignment="Center" />
+                <RadioButton x:Name="RadioButton_BoundingBox" Content="Scope: bounding box (EPSG:2180)" Checked="Scope_Changed" Margin="5,0,5,0" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <Label x:Name="Label_Parameters" Grid.Row="3" Content="Matching rule - the defaults are the rule as proposed for paper 01" Margin="5,10,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <controls:TextBoxControl x:Name="TextBoxControl_IoUThreshold" Grid.Column="0" HorizontalAlignment="Stretch" Text="IoU threshold (0-1)" ToolTip="A one-to-one pair below this intersection over union is one-to-one weak: matched for completeness, left out of the geometry measures" Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_MinOverlapShare" Grid.Column="1" HorizontalAlignment="Stretch" Text="Minimum overlap share (0-1)" ToolTip="Two footprints are joined when their overlap covers at least this share of the smaller one" Value="" />
+            </Grid>
+
+            <Grid Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <controls:TextBoxControl x:Name="TextBoxControl_MinArea" Grid.Column="0" HorizontalAlignment="Stretch" Text="Minimum area (m2)" ToolTip="Footprints below this area are left out on both sides and stored as excluded" Value="" />
+                <controls:TextBoxControl x:Name="TextBoxControl_MaxCentroidDistance" Grid.Column="1" HorizontalAlignment="Stretch" Text="Max centroid distance (m, 0 = off)" ToolTip="When above zero, two footprints that do not overlap are still joined when their centroids are this close" Value="" />
+            </Grid>
+
+            <Grid Grid.Row="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <controls:TextBoxControl x:Name="TextBoxControl_BoundaryMargin" Grid.Column="0" HorizontalAlignment="Stretch" Text="Boundary margin (m)" ToolTip="How far beyond a county group both sides are read, so a building on a county edge finds its partner across it" Value="" />
+                <Button x:Name="Button_Defaults" Grid.Column="1" Content="Defaults" Width="90" Height="23" Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="Button_Defaults_Click" ToolTip="Puts the five rule parameters back to the rule as proposed" />
+            </Grid>
+
+            <CheckBox x:Name="CheckBox_Persist" Grid.Row="7" Content="Store the links (replace the snapshot of every county group in scope)" Margin="10,12,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <TextBlock x:Name="TextBlock_Persist" Grid.Row="8" Margin="28,4,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Text="Cleared: a sensitivity run - nothing is written; the measures are in the report." />
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="1" Margin="10,5,10,0">
+            <Grid x:Name="Grid_CountyScope">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Label x:Name="Label_Counties" Grid.Row="0" Content="County parts - one entry per piece; select what the run covers" ToolTip="County parts - a multi-part county is one entry per piece; the run widens every piece to its siblings" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                <controls:ListBoxControl x:Name="ListBoxControl_Counties" Grid.Row="1" SelectionMode="Extended" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            </Grid>
+
+            <StackPanel x:Name="StackPanel_BoundingBox" VerticalAlignment="Top" Visibility="Collapsed">
+                <Label Content="Bounding box in EPSG:2180 - lower left and upper right corners" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                <Grid Margin="0,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <controls:TextBoxControl x:Name="TextBoxControl_X1" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" Text="x1 (easting)" Value="" />
+                    <controls:TextBoxControl x:Name="TextBoxControl_Y1" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Text="y1 (northing)" Value="" />
+                    <controls:TextBoxControl x:Name="TextBoxControl_X2" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Text="x2 (easting)" Value="" />
+                    <controls:TextBoxControl x:Name="TextBoxControl_Y2" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Text="y2 (northing)" Value="" />
+                </Grid>
+                <TextBlock Margin="5,6,5,0" Text="Whole county groups are matched: every part whose envelope reaches the box." />
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
+            <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
+            <Button x:Name="Button_Cancel" Content="Cancel" Width="70" Height="23" Margin="5,0,5,0" IsCancel="True" Click="Button_Cancel_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
