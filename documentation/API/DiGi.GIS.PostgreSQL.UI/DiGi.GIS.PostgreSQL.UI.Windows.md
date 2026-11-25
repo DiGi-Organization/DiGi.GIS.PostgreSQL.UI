@@ -319,6 +319,168 @@ The raw control value\.
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 The trimmed text, or null when there was none\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow'></a>
+
+## OpenBuildingMatchOptionsWindow Class
+
+Interaction logic for OpenBuildingMatchOptionsWindow\.xaml
+
+Asks what decides a run of the open building matching (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#57): which of the five footprint datasets to match to BDOT10k, the scope (a county list or an EPSG:2180 bounding box), the five parameters of the matching rule and whether the links replace the stored snapshot. GHS-OBAT is not offered: it holds centroids and the core task refuses it.
+
+Every dataset checked is stored as "all" ([DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions\.DatasetKeys](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtaskoptions.datasetkeys 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions\.DatasetKeys') null), so a run started from this window keeps matching every footprint dataset if one is added later. Numbers are read in the invariant culture first and in the current one second, so `0.5` and `0,5` both work. What the core task and the rule need is asked through [OpenBuildingMatchOptionsMessage\(PostgreSQLOpenBuildingMatchTaskOptions\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingMatchOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OpenBuildingMatchOptionsMessage\(DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions\)') before OK returns, so the operator is told while the dialog is open.
+
+The window works on a copy - the options and their rule parameters - so a cancelled dialog leaves the settings of an earlier run exactly as they were.
+
+```csharp
+public class OpenBuildingMatchOptionsWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [System\.Windows\.Threading\.DispatcherObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.threading.dispatcherobject 'System\.Windows\.Threading\.DispatcherObject') → [System\.Windows\.DependencyObject](https://learn.microsoft.com/en-us/dotnet/api/system.windows.dependencyobject 'System\.Windows\.DependencyObject') → [System\.Windows\.Media\.Visual](https://learn.microsoft.com/en-us/dotnet/api/system.windows.media.visual 'System\.Windows\.Media\.Visual') → [System\.Windows\.UIElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.uielement 'System\.Windows\.UIElement') → [System\.Windows\.FrameworkElement](https://learn.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement 'System\.Windows\.FrameworkElement') → [System\.Windows\.Controls\.Control](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.control 'System\.Windows\.Controls\.Control') → [System\.Windows\.Controls\.ContentControl](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.contentcontrol 'System\.Windows\.Controls\.ContentControl') → [System\.Windows\.Window](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window 'System\.Windows\.Window') → OpenBuildingMatchOptionsWindow
+
+Implements [System\.Windows\.Markup\.IComponentConnector](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector 'System\.Windows\.Markup\.IComponentConnector')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.OpenBuildingMatchOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_)'></a>
+
+## OpenBuildingMatchOptionsWindow\(PostgreSQLOpenBuildingMatchTaskOptions, IEnumerable\<AdministrativeAreal2DReference\>\) Constructor
+
+Initializes a new instance of the [OpenBuildingMatchOptionsWindow](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.OpenBuildingMatchOptionsWindow') class\.
+
+```csharp
+public OpenBuildingMatchOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions? postgreSQLOpenBuildingMatchTaskOptions, System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.OpenBuildingMatchOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).postgreSQLOpenBuildingMatchTaskOptions'></a>
+
+`postgreSQLOpenBuildingMatchTaskOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions')
+
+The options the controls are filled from; null uses the defaults \(every dataset, the proposed rule, links stored\)\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.OpenBuildingMatchOptionsWindow(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions,System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).administrativeAreal2DReferences'></a>
+
+`administrativeAreal2DReferences` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.administrativeareal2dreference 'DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The county parts to choose from, one entry per piece\. Nothing is preselected unless the options name parts: the scope is required, and a dialog that opens with every county ticked invites a national run as the default\.
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.PostgreSQLOpenBuildingMatchTaskOptions'></a>
+
+## OpenBuildingMatchOptionsWindow\.PostgreSQLOpenBuildingMatchTaskOptions Property
+
+Gets the options the window holds\. They carry the values of the controls only once the dialog has been closed with OK; until then, and after a cancellation, they are the values it was opened with\.
+
+```csharp
+public DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions PostgreSQLOpenBuildingMatchTaskOptions { get; }
+```
+
+#### Property Value
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.DatasetCheckBoxes()'></a>
+
+## OpenBuildingMatchOptionsWindow\.DatasetCheckBoxes\(\) Method
+
+The dataset check boxes with the key each one stands for, in the order they are shown\.
+
+```csharp
+private (System.Windows.Controls.CheckBox CheckBox,string DatasetKey)[] DatasetCheckBoxes();
+```
+
+#### Returns
+[&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.Windows\.Controls\.CheckBox](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.checkbox 'System\.Windows\.Controls\.CheckBox')[,](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple 'System\.ValueTuple')[\[\]](https://learn.microsoft.com/en-us/dotnet/api/system.array 'System\.Array')  
+The pairs of check box and dataset key\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.InitializeComponent()'></a>
+
+## OpenBuildingMatchOptionsWindow\.InitializeComponent\(\) Method
+
+InitializeComponent
+
+```csharp
+public void InitializeComponent();
+```
+
+Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.SetParameters(DiGi.GIS.PostgreSQL.Classes.OpenBuildingMatchParameters)'></a>
+
+## OpenBuildingMatchOptionsWindow\.SetParameters\(OpenBuildingMatchParameters\) Method
+
+Shows the five rule parameters in the controls, in the invariant culture\.
+
+```csharp
+private void SetParameters(DiGi.GIS.PostgreSQL.Classes.OpenBuildingMatchParameters openBuildingMatchParameters);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.SetParameters(DiGi.GIS.PostgreSQL.Classes.OpenBuildingMatchParameters).openBuildingMatchParameters'></a>
+
+`openBuildingMatchParameters` [DiGi\.GIS\.PostgreSQL\.Classes\.OpenBuildingMatchParameters](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.openbuildingmatchparameters 'DiGi\.GIS\.PostgreSQL\.Classes\.OpenBuildingMatchParameters')
+
+The parameters to show\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.SetScopeControls()'></a>
+
+## OpenBuildingMatchOptionsWindow\.SetScopeControls\(\) Method
+
+Shows the scope form that is checked and hides the other one, so the window never offers a county selection and a box to fill at the same time\.
+
+```csharp
+private void SetScopeControls();
+```
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryGetOptions(string)'></a>
+
+## OpenBuildingMatchOptionsWindow\.TryGetOptions\(string\) Method
+
+Reads every control into the window's options and checks them, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\.
+
+The options are written only when every control reads and the result passes [OpenBuildingMatchOptionsMessage\(PostgreSQLOpenBuildingMatchTaskOptions\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingMatchOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OpenBuildingMatchOptionsMessage\(DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions\)'); a refusal leaves them as they were.
+
+```csharp
+internal bool TryGetOptions(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryGetOptions(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls cannot start a run, or null when they can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options now hold the controls' values and can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryParse(string,double)'></a>
+
+## OpenBuildingMatchOptionsWindow\.TryParse\(string, double\) Method
+
+Reads a number typed in the invariant culture \(`0.5`\) or, failing that, in the current one \(`0,5` under `pl-PL`\)\.
+
+```csharp
+private static bool TryParse(string? text, out double value);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryParse(string,double).text'></a>
+
+`text` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The typed text\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryParse(string,double).value'></a>
+
+`value` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The number read, or zero\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the text is a finite number\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuilding2DRefreshOptionsWindow'></a>
 
 ## PostgreSQLBuilding2DRefreshOptionsWindow Class

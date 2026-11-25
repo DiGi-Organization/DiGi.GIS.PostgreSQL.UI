@@ -662,6 +662,31 @@ The options to check, or null\.
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
 The message naming the first problem found, or null when the options can start a run\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingMatchOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions)'></a>
+
+## Query\.OpenBuildingMatchOptionsMessage\(PostgreSQLOpenBuildingMatchTaskOptions\) Method
+
+Names why a set of open building match options cannot start a run, or answers null when it can \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#57\)\.
+
+The rules the core task ([DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTask'), DiGi-Organization/DiGi.GIS.PostgreSQL#127) enforces are asked here first, so the operator is told what is wrong while the options dialog is still open instead of from a refused run's log; the core task stays the final gate. The rule parameters are checked here only: the core task takes them as given, so a share above one or a negative area would run and quietly match nothing.
+
+The checks, in order: the datasets (null is all five footprint datasets; an empty set, an unknown key or GHS-OBAT - centroids, never matched - is refused), the five rule parameters (finite; the IoU threshold and the minimum overlap share between 0 and 1, the minimum area, the centroid distance and the boundary margin not negative), and exactly one scope form - a county list or a bounding box with an area.
+
+```csharp
+public static string? OpenBuildingMatchOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions? postgreSQLOpenBuildingMatchTaskOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingMatchOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions).postgreSQLOpenBuildingMatchTaskOptions'></a>
+
+`postgreSQLOpenBuildingMatchTaskOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions')
+
+The options to check, or null\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The message naming the first problem found, or null when the options can start a run\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingSourcePaths(string,string)'></a>
 
 ## Query\.OpenBuildingSourcePaths\(string, string\) Method

@@ -1797,6 +1797,158 @@ The exception that ended the run, or null when none escaped the core task\.
 
 The token the run observed, so the report can say whether it was cancelled\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask'></a>
+
+## UIOpenBuildingMatchTask Class
+
+The tray\-side wrapper of [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTask') \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#57\): it asks the operator which datasets to match to BDOT10k, over which scope, with which rule parameters and whether to store the links, then runs the core task and writes the run report\.
+
+The converters the run needs - the open building converter on Storage, BDOT10k and the county parts on Main - are checked before the dialog, so a tray without them refuses with a reason instead of opening a window for a run that cannot start. The county list is read on this thread; the window is shown on the dispatcher, because this body runs on a thread pool thread where a window cannot be created. The window edits a copy: a cancelled dialog leaves the task's options as they were and ends the run before anything is read or written. [SkipOptionsDialog](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.SkipOptionsDialog 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIOpenBuildingMatchTask\.SkipOptionsDialog') is the seam a test or a hosted run uses instead.
+
+What the dialog asked is checked once more through [OpenBuildingMatchOptionsMessage\(PostgreSQLOpenBuildingMatchTaskOptions\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingMatchOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OpenBuildingMatchOptionsMessage\(DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions\)') before the core task starts, so a hand-built task that skipped the dialog still refuses with a reason in the log.
+
+```csharp
+public class UIOpenBuildingMatchTask : DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.Core\.Classes\.ReportableBackgroundTask&lt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.reportablebackgroundtask-1 'DiGi\.Core\.Classes\.ReportableBackgroundTask\`1') → [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTask') → UIOpenBuildingMatchTask
+
+Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
+### Constructors
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.UIOpenBuildingMatchTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager)'></a>
+
+## UIOpenBuildingMatchTask\(GISPostgreSQLConverterManager\) Constructor
+
+Initializes a new instance of the [UIOpenBuildingMatchTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIOpenBuildingMatchTask') class\.
+
+```csharp
+public UIOpenBuildingMatchTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager gISPostgreSQLConverterManager);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.UIOpenBuildingMatchTask(DiGi.GIS.PostgreSQL.Classes.GISPostgreSQLConverterManager).gISPostgreSQLConverterManager'></a>
+
+`gISPostgreSQLConverterManager` [DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.gispostgresqlconvertermanager 'DiGi\.GIS\.PostgreSQL\.Classes\.GISPostgreSQLConverterManager')
+
+The manager holding the PostgreSQL converters\.
+### Fields
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.ReportFileName'></a>
+
+## UIOpenBuildingMatchTask\.ReportFileName Field
+
+The report file name; one file, rewritten by every run, beside the application\.
+
+```csharp
+private const string ReportFileName = "OpenBuilding_Match_Report.txt";
+```
+
+#### Field Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+### Properties
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.SkipOptionsDialog'></a>
+
+## UIOpenBuildingMatchTask\.SkipOptionsDialog Property
+
+Gets or sets whether the options dialog is skipped and the run takes its options from the task's properties as they are\.
+
+The dialog needs a running WPF application, which a test host has not got; a fact sets this and drives the run through the properties instead (the seam [UIOpenBuildingImportTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIOpenBuildingImportTask') carries for the same reason). Off for the row the tray registers.
+
+```csharp
+public bool SkipOptionsDialog { get; set; }
+```
+
+#### Property Value
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken)'></a>
+
+## UIOpenBuildingMatchTask\.ExecuteAsync\(IProgress\<long\>, CancellationToken\) Method
+
+Asks for the run's options, validates them, runs the core matching and writes the run report\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.IProgress<long> progress, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).progress'></a>
+
+`progress` [System\.IProgress&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')[System\.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64 'System\.Int64')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iprogress-1 'System\.IProgress\`1')
+
+A progress reporter carrying the running total of link rows produced\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.ExecuteAsync(System.IProgress_long_,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+A cancellation token that can be used to cancel the operation\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A task representing the asynchronous operation\. Returns true when every county group of every dataset was matched; false when the run was refused, cancelled in the dialog or a group failed\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.Format(System.Nullable_double_)'></a>
+
+## UIOpenBuildingMatchTask\.Format\(Nullable\<double\>\) Method
+
+Formats an optional measure for the report with four decimals in the invariant culture, or as a dash when there is none\.
+
+```csharp
+private static string Format(System.Nullable<double> value);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.Format(System.Nullable_double_).value'></a>
+
+`value` [System\.Nullable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.nullable-1 'System\.Nullable\`1')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.nullable-1 'System\.Nullable\`1')
+
+The measure\.
+
+#### Returns
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')  
+The formatted text\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.WriteReport(System.DateTime,bool,System.Exception,System.Threading.CancellationToken)'></a>
+
+## UIOpenBuildingMatchTask\.WriteReport\(DateTime, bool, Exception, CancellationToken\) Method
+
+Writes the run report next to this application: the datasets, the scope, the rule parameters, whether the links were stored, one line per dataset and county group, and the total measures per dataset \(DiGi\-Organization/DiGi\.GIS\.PostgreSQL\.UI\#57\)\.
+
+Written for a refused group, a failed run and a cancelled one as well, and a failure to write it is logged rather than thrown, so a read-only output directory cannot turn a finished run into a failed one. The figures describe the database the tray is connected to.
+
+```csharp
+private void WriteReport(System.DateTime started, bool succeeded, System.Exception? exception, System.Threading.CancellationToken cancellationToken);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.WriteReport(System.DateTime,bool,System.Exception,System.Threading.CancellationToken).started'></a>
+
+`started` [System\.DateTime](https://learn.microsoft.com/en-us/dotnet/api/system.datetime 'System\.DateTime')
+
+When the run started, for the report's duration\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.WriteReport(System.DateTime,bool,System.Exception,System.Threading.CancellationToken).succeeded'></a>
+
+`succeeded` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+What the core task answered for the run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.WriteReport(System.DateTime,bool,System.Exception,System.Threading.CancellationToken).exception'></a>
+
+`exception` [System\.Exception](https://learn.microsoft.com/en-us/dotnet/api/system.exception 'System\.Exception')
+
+The exception that ended the run, or null when none escaped the core task\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask.WriteReport(System.DateTime,bool,System.Exception,System.Threading.CancellationToken).cancellationToken'></a>
+
+`cancellationToken` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+The token the run observed, so the report can say whether it was cancelled\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.UIOrtoDatasFromFilePostTask'></a>
 
 ## UIOrtoDatasFromFilePostTask Class

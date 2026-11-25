@@ -27,6 +27,7 @@ Derived
 ↳ [UIEPWFileFromFilePostTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIEPWFileFromFilePostTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIEPWFileFromFilePostTask')  
 ↳ [UIOccupancyDatasFromFilePostTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIOccupancyDatasFromFilePostTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIOccupancyDatasFromFilePostTask')  
 ↳ [UIOpenBuildingImportTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIOpenBuildingImportTask')  
+↳ [UIOpenBuildingMatchTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingMatchTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIOpenBuildingMatchTask')  
 ↳ [UIOrtoDatasFromFilePostTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIOrtoDatasFromFilePostTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIOrtoDatasFromFilePostTask')  
 ↳ [UIPostgreSQLBuilding2DRefreshTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuilding2DRefreshTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLBuilding2DRefreshTask')  
 ↳ [UIPostgreSQLBuildingDataExternalComponentsUpdateTask](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLBuildingDataExternalComponentsUpdateTask 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLBuildingDataExternalComponentsUpdateTask')  
