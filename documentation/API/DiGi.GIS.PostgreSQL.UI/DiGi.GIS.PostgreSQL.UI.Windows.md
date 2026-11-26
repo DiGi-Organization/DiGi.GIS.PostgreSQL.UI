@@ -386,6 +386,8 @@ Asks what decides a run of the open building matching (DiGi-Organization/DiGi.GI
 
 Every dataset checked is stored as "all" ([DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions\.DatasetKeys](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtaskoptions.datasetkeys 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions\.DatasetKeys') null), so a run started from this window keeps matching every footprint dataset if one is added later. Numbers are read in the invariant culture first and in the current one second, so `0.5` and `0,5` both work. What the core task and the rule need is asked through [OpenBuildingMatchOptionsMessage\(PostgreSQLOpenBuildingMatchTaskOptions\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingMatchOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OpenBuildingMatchOptionsMessage\(DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions\)') before OK returns, so the operator is told while the dialog is open.
 
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#60), so a run repeated after the tray was restarted is not typed again. Importing only fills the controls: nothing runs until OK, and OK validates the imported values like typed ones.
+
 The window works on a copy - the options and their rule parameters - so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 
 ```csharp
@@ -460,6 +462,25 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions)'></a>
+
+## OpenBuildingMatchOptionsWindow\.SetControls\(PostgreSQLOpenBuildingMatchTaskOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before\. Internal so a fact can fill a window
+from a settings file the way Import does, without a file dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions postgreSQLOpenBuildingMatchTaskOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions).postgreSQLOpenBuildingMatchTaskOptions'></a>
+
+`postgreSQLOpenBuildingMatchTaskOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions')
+
+The options to show\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.SetParameters(DiGi.GIS.PostgreSQL.Classes.OpenBuildingMatchParameters)'></a>
 
@@ -537,6 +558,70 @@ The number read, or zero\.
 #### Returns
 [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
 True when the text is a finite number\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions,string)'></a>
+
+## OpenBuildingMatchOptionsWindow\.TryReadOptions\(bool, PostgreSQLOpenBuildingMatchTaskOptions, string\) Method
+
+Reads every control into a candidate set of options, writing nothing and showing no message\.
+
+Complete (OK) requires at least one dataset and a scope, and finishes with [OpenBuildingMatchOptionsMessage\(PostgreSQLOpenBuildingMatchTaskOptions\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingMatchOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OpenBuildingMatchOptionsMessage\(DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions\)'), so the rule and the scope of the run are checked while the dialog can still be corrected. Export reads the same controls without those requirements - no dataset checked is an empty set, never "all", and an empty scope is left out - so a half-prepared window can be saved; what is still refused is what could not be written back as typed: a rule parameter that is not a finite number and a bounding box with only some of its four coordinates. A file out of the rule's range is refused by OK when it is read back, exactly as when it is typed.
+
+```csharp
+internal bool TryReadOptions(bool complete, out DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions? options, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: a dataset and a scope are required and the whole options set is validated\. False for an export: an unfinished window is saved as it stands\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions,string).options'></a>
+
+`options` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions')
+
+The options the controls describe, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the controls read into options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryReadSettings(string,string)'></a>
+
+## OpenBuildingMatchOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one open building match options object is accepted: a
+file of another window's settings carries a different type name and cannot be read as this one, and a
+file holding several objects describes several settings, none of which is this window's\.
+
+```csharp
+internal static DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingMatchTaskOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingMatchOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingmatchtaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingMatchTaskOptions')  
+The setting the file holds, or null when it holds none\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuilding2DRefreshOptionsWindow'></a>
 
