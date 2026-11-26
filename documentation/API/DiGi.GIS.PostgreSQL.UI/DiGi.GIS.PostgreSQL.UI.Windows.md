@@ -189,6 +189,8 @@ The SHA-256 is never typed. The field is shown disabled with the caption saying 
 
 Exactly one scope form has to be filled - a county selection or the four coordinates of an EPSG:2180 box - and OK still refuses when either is missing or both are given, because both is ambiguous and neither has no run. What the core task enforces is asked here first through [OpenBuildingImportOptionsMessage\(PostgreSQLOpenBuildingImportTaskOptions\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.OpenBuildingImportOptionsMessage(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.OpenBuildingImportOptionsMessage\(DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions\)'), so the operator is told while the dialog is open rather than from a failed run's log.
 
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#58), so a run repeated after the tray was restarted is not typed again. Importing only fills the controls: nothing runs until OK, and OK validates the imported values like typed ones. A file written for another dataset is refused, because the row fixes the dataset.
+
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 
 ```csharp
@@ -255,6 +257,27 @@ private void AddSourcePaths(System.Collections.Generic.IEnumerable<string> paths
 
 The paths to add\.
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.CreateOptions(bool)'></a>
+
+## OpenBuildingImportOptionsWindow\.CreateOptions\(bool\) Method
+
+Reads the controls into a new copy of the window's options, telling the operator what cannot be read\.
+
+```csharp
+private DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions? CreateOptions(bool complete);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.CreateOptions(bool).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: a scope is required\. False for an export: an empty county selection or four blank coordinates are kept as no scope\.
+
+#### Returns
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingimporttaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions')  
+The options the controls describe, or null when a value could not be read; the reason has been shown\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.DisplayName(string)'></a>
 
 ## OpenBuildingImportOptionsWindow\.DisplayName\(string\) Method
@@ -287,6 +310,40 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions)'></a>
+
+## OpenBuildingImportOptionsWindow\.SetControls\(PostgreSQLOpenBuildingImportTaskOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave out clears its control rather than keeping what was typed before\.
+
+```csharp
+private void SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions options);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions).options'></a>
+
+`options` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlopenbuildingimporttaskoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions')
+
+The options to show\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.SetCounties(System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_)'></a>
+
+## OpenBuildingImportOptionsWindow\.SetCounties\(IEnumerable\<AdministrativeAreal2DReference\>\) Method
+
+Fills the county list, sorted by code and then by identifier\. The selection is set by [SetControls\(PostgreSQLOpenBuildingImportTaskOptions\)](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLOpenBuildingImportTaskOptions) 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.OpenBuildingImportOptionsWindow\.SetControls\(DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLOpenBuildingImportTaskOptions\)')\.
+
+```csharp
+private void SetCounties(System.Collections.Generic.IEnumerable<DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.SetCounties(System.Collections.Generic.IEnumerable_DiGi.GIS.PostgreSQL.Classes.AdministrativeAreal2DReference_).administrativeAreal2DReferences'></a>
+
+`administrativeAreal2DReferences` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.administrativeareal2dreference 'DiGi\.GIS\.PostgreSQL\.Classes\.AdministrativeAreal2DReference')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The county parts to list\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.OpenBuildingImportOptionsWindow.SetScopeControls()'></a>
 
