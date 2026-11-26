@@ -1055,6 +1055,8 @@ The number of solves run at once: 0 is automatic, half the logical processors; 1
 
 The counties matter most. A solve costs seconds per building and radius, so an unscoped run is the whole country several times over - the window never leaves with no county chosen.
 
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#59), so a run repeated after the tray was restarted is not typed again. Importing only fills the controls: nothing runs until OK, and OK validates the imported values like typed ones.
+
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 
 ```csharp
@@ -1104,6 +1106,36 @@ public DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOp
 [DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.solar.classes.postgresqlbuildingsolarradiationsolveoptions 'DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions')
 ### Methods
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.CreateOptions(bool,string)'></a>
+
+## PostgreSQLBuildingSolarRadiationSolveOptionsWindow\.CreateOptions\(bool, string\) Method
+
+Reads the controls into a new copy of the window's options, telling what cannot be read\. The refusal is
+returned rather than shown: [TryAccept\(string\)](DiGi.GIS.PostgreSQL.UI.Windows.md#DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.TryAccept(string) 'DiGi\.GIS\.PostgreSQL\.UI\.Windows\.PostgreSQLBuildingSolarRadiationSolveOptionsWindow\.TryAccept\(string\)') hands it to OK to display, and Export
+shows it itself, so a value is never reported twice\. Internal so a fact can read a half\-filled window the
+way Export does, without a file dialog\.
+
+```csharp
+internal DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOptions? CreateOptions(bool complete, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.CreateOptions(bool,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: a county and a radius are required\. False for an export: an empty county selection or an empty radii list is kept as no scope, so a half\-prepared window can still be saved\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.CreateOptions(bool,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.solar.classes.postgresqlbuildingsolarradiationsolveoptions 'DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions')  
+The options the controls describe, or null when a value could not be read\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.InitializeComponent()'></a>
 
 ## PostgreSQLBuildingSolarRadiationSolveOptionsWindow\.InitializeComponent\(\) Method
@@ -1115,6 +1147,26 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOptions)'></a>
+
+## PostgreSQLBuildingSolarRadiationSolveOptionsWindow\.SetControls\(PostgreSQLBuildingSolarRadiationSolveOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before\. The captions stay in the XAML: the
+designer does not run this code, only the values do\. Internal so a fact can fill a window from a settings
+file the way Import does, without a file dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOptions options);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOptions).options'></a>
+
+`options` [DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.solar.classes.postgresqlbuildingsolarradiationsolveoptions 'DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions')
+
+The options to show\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.TryAccept(string)'></a>
 
@@ -1139,6 +1191,35 @@ The reason the dialog cannot be accepted, or null when it can\.
 #### Returns
 [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
 True when the options were written; false when a control was refused, leaving them untouched\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.TryReadSettings(string,string)'></a>
+
+## PostgreSQLBuildingSolarRadiationSolveOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one solve options object is accepted: a file of another
+window's settings answers a different type name and cannot be read as this one, and a file holding several
+objects describes several settings, none of which is this window's\.
+
+```csharp
+internal static DiGi.GIS.PostgreSQL.Solar.Classes.PostgreSQLBuildingSolarRadiationSolveOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.solar.classes.postgresqlbuildingsolarradiationsolveoptions 'DiGi\.GIS\.PostgreSQL\.Solar\.Classes\.PostgreSQLBuildingSolarRadiationSolveOptions')  
+The setting the file holds, or null when it holds none\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow'></a>
 
