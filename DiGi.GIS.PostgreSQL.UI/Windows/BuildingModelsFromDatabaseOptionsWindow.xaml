@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DiGi.GIS.PostgreSQL.UI.Windows"
         xmlns:controls="clr-namespace:DiGi.UI.WPF.Controls;assembly=DiGi.UI.WPF"
         mc:Ignorable="d"
-        Title="Create BuildingModels from database" Height="480" Width="560" MinHeight="360" MinWidth="440"
+        Title="Create BuildingModels from database" Height="480" Width="680" MinHeight="360" MinWidth="660"
         WindowStartupLocation="CenterScreen"
         WindowStyle="SingleBorderWindow"
         Icon="pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/DiGi.GIS.ico">
@@ -38,6 +38,11 @@
 
             <Button x:Name="Button_ReportDirectory" Grid.Column="2" Content="Browse..." Width="70" Height="23" Margin="5,0,0,0" VerticalAlignment="Center" Click="Button_ReportDirectory_Click" />
         </Grid>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,5,5">
+            <Button x:Name="Button_ImportSettings" Content="Import settings..." Width="110" Height="23" Click="Button_ImportSettings_Click" ToolTip="Fills the window from a settings file written by Export settings. Nothing runs until OK" />
+            <Button x:Name="Button_ExportSettings" Content="Export settings..." Width="110" Height="23" Margin="8,0,0,0" Click="Button_ExportSettings_Click" ToolTip="Writes what the window holds now - the counties, resume, report directory - to a settings file" />
+        </StackPanel>
 
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
             <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
