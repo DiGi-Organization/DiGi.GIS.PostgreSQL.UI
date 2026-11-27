@@ -702,11 +702,13 @@ Interaction logic for PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindo
 
 Asks for the settings that decide what a run touches and how long it takes - which counties, the command timeout, the batch size, whether finished buildings are skipped, whether party walls are measured, and how many batches of a county run at once. The run reads the stored building models of the counties in scope, so the counties decide its reach and its cost; left unscoped it walks every county part in the country.
 
-Every county is selected by default, so opening the dialog confirms the national scope rather than inviting it; deselecting everything is still refused at OK, because an empty selection is not the same as no selection and neither is a safe thing to leave this window with by accident.
+Every county is selected by default, so opening the dialog confirms the national scope rather than inviting it; deselecting everything is still refused at OK, because an empty selection is not the same as no selection and neither is a safe thing to leave this window with by accident. For the same reason an empty selection does not export: the file format has no "none" this window could show again, so Export refuses it with the message OK gives.
 
 Party walls decide most of the cost: with them the run also reads the outlines and the stored models of the neighbours of every batch, without them it only classifies the models of the counties in scope and leaves the party wall columns exactly as they were. The box starts from the options, so it is checked unless a run was configured otherwise.
 
 The parallel batches decide how many batches of one county are read, classified and written at once - 0 takes half of the logical processors, 1 is the sequential run. The stored rows and the counters do not depend on it, but the memory of the run grows with that number times the batch size, so it is worth no more than the host can hold.
+
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#68), so a run repeated after the tray was restarted is not typed again. Importing fills the controls: a file with no county list opens with every county selected, the way the window always shows the unscoped run. Nothing runs until OK, and OK validates the imported values like typed ones.
 
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 
@@ -768,6 +770,114 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataExternalComponentsUpdateOptions)'></a>
+
+## PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow\.SetControls\(PostgreSQLBuildingDataExternalComponentsUpdateOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before\. One rule differs from every other
+window: options with no county list select every county, because the unscoped run is what this window
+always shows for them; options naming counties select exactly those\. Internal so a fact can fill a
+window from a settings file the way Import does, without a file dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataExternalComponentsUpdateOptions postgreSQLBuildingDataExternalComponentsUpdateOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataExternalComponentsUpdateOptions).postgreSQLBuildingDataExternalComponentsUpdateOptions'></a>
+
+`postgreSQLBuildingDataExternalComponentsUpdateOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataExternalComponentsUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingdataexternalcomponentsupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataExternalComponentsUpdateOptions')
+
+The options to show\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.TryGetOptions(string)'></a>
+
+## PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow\.TryGetOptions\(string\) Method
+
+Reads every control into the window's options and checks them, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\.
+
+The options are written only when every control reads, a county is selected and the whole-number rules pass; a refusal leaves them as they were. The member with no control - the party wall distance - keeps the value the window was opened with.
+
+```csharp
+internal bool TryGetOptions(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.TryGetOptions(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls cannot start a run, or null when they can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options now hold the controls' values and can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataExternalComponentsUpdateOptions,string)'></a>
+
+## PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow\.TryReadOptions\(bool, PostgreSQLBuildingDataExternalComponentsUpdateOptions, string\) Method
+
+Reads every control into a candidate set of options, writing nothing and showing no message\.
+
+The county selection is required on both paths, unlike every other window's scope: this one shows "no county set" as every county selected, so an emptied list could not be written back as typed and the file would come back as the national scope - Export refuses it with the message OK gives. The range rules (timeout of at least zero, batch size of at least one, parallel batches of at least zero) are OK's only, so a half-configured window still exports; what is refused on both paths is what could not be written back as typed: a box that does not hold a whole number. The candidate is built on a copy of the window's options, so the member with no control - the party wall distance - travels in the file exactly as the copy holds it and is never changed by a read.
+
+```csharp
+internal bool TryReadOptions(bool complete, out DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataExternalComponentsUpdateOptions? options, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataExternalComponentsUpdateOptions,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: every rule applies\. False for an export: the ranges are left out, the county selection is still required\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataExternalComponentsUpdateOptions,string).options'></a>
+
+`options` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataExternalComponentsUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingdataexternalcomponentsupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataExternalComponentsUpdateOptions')
+
+The options the controls describe, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataExternalComponentsUpdateOptions,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the controls read into options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.TryReadSettings(string,string)'></a>
+
+## PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one external components options object is accepted: a
+file of another window's settings carries a different type name and cannot be read as this one, and a
+file holding several objects describes several settings, none of which is this window's\.
+
+```csharp
+internal static DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataExternalComponentsUpdateOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataExternalComponentsUpdateOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataExternalComponentsUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingdataexternalcomponentsupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataExternalComponentsUpdateOptions')  
+The setting the file holds, or null when it holds none\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow'></a>
 
