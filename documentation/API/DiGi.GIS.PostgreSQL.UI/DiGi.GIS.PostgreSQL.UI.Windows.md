@@ -3581,6 +3581,8 @@ Asks for the inputs of one YOLO detector training run: the scenario, the countie
 
 <b>Test areas are kept out of training.</b> The exclusion buffer and the exclusion boxes (DiGi.GIS.PostgreSQL.UI#39) edit [DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingDatasetOptions\.ExclusionBuffer](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yolotrainingdatasetoptions.exclusionbuffer 'DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingDatasetOptions\.ExclusionBuffer') and [DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingDatasetOptions\.ExclusionBoundingBoxes](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yolotrainingdatasetoptions.exclusionboundingboxes 'DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingDatasetOptions\.ExclusionBoundingBoxes'), parsed by [TryParseYOLOExclusionBuffer\(string, double, string\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBuffer(string,double,string) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.TryParseYOLOExclusionBuffer\(string, double, string\)') and [TryParseYOLOExclusionBoundingBoxes\(string, List&lt;YOLOExclusionBoundingBox&gt;, string\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.TryParseYOLOExclusionBoundingBoxes(string,System.Collections.Generic.List_DiGi.GIS.YOLO.UI.Classes.YOLOExclusionBoundingBox_,string) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.TryParseYOLOExclusionBoundingBoxes\(string, System\.Collections\.Generic\.List\<DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOExclusionBoundingBox\>, string\)'): an empty buffer is the class default, an empty box list excludes nothing, and a malformed line refuses OK with its line number.
 
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#76), so a run repeated after the tray was restarted is not typed again. The scenario is not part of the file - it stays as chosen, and the buttons' tooltips say so - and Import only fills the controls and re-runs the interrupted-run evaluation for the imported run name and project directory. Nothing runs until OK, and OK validates the imported values like typed ones; the resume stashes, the checkpoint and the runner path are window state and never reach the file.
+
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were, and every member the window has no control for carries through untouched.
 
 ```csharp
@@ -3720,6 +3722,28 @@ public void InitializeComponent();
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.SetControls(DiGi.GIS.YOLO.UI.Classes.YOLOTrainingRunOptions)'></a>
+
+## YOLOTrainingOptionsWindow\.SetControls\(YOLOTrainingRunOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before: an empty step list reads as every
+step, exactly as the runner reads it\. The scenario combo is deliberately not touched \- the scenario is
+not part of the settings file and stays as chosen; the resume offer is the interrupted\-run evaluation's
+to make, so the caller runs it after this returns\. Internal so a fact can fill a window from a settings
+file the way Import does, without a file dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.YOLO.UI.Classes.YOLOTrainingRunOptions yOLOTrainingRunOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.SetControls(DiGi.GIS.YOLO.UI.Classes.YOLOTrainingRunOptions).yOLOTrainingRunOptions'></a>
+
+`yOLOTrainingRunOptions` [DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingRunOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yolotrainingrunoptions 'DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingRunOptions')
+
+The options to show\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.SetStallInputsEnabled()'></a>
 
 ## YOLOTrainingOptionsWindow\.SetStallInputsEnabled\(\) Method
@@ -3729,3 +3753,91 @@ Enables the automatic\-resume count and the stall limit only when the training s
 ```csharp
 private void SetStallInputsEnabled();
 ```
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.TryGetOptions(string)'></a>
+
+## YOLOTrainingOptionsWindow\.TryGetOptions\(string\) Method
+
+Reads every control into the window's options and checks them \- the fact\-driven part of OK, which writes the candidate over the window's options and takes the scenario from the selection box\. The scenario is never read from a file: it is not in one\.
+
+```csharp
+internal bool TryGetOptions(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.TryGetOptions(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls cannot start a run, or null when they can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options now hold the controls' values and the scenario its selection, and can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.TryReadOptions(bool,DiGi.GIS.YOLO.UI.Classes.YOLOTrainingRunOptions,string)'></a>
+
+## YOLOTrainingOptionsWindow\.TryReadOptions\(bool, YOLOTrainingRunOptions, string\) Method
+
+Reads every control into a candidate set of options and checks it, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\.
+
+The options are written only when every control reads and the whole gate OK has always applied passes - at least one step, at least one county, the hyperparameter ranges, the stall pairing, the required directories, the resume pairing and the exclusion text - and the result is built exactly as OK builds it: the scenario of the current selection applied to a copy of the window's options first, then every control over it. A refusal leaves the window's options as they were.
+
+Export reads the same controls without the gates, so a half-prepared window can be saved: no county and no dataset directory write nothing, and relative directories, missing start weights and out-of-range numbers still export, to be refused by OK on read-back. What is refused on both paths is what could not be written back as typed - a box that does not hold its number, a stall limit that is not a number of minutes, exclusion text that does not parse - and an empty step list, which the runner reads as every step and so could not round-trip. The scenario is never read from the file: it is not in it.
+
+```csharp
+internal bool TryReadOptions(bool complete, out DiGi.GIS.YOLO.UI.Classes.YOLOTrainingRunOptions? options, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.TryReadOptions(bool,DiGi.GIS.YOLO.UI.Classes.YOLOTrainingRunOptions,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: every gate applies\. False for an export: an unfinished window is saved as it stands\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.TryReadOptions(bool,DiGi.GIS.YOLO.UI.Classes.YOLOTrainingRunOptions,string).options'></a>
+
+`options` [DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingRunOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yolotrainingrunoptions 'DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingRunOptions')
+
+The options the controls describe, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.TryReadOptions(bool,DiGi.GIS.YOLO.UI.Classes.YOLOTrainingRunOptions,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the controls read into options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.TryReadSettings(string,string)'></a>
+
+## YOLOTrainingOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one YOLO training options object is accepted: a
+file of another window's settings carries a different type name and cannot be read as this one, and a
+file holding several objects describes several settings, none of which is this window's\. The scenario
+is not part of any of them \- it is not written and not read\.
+
+```csharp
+internal static DiGi.GIS.YOLO.UI.Classes.YOLOTrainingRunOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingRunOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yolotrainingrunoptions 'DiGi\.GIS\.YOLO\.UI\.Classes\.YOLOTrainingRunOptions')  
+The setting the file holds, or null when it holds none\.
