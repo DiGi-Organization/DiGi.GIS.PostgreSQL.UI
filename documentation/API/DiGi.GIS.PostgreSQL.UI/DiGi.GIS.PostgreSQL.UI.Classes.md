@@ -3249,13 +3249,13 @@ The user database is not the database the rest of this application works against
 
 There is no base task to hand the run to. [DiGi\.User\.PostgreSQL\.Classes\.UserPostgreSQLConverter](https://learn.microsoft.com/en-us/dotnet/api/digi.user.postgresql.classes.userpostgresqlconverter 'DiGi\.User\.PostgreSQL\.Classes\.UserPostgreSQLConverter') already carries every database step, and creating a user is three of them.
 
-Every refusal - a taken email, a cancelled dialog, a database that cannot be reached - is thrown as a [DiGi\.Core\.Classes\.BackgroundTaskFailureException](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtaskfailureexception 'DiGi\.Core\.Classes\.BackgroundTaskFailureException') rather than returned, so the task row carries the reason on hover instead of a bare Failed with the reason buried in the log file.
+Every refusal - a taken email, a database that cannot be reached - is thrown as a [DiGi\.Core\.Classes\.BackgroundTaskFailureException](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtaskfailureexception 'DiGi\.Core\.Classes\.BackgroundTaskFailureException') rather than returned, so the task row carries the reason on hover instead of a bare Failed with the reason buried in the log file. A cancelled dialog is not a refusal: the run ends as canceled through [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask'), and the tray logs no error (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#61).
 
 ```csharp
-public class UIPostgreSQLUserCreateTask : DiGi.Core.Classes.BackgroundTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
+public class UIPostgreSQLUserCreateTask : DiGi.Core.Classes.CancelableBackgroundTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
 ```
 
-Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → UIPostgreSQLUserCreateTask
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → UIPostgreSQLUserCreateTask
 
 Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
 ### Constructors
@@ -3278,15 +3278,22 @@ public UIPostgreSQLUserCreateTask(DiGi.User.PostgreSQL.Classes.UserPostgreSQLCon
 The converter addressing the user database the new user is written to\.
 ### Methods
 
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLUserCreateTask.ExecuteAsync()'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLUserCreateTask.ExecuteAsync(System.Threading.CancellationToken)'></a>
 
-## UIPostgreSQLUserCreateTask\.ExecuteAsync\(\) Method
+## UIPostgreSQLUserCreateTask\.ExecuteAsync\(CancellationToken\) Method
 
-When overridden in a derived class, defines the work to be executed by the background task\.
+When overridden in a derived class, defines the work to be executed with a cancellation token\.
 
 ```csharp
-protected override System.Threading.Tasks.Task<bool> ExecuteAsync();
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.Threading.CancellationToken token);
 ```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLUserCreateTask.ExecuteAsync(System.Threading.CancellationToken).token'></a>
+
+`token` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+The cancellation token to observe\.
 
 #### Returns
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
