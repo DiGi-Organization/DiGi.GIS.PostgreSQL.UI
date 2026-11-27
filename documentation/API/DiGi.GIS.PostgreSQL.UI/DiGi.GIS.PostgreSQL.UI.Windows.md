@@ -13,6 +13,8 @@ Asks what decides the reach of a BuildingModel regeneration from the database: w
 
 No county selected means every county, which is what the task has always meant.
 
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#75), so a run repeated after the tray was restarted is not typed again. Importing fills the controls; nothing runs until OK, and OK validates the imported values like typed ones. The report directory is a machine-specific path: it exports as typed and OK keeps checking that it exists on read-back.
+
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 
 ```csharp
@@ -73,6 +75,114 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions)'></a>
+
+## BuildingModelsFromDatabaseOptionsWindow\.SetControls\(BuildingModelsFromDatabaseOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before: options with no county list clear
+the selection \(every county is what an unscoped run means, shown by SetCounties when the window
+opens\) and options with no report directory empty the box\. Internal so a fact can fill a window from
+a settings file the way Import does, without a file dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions buildingModelsFromDatabaseOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions).buildingModelsFromDatabaseOptions'></a>
+
+`buildingModelsFromDatabaseOptions` [BuildingModelsFromDatabaseOptions](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.BuildingModelsFromDatabaseOptions')
+
+The options to show\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.TryGetOptions(string)'></a>
+
+## BuildingModelsFromDatabaseOptionsWindow\.TryGetOptions\(string\) Method
+
+Reads every control into the window's options and checks them, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\.
+
+The options are written only when every control reads and a report directory that is given exists; a refusal leaves them as they were. The empty county scope is legal here, as it always was - every county is what the task means.
+
+```csharp
+internal bool TryGetOptions(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.TryGetOptions(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls cannot start a run, or null when they can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options now hold the controls' values and can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions,string)'></a>
+
+## BuildingModelsFromDatabaseOptionsWindow\.TryReadOptions\(bool, BuildingModelsFromDatabaseOptions, string\) Method
+
+Reads every control into a candidate set of options, writing nothing and showing no message\.
+
+Complete (OK) applies the rule the window has always applied - a report directory that is given has to exist (blank means the directory the application was launched from, which the task resolves) - and finishes with that message. Export reads the same controls without it, so a half-prepared window can be saved: a report directory that does not exist exports, because it is a string that could be written back as typed, and no county selected writes no county list - never an empty set. The window holds no free numbers, so an export never fails on a value; only the file-level refusals apply.
+
+```csharp
+internal bool TryReadOptions(bool complete, out DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions? options, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: the report directory that is given has to exist\. False for an export: an unfinished window is saved as it stands\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions,string).options'></a>
+
+`options` [BuildingModelsFromDatabaseOptions](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.BuildingModelsFromDatabaseOptions')
+
+The options the controls describe, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the controls read into options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.TryReadSettings(string,string)'></a>
+
+## BuildingModelsFromDatabaseOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one BuildingModels\-from\-database options object is accepted: a
+file of another window's settings carries a different type name and cannot be read as this one, and a
+file holding several objects describes several settings, none of which is this window's\.
+
+```csharp
+internal static DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.BuildingModelsFromDatabaseOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[BuildingModelsFromDatabaseOptions](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.BuildingModelsFromDatabaseOptions 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.BuildingModelsFromDatabaseOptions')  
+The setting the file holds, or null when it holds none\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.MainWindow'></a>
 
