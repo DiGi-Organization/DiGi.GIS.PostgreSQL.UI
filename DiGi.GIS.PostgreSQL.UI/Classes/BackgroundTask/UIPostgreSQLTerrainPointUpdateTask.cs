@@ -92,6 +92,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLTerrainPointUpdateOptions is null)
             {
                 Serilog.Modify.Log("Terrain point options were cancelled - nothing was sampled");
+                CancelRun();
                 return false;
             }
 

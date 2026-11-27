@@ -121,11 +121,13 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             });
 
             // A cancelled dialog, or a declined confirmation, leaves the options of an earlier run as they were -
-            // the window works on a copy - and ends the run here rather than starting one nobody scoped.
+            // the window works on a copy - and ends the run here as canceled rather than starting one nobody scoped
+            // (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#61).
             if (yOLOTrainingRunOptions is null)
             {
                 Serilog.Modify.Log("YOLO training options were cancelled - nothing was run");
-                return true;
+                CancelRun();
+                return false;
             }
 
             YOLOTrainingScenario = yOLOTrainingScenario;

@@ -59,6 +59,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLOrtoSheetUpdateOptions is null)
             {
                 Serilog.Modify.Log("Sheet import options were cancelled - nothing was imported");
+                CancelRun();
                 return false;
             }
 

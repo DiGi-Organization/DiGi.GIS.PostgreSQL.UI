@@ -133,6 +133,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (buildingModelsFromDatabaseOptions_Dialog is null)
             {
                 Serilog.Modify.Log("BuildingModels options were cancelled - nothing was written");
+                CancelRun();
                 return false;
             }
 

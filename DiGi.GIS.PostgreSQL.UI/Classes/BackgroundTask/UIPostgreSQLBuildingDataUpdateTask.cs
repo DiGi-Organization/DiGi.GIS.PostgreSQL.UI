@@ -74,6 +74,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLBuildingDataUpdateOptions is null)
             {
                 Serilog.Modify.Log("Building data options were cancelled - nothing was written");
+                CancelRun();
                 return false;
             }
 

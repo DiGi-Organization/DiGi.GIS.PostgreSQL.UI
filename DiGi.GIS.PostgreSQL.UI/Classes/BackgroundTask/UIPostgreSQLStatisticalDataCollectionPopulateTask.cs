@@ -66,8 +66,11 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                     }
                 }
 
+                // No path means the file dialog was cancelled: the run ends as canceled, not as a failure
+                // (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#61).
                 if (string.IsNullOrWhiteSpace(selectedPath))
                 {
+                    CancelRun();
                     return false;
                 }
 

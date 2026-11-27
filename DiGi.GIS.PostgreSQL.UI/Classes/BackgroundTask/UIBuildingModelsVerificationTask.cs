@@ -87,6 +87,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 bool? dialogResult = openFolderDialog.ShowDialog();
                 if (dialogResult is null || !dialogResult.HasValue || !dialogResult.Value)
                 {
+                    CancelRun();
                     return false;
                 }
 

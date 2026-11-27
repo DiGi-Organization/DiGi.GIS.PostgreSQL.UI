@@ -128,6 +128,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 if (string.IsNullOrWhiteSpace(statisticalUnitFilePath) || string.IsNullOrWhiteSpace(path))
                 {
                     Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Information, "{Type}: cancelled - no unit file or collection file selected", nameof(UIStatisticalDataCollectionsWriteTask));
+                    CancelRun();
                     return false;
                 }
             }

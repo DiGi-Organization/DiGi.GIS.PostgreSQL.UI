@@ -6,6 +6,7 @@ using DiGi.User.Enums;
 using DiGi.User.PostgreSQL.Classes;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DiGi.GIS.PostgreSQL.UI.Classes
@@ -15,9 +16,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
     /// <para>The password is stored only as a PBKDF2 derived key with its salt and iteration count. The text the operator typed reaches the derivation and nothing else - not the row, not the log, and not a field on this task.</para>
     /// <para>The user database is not the database the rest of this application works against: users live where <c>User_PostgreSQL_Main.conf</c> points, which is what the Web API reads when it authenticates a login. A user written anywhere else could not log in.</para>
     /// <para>There is no base task to hand the run to. <see cref="UserPostgreSQLConverter"/> already carries every database step, and creating a user is three of them.</para>
-    /// <para>Every refusal - a taken email, a cancelled dialog, a database that cannot be reached - is thrown as a <see cref="BackgroundTaskFailureException"/> rather than returned, so the task row carries the reason on hover instead of a bare Failed with the reason buried in the log file.</para>
+    /// <para>Every refusal - a taken email, a database that cannot be reached - is thrown as a <see cref="BackgroundTaskFailureException"/> rather than returned, so the task row carries the reason on hover instead of a bare Failed with the reason buried in the log file. A cancelled dialog is not a refusal: the run ends as canceled through <see cref="CancelableBackgroundTask"/>, and the tray logs no error (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#61).</para>
     /// </summary>
-    public class UIPostgreSQLUserCreateTask : BackgroundTask, IGISPostgreSQLUIObject
+    public class UIPostgreSQLUserCreateTask : CancelableBackgroundTask, IGISPostgreSQLUIObject
     {
         private readonly UserPostgreSQLConverter userPostgreSQLConverter;
 
@@ -31,7 +32,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
         }
 
         /// <inheritdoc />
-        protected override async Task<bool> ExecuteAsync()
+        protected override async Task<bool> ExecuteAsync(CancellationToken token)
         {
             // The dialog is a window, and this runs on a thread pool thread, where a window cannot be created at
             // all. Without an application there is no user interface thread to move it to.
@@ -63,13 +64,13 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 userLevel = postgreSQLUserCreateOptionsWindow.UserLevel;
             });
 
-            // A cancelled dialog leaves these unassigned and ends the run here, having written nothing. Thrown
-            // rather than returned so the task row carries the reason - a bare false would leave the row saying
-            // only "Failed" with the reason buried in the log file.
+            // A cancelled dialog leaves these unassigned and ends the run here as canceled, having written nothing -
+            // not as a failure, which the tray would log as an error (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#61).
             if (email is null || password is null || userLevel is null)
             {
                 Serilog.Modify.Log("Creating a user was cancelled - nothing was written");
-                throw new BackgroundTaskFailureException("Creating a user was cancelled - nothing was written");
+                CancelRun();
+                return false;
             }
 
             // The whole storage chain, before the duplicate check below reads any of it: CreateTableAsync creates
@@ -79,7 +80,10 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             // It has to come first because the duplicate check is a read, and a read finds neither of the first two
             // for itself - an absent database fails the connection with 3D000, and a database without the table
             // fails the statement with 42P01. Neither is something a read should repair.
-            if (!await userPostgreSQLConverter.CreateTableAsync())
+            // A Stop is honoured only before the first write: the table set-up and the duplicate check take the
+            // run's token, while the insert, the credential and the undo below take none, so a stop never leaves a
+            // user row half written or a failed write not undone.
+            if (!await userPostgreSQLConverter.CreateTableAsync(cancellationToken: token))
             {
                 Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "The user database could not be created or reached - no user was created");
                 throw new BackgroundTaskFailureException("The user database could not be created or reached - no user was created");
@@ -87,7 +91,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             // Refused rather than upserted. InsertAsync writes ON CONFLICT (email) DO UPDATE, so without this
             // check a taken email would silently rewrite that user's name and level instead of failing.
-            if (await userPostgreSQLConverter.GetUserByEmailAsync(email) is not null)
+            if (await userPostgreSQLConverter.GetUserByEmailAsync(email, cancellationToken: token) is not null)
             {
                 Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "A user with the email {Email} already exists - no user was created", email);
                 throw new BackgroundTaskFailureException($"A user with the email {email} already exists - no user was created");
@@ -102,7 +106,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             // InsertAsync creates the users table when it is not there yet and adds the credential columns to one
             // that predates them, so the first run against a database is also what migrates it.
-            List<string> ids = await userPostgreSQLConverter.InsertAsync([new DiGi.User.Classes.User(email) { FirstName = firstName, LastName = lastName, Level = (int)userLevel.Value }]);
+            List<string> ids = await userPostgreSQLConverter.InsertAsync([new DiGi.User.Classes.User(email) { FirstName = firstName, LastName = lastName, Level = (int)userLevel.Value }], cancellationToken: CancellationToken.None);
             if (ids.Count == 0)
             {
                 Serilog.Modify.Log(Serilog.Enums.LogEventLevel.Error, "The user {Email} could not be written", email);
@@ -119,9 +123,9 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                     // Only a row that carries no credential at all. InsertAsync upserts and deliberately leaves an
                     // existing user's credential columns alone, so a row that has one belonged to somebody before
                     // this run started and must not be removed by it.
-                    if (await userPostgreSQLConverter.GetUserCredentialAsync(email) is null)
+                    if (await userPostgreSQLConverter.GetUserCredentialAsync(email, cancellationToken: CancellationToken.None) is null)
                     {
-                        await userPostgreSQLConverter.DeleteUserByEmailAsync(email);
+                        await userPostgreSQLConverter.DeleteUserByEmailAsync(email, cancellationToken: CancellationToken.None);
                     }
                 }
                 catch (Exception exception)
@@ -136,7 +140,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             try
             {
-                credentialWritten = await userPostgreSQLConverter.SetUserCredentialAsync(userCredential);
+                credentialWritten = await userPostgreSQLConverter.SetUserCredentialAsync(userCredential, cancellationToken: CancellationToken.None);
             }
             catch
             {

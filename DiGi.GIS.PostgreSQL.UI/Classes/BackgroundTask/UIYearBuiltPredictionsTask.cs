@@ -126,12 +126,13 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
 
             // A cancelled dialog, or a declined confirmation, leaves the options of an earlier run as they were - the
             // window works on a copy - and ends the run here rather than starting one nobody scoped. It is not a
-            // failure to report: the row shows a completed run that started nothing, rather than a reason nobody was
-            // refused for.
+            // failure to report: the row shows a canceled run rather than a reason nobody was refused for, and the
+            // tray logs no error (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#61).
             if (yearBuiltPredictionPipelineOptions is null)
             {
                 Serilog.Modify.Log("Year built prediction options were cancelled - nothing was run");
-                return true;
+                CancelRun();
+                return false;
             }
 
             // The two processes do not share a working directory - this one runs from wherever the tray application

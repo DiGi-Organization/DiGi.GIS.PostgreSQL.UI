@@ -70,6 +70,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLBuildingSolarRadiationContextExportOptions is null)
             {
                 Serilog.Modify.Log("{Type}: export options were cancelled - nothing was written", nameof(UIPostgreSQLBuildingSolarRadiationContextExportTask));
+                CancelRun();
                 return false;
             }
 

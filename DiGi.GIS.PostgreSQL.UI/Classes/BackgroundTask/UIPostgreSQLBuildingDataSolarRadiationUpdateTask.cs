@@ -70,6 +70,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLBuildingDataSolarRadiationUpdateOptions is null)
             {
                 Serilog.Modify.Log("{Type}: solar summary options were cancelled - nothing was written", nameof(UIPostgreSQLBuildingDataSolarRadiationUpdateTask));
+                CancelRun();
                 return false;
             }
 

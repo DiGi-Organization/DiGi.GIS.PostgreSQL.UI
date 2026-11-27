@@ -74,6 +74,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLBuildingDataExternalComponentsUpdateOptions is null)
             {
                 Serilog.Modify.Log("External components area options were cancelled - nothing was written");
+                CancelRun();
                 return false;
             }
 

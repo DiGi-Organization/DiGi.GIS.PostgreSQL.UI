@@ -108,6 +108,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 if (postgreSQLOpenBuildingImportTaskOptions is null)
                 {
                     Serilog.Modify.Log("Open building import options were cancelled - nothing was written");
+                    CancelRun();
                     return false;
                 }
 

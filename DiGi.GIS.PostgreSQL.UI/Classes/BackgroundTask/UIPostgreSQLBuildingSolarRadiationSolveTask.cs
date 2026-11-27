@@ -71,6 +71,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLBuildingSolarRadiationSolveOptions is null)
             {
                 Serilog.Modify.Log("{Type}: solve options were cancelled - nothing was solved", nameof(UIPostgreSQLBuildingSolarRadiationSolveTask));
+                CancelRun();
                 return false;
             }
 

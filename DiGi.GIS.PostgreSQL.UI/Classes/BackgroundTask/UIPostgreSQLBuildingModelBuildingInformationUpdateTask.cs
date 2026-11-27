@@ -165,6 +165,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 if (options_Dialog is null)
                 {
                     Serilog.Modify.Log("BuildingInformation options were cancelled - nothing was written");
+                    CancelRun();
                     return false;
                 }
 

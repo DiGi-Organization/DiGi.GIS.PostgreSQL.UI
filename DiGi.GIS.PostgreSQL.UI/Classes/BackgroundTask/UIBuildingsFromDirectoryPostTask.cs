@@ -47,6 +47,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             bool? dialogResult = openFolderDialog.ShowDialog();
             if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
             {
+                CancelRun();
                 return false;
             }
 
@@ -66,6 +67,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 MessageBoxResult messageBoxResult = MessageBox.Show(string.Format(CultureInfo.CurrentCulture, "The last building on the server came from:\n\n{0}\n\nContinue from that file?\n\nYes - resume from it.\nNo - import the whole directory from the start.", source_Latest), "Continue", MessageBoxButton.YesNoCancel);
                 if (messageBoxResult == MessageBoxResult.Cancel)
                 {
+                    CancelRun();
                     return false;
                 }
 

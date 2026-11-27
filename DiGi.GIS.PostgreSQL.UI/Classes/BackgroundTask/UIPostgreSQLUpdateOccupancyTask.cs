@@ -67,6 +67,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLUpdateOccupancyOptions is null)
             {
                 Serilog.Modify.Log("Occupancy options were cancelled - nothing was written");
+                CancelRun();
                 return false;
             }
 

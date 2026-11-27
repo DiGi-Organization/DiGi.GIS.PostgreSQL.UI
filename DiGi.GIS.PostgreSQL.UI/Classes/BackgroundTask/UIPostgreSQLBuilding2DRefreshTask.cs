@@ -68,6 +68,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLBuilding2DRefreshOptions is null)
             {
                 Serilog.Modify.Log("Building2D refresh options were cancelled - nothing was written");
+                CancelRun();
                 return false;
             }
 

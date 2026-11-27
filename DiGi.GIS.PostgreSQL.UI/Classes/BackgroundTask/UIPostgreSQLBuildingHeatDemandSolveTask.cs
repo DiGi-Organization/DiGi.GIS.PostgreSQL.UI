@@ -71,6 +71,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLBuildingHeatDemandSolveOptions is null)
             {
                 Serilog.Modify.Log("{Type}: heat demand options were cancelled - nothing was calculated", nameof(UIPostgreSQLBuildingHeatDemandSolveTask));
+                CancelRun();
                 return false;
             }
 

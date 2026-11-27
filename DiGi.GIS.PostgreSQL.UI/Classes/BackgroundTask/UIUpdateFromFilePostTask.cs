@@ -42,6 +42,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             result = openFileDialog.ShowDialog();
             if (result == null || !result.HasValue || !result.Value)
             {
+                CancelRun();
                 return false;
             }
 

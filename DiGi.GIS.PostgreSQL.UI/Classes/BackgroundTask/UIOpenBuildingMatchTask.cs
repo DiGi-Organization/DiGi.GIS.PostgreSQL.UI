@@ -98,6 +98,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 if (postgreSQLOpenBuildingMatchTaskOptions is null)
                 {
                     Serilog.Modify.Log("{Type}: the open building match options were cancelled - nothing was read or written", nameof(UIOpenBuildingMatchTask));
+                    CancelRun();
                     return false;
                 }
 

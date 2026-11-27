@@ -74,6 +74,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             if (postgreSQLOrtoDatasAcquisitionUpdateOptions is null)
             {
                 Serilog.Modify.Log("Acquisition backfill options were cancelled - nothing was written");
+                CancelRun();
                 return false;
             }
 

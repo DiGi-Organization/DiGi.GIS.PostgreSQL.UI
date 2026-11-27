@@ -43,6 +43,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
             MessageBoxResult messageBoxResult = MessageBox.Show("Do you want select single EPW file?", "Selection", MessageBoxButton.YesNoCancel);
             if (messageBoxResult == MessageBoxResult.Cancel)
             {
+                CancelRun();
                 return false;
             }
 
@@ -58,6 +59,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 bool? dialogResult = openFileDialog.ShowDialog();
                 if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
                 {
+                    CancelRun();
                     return false;
                 }
 
@@ -69,6 +71,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Classes
                 bool? dialogResult = openFolderDialog.ShowDialog();
                 if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
                 {
+                    CancelRun();
                     return false;
                 }
 
