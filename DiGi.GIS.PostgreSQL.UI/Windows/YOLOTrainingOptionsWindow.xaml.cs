@@ -3,10 +3,12 @@ using DiGi.GIS.PostgreSQL.UI.Enums;
 using DiGi.GIS.YOLO.UI.Classes;
 using DiGi.GIS.YOLO.UI.Enums;
 using DiGi.UI.WPF.Classes;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.Json.Nodes;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +23,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
     /// <para><b>Stalls are handled by the runner.</b> <c>Automatic resumes</c> and <c>Stall limit</c> set <see cref="YOLOTrainingRunOptions.AutoResumeCount"/> and <see cref="YOLOTrainingRunOptions.InactivityTimeout"/>: a training that stalls or crashes is continued from its own <c>last.pt</c> that many times, and a stall is what a silent training becomes after the limit. Both are enabled only with the Training step, and an empty stall limit keeps the runner's default of 15 minutes.</para>
     /// <para><b>What is not offered is the runner's to decide.</b> The dataset's confidence threshold, split, label check sizes, legacy cut-off and request sizes carry through the copy untouched at the values its README describes; they shape what the detector is trained on, and a control opened before every run invites changing them between runs that are then compared.</para>
     /// <para><b>Test areas are kept out of training.</b> The exclusion buffer and the exclusion boxes (DiGi.GIS.PostgreSQL.UI#39) edit <see cref="YOLOTrainingDatasetOptions.ExclusionBuffer"/> and <see cref="YOLOTrainingDatasetOptions.ExclusionBoundingBoxes"/>, parsed by <see cref="Query.TryParseYOLOExclusionBuffer(string?, out double, out string?)"/> and <see cref="Query.TryParseYOLOExclusionBoundingBoxes(string?, out List{YOLOExclusionBoundingBox}?, out string?)"/>: an empty buffer is the class default, an empty box list excludes nothing, and a malformed line refuses OK with its line number.</para>
+    /// <para>The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#76), so a run repeated after the tray was restarted is not typed again. The scenario is not part of the file - it stays as chosen, and the buttons' tooltips say so - and Import only fills the controls and re-runs the interrupted-run evaluation for the imported run name and project directory. Nothing runs until OK, and OK validates the imported values like typed ones; the resume stashes, the checkpoint and the runner path are window state and never reach the file.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were, and every member the window has no control for carries through untouched.</para>
     /// </summary>
     public partial class YOLOTrainingOptionsWindow : Window
@@ -60,45 +63,15 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             // throw away the start weights and epochs the operator chose last time. Only a first run is defaulted.
             this.yOLOTrainingRunOptions = yOLOTrainingRunOptions is null ? Create.YOLOTrainingRunOptions(yOLOTrainingScenario, consoleAppPath) : new YOLOTrainingRunOptions(yOLOTrainingRunOptions);
 
-            YOLOTrainingDatasetOptions? yOLOTrainingDatasetOptions = this.yOLOTrainingRunOptions.DatasetOptions;
-
-            // Selected before the handler is attached, so opening the dialog is not taken for a switch.
+            // Selected before the handler is attached, so opening the dialog is not taken for a switch. The
+            // scenario is the one control the settings file never fills - it stays as chosen.
             ComboBox_Scenario.SelectedIndex = yOLOTrainingScenario == YOLOTrainingScenario.Fresh ? 1 : 0;
             ComboBox_Scenario.SelectionChanged += ComboBox_Scenario_SelectionChanged;
 
-            TextBoxControl_DatasetDirectory.Value = yOLOTrainingDatasetOptions?.OutputDirectory;
-            TextBoxControl_StartWeightsPath.Value = this.yOLOTrainingRunOptions.StartWeightsPath;
-            TextBoxControl_Epochs.Value = this.yOLOTrainingRunOptions.Epochs.ToString(CultureInfo.InvariantCulture);
-            TextBoxControl_Patience.Value = this.yOLOTrainingRunOptions.Patience.ToString(CultureInfo.InvariantCulture);
-            TextBoxControl_ImageSize.Value = this.yOLOTrainingRunOptions.ImageSize.ToString(CultureInfo.InvariantCulture);
-            TextBoxControl_Batch.Value = this.yOLOTrainingRunOptions.Batch.ToString(CultureInfo.InvariantCulture);
-            TextBoxControl_Seed.Value = this.yOLOTrainingRunOptions.Seed.ToString(CultureInfo.InvariantCulture);
-            TextBoxControl_Device.Value = this.yOLOTrainingRunOptions.Device;
-            TextBoxControl_AutoResumeCount.Value = this.yOLOTrainingRunOptions.AutoResumeCount.ToString(CultureInfo.InvariantCulture);
-            TextBoxControl_InactivityTimeout.Value = this.yOLOTrainingRunOptions.InactivityTimeout is TimeSpan inactivityTimeout ? ((int)inactivityTimeout.TotalMinutes).ToString(CultureInfo.InvariantCulture) : null;
-            TextBoxControl_RunName.Value = this.yOLOTrainingRunOptions.RunName;
-            TextBoxControl_ProjectDirectory.Value = this.yOLOTrainingRunOptions.ProjectDirectory;
-            TextBoxControl_PythonPath.Value = this.yOLOTrainingRunOptions.PythonPath ?? yOLOTrainingDatasetOptions?.PythonPath;
-            TextBoxControl_WorkingDirectory.Value = this.yOLOTrainingRunOptions.WorkingDirectory ?? yOLOTrainingDatasetOptions?.WorkingDirectory;
-            TextBoxControl_WeightsPaths.Value = yOLOTrainingDatasetOptions?.WeightsPaths is List<string> weightsPaths ? string.Join("; ", weightsPaths) : null;
-
-            // The exclusion of the pilot test areas (DiGi.GIS.PostgreSQL.UI#39), shown as stored so reopening the
-            // dialog shows what the next build will exclude.
-            TextBoxControl_ExclusionBuffer.Value = (yOLOTrainingDatasetOptions ?? new YOLOTrainingDatasetOptions()).ExclusionBuffer.ToString("R", CultureInfo.InvariantCulture);
-            TextBox_ExclusionBoundingBoxes.Text = yOLOTrainingDatasetOptions?.ExclusionBoundingBoxes.ToSystem_String() ?? string.Empty;
-
-            // The runner reads an empty list as every step, and so does the dialog.
-            List<YOLOTrainingStep>? yOLOTrainingSteps = this.yOLOTrainingRunOptions.Steps;
-            bool Checked(YOLOTrainingStep yOLOTrainingStep)
-            {
-                return yOLOTrainingSteps is null || yOLOTrainingSteps.Count == 0 || yOLOTrainingSteps.Contains(yOLOTrainingStep);
-            }
-
-            CheckBox_Dataset.IsChecked = Checked(YOLOTrainingStep.Dataset);
-            CheckBox_LabelCheck.IsChecked = Checked(YOLOTrainingStep.LabelCheck);
-            CheckBox_Train.IsChecked = Checked(YOLOTrainingStep.Train);
-            CheckBox_Validate.IsChecked = Checked(YOLOTrainingStep.Validate);
-            CheckBox_Evaluate.IsChecked = Checked(YOLOTrainingStep.Evaluate);
+            // The boxes, the step checks and the county selection all come from here - the same call an import
+            // makes. The county pass is a no-op before the list exists; SetCounties below fills the list and
+            // applies the options' own selection, exactly as it always did.
+            SetControls(this.yOLOTrainingRunOptions);
 
             // Subscribed before the list is filled - the text of an item is decided as it is added.
             ListBoxControl_Counties.ItemAdding += ListBoxControl_Counties_ItemAdding;
@@ -148,17 +121,147 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             Close();
         }
 
-        private void Button_OK_Click(object sender, RoutedEventArgs e)
+        private void Button_ExportSettings_Click(object sender, RoutedEventArgs e)
         {
-            string title = Title ?? string.Empty;
-
-            void Warn(string message)
+            // Not complete: a half-prepared window can be saved and finished after the next import - the
+            // ranges, the required directories, the step/county floors and the resume pairing are OK's gate,
+            // not the file's. What is refused is what could not be written back as typed: a box that does not
+            // hold its number, or exclusion text that does not parse. The scenario is not written: only the
+            // YOLOTrainingRunOptions leave through this button, and the scenario stays as chosen.
+            if (!TryReadOptions(false, out YOLOTrainingRunOptions? options, out string? message_Export) || options is null)
             {
-                MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(message_Export ?? string.Empty, Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
 
-            List<AdministrativeAreal2DReference>? administrativeAreal2DReferences = ListBoxControl_Counties.GetItems<AdministrativeAreal2DReference>();
+            SaveFileDialog saveFileDialog = new()
+            {
+                Title = "Export YOLO training settings",
+                Filter = "Settings (*.json)|*.json|All files (*.*)|*.*",
+                FilterIndex = 1,
+                DefaultExt = ".json",
+                FileName = "YOLO_Training_Settings.json"
+            };
 
+            if (saveFileDialog.ShowDialog(this) != true)
+            {
+                return;
+            }
+
+            string? json = Core.Convert.ToSystem_String(options);
+            if (json is null)
+            {
+                MessageBox.Show(this, "The settings could not be converted to JSON - nothing was written.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+                File.WriteAllText(saveFileDialog.FileName, json, Encoding.UTF8);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                MessageBox.Show(this, $"The settings could not be written to {saveFileDialog.FileName}: {exception.Message}", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Button_ImportSettings_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = "Import YOLO training settings",
+                Filter = "Settings (*.json)|*.json|All files (*.*)|*.*",
+                FilterIndex = 1
+            };
+
+            if (openFileDialog.ShowDialog(this) != true)
+            {
+                return;
+            }
+
+            string json;
+            try
+            {
+                json = File.ReadAllText(openFileDialog.FileName, Encoding.UTF8);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                MessageBox.Show(this, $"The settings could not be read from {openFileDialog.FileName}: {exception.Message}", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (TryReadSettings(json, out string? message_Read) is not YOLOTrainingRunOptions yOLOTrainingRunOptions_Imported)
+            {
+                MessageBox.Show(this, message_Read ?? string.Empty, Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Only the controls are filled - the scenario combo deliberately among them not - and then the
+            // interrupted-run evaluation runs again for the imported run name and project directory, so an
+            // imported pair offers resuming exactly as a typed one does; the resume tick follows the file when
+            // an offer is on. Nothing runs until OK, and a cancellation still leaves the options untouched.
+            SetControls(yOLOTrainingRunOptions_Imported);
+            EvaluateInterruptedRun();
+            SetStallInputsEnabled();
+            CheckBox_ResumeInterruptedRun.IsChecked = yOLOTrainingRunOptions_Imported.ResumeTraining;
+
+            // Said rather than left for OK to find: a county the list does not hold cannot be selected - the
+            // usual sign the settings came from another machine.
+            HashSet<int> countyIds = yOLOTrainingRunOptions_Imported.DatasetOptions?.CountyIds ?? [];
+            if (countyIds.Count != 0)
+            {
+                HashSet<int> countyIds_Listed = [];
+                foreach (AdministrativeAreal2DReference administrativeAreal2DReference in ListBoxControl_Counties.GetItems<AdministrativeAreal2DReference>(false) ?? [])
+                {
+                    countyIds_Listed.Add(administrativeAreal2DReference.Id);
+                }
+
+                List<int> countyIds_Missing = [];
+                foreach (int countyId in countyIds)
+                {
+                    if (!countyIds_Listed.Contains(countyId))
+                    {
+                        countyIds_Missing.Add(countyId);
+                    }
+                }
+
+                countyIds_Missing.Sort();
+                if (countyIds_Missing.Count != 0)
+                {
+                    MessageBox.Show(this, string.Create(CultureInfo.CurrentCulture, $"{countyIds_Missing.Count} county part(s) of the file are not in the list and were not selected: {string.Join(", ", countyIds_Missing)}"), Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        private void Button_OK_Click(object sender, RoutedEventArgs e)
+        {
+            if (TryGetOptions(out string? message))
+            {
+                DialogResult = true;
+                Close();
+                return;
+            }
+
+            MessageBox.Show(message ?? "The options cannot start a run.", Title ?? string.Empty, MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        /// <summary>
+        /// Reads every control into a candidate set of options and checks it, without closing the window or showing a message - the part of OK a fact can drive, because a message box would hang it.
+        /// <para>The options are written only when every control reads and the whole gate OK has always applied passes - at least one step, at least one county, the hyperparameter ranges, the stall pairing, the required directories, the resume pairing and the exclusion text - and the result is built exactly as OK builds it: the scenario of the current selection applied to a copy of the window's options first, then every control over it. A refusal leaves the window's options as they were.</para>
+        /// <para>Export reads the same controls without the gates, so a half-prepared window can be saved: no county and no dataset directory write nothing, and relative directories, missing start weights and out-of-range numbers still export, to be refused by OK on read-back. What is refused on both paths is what could not be written back as typed - a box that does not hold its number, a stall limit that is not a number of minutes, exclusion text that does not parse - and an empty step list, which the runner reads as every step and so could not round-trip. The scenario is never read from the file: it is not in it.</para>
+        /// </summary>
+        /// <param name="complete">True for OK: every gate applies. False for an export: an unfinished window is saved as it stands.</param>
+        /// <param name="options">The options the controls describe, or null when they could not be read.</param>
+        /// <param name="message">The reason the controls could not be read, or null when they could.</param>
+        /// <returns>True when the controls read into options.</returns>
+        internal bool TryReadOptions(bool complete, out YOLOTrainingRunOptions? options, out string? message)
+        {
+            options = null;
+            message = null;
+
+            // The runner reads an empty list as every step, so a selection of none could not be written back as
+            // typed: the file would come back as every step ticked. Required on both paths, like the external
+            // components window's county selection.
             List<YOLOTrainingStep> yOLOTrainingSteps = [];
             if (CheckBox_Dataset.IsChecked == true)
             {
@@ -185,57 +288,70 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
                 yOLOTrainingSteps.Add(YOLOTrainingStep.Evaluate);
             }
 
-            // The runner reads an empty list as every step, so no step ticked would start the whole run.
             if (yOLOTrainingSteps.Count == 0)
             {
-                Warn("At least one step has to be selected.");
-                return;
+                message = "At least one step has to be selected.";
+                return false;
             }
 
-            // The counties are what the dataset step builds from; without it they scope nothing, but they are still
-            // what the confirmation names back, so a run with none is refused rather than guessed at.
-            if (administrativeAreal2DReferences is null || administrativeAreal2DReferences.Count == 0)
+            // The counties are what the dataset step builds from; without it they scope nothing, but they are
+            // still what the confirmation names back, so a run with none is refused rather than guessed at.
+            List<AdministrativeAreal2DReference>? administrativeAreal2DReferences = ListBoxControl_Counties.GetItems<AdministrativeAreal2DReference>();
+
+            HashSet<int>? countyIds = null;
+            if (administrativeAreal2DReferences is not null && administrativeAreal2DReferences.Count != 0)
             {
-                Warn("At least one county has to be selected.");
-                return;
+                countyIds = [];
+                foreach (AdministrativeAreal2DReference administrativeAreal2DReference in administrativeAreal2DReferences)
+                {
+                    countyIds.Add(administrativeAreal2DReference.Id);
+                }
             }
 
-            if (!TextBoxControl_Epochs.TryGetValue(out int epochs) || epochs < 1)
+            if (complete && countyIds is null)
             {
-                Warn("Epochs has to be a whole number of at least one.");
-                return;
+                message = "At least one county has to be selected.";
+                return false;
             }
 
-            if (!TextBoxControl_Patience.TryGetValue(out int patience) || patience < 0)
+            if (!TextBoxControl_Epochs.TryGetValue(out int epochs) || (complete && epochs < 1))
             {
-                Warn("Patience has to be a whole number of at least zero.");
-                return;
+                message = "Epochs has to be a whole number of at least one.";
+                return false;
             }
 
-            if (!TextBoxControl_ImageSize.TryGetValue(out int imageSize) || imageSize < 32)
+            if (!TextBoxControl_Patience.TryGetValue(out int patience) || (complete && patience < 0))
             {
-                Warn("Image size has to be a whole number of at least 32.");
-                return;
+                message = "Patience has to be a whole number of at least zero.";
+                return false;
             }
 
-            if (!TextBoxControl_Batch.TryGetValue(out int batch) || batch < 1)
+            if (!TextBoxControl_ImageSize.TryGetValue(out int imageSize) || (complete && imageSize < 32))
             {
-                Warn("Batch has to be a whole number of at least one.");
-                return;
+                message = "Image size has to be a whole number of at least 32.";
+                return false;
             }
 
-            if (!TextBoxControl_Seed.TryGetValue(out int seed) || seed < 0)
+            if (!TextBoxControl_Batch.TryGetValue(out int batch) || (complete && batch < 1))
             {
-                Warn("Seed has to be a whole number of at least zero.");
-                return;
+                message = "Batch has to be a whole number of at least one.";
+                return false;
+            }
+
+            if (!TextBoxControl_Seed.TryGetValue(out int seed) || (complete && seed < 0))
+            {
+                message = "Seed has to be a whole number of at least zero.";
+                return false;
             }
 
             if (!TextBoxControl_AutoResumeCount.TryGetValue(out int autoResumeCount))
             {
-                Warn("Automatic resumes has to be a whole number from 0 to 10.");
-                return;
+                message = "Automatic resumes has to be a whole number from 0 to 10.";
+                return false;
             }
 
+            // Empty is the runner's default of fifteen minutes; a box holding something that is not a number
+            // of minutes cannot be written back as typed, on either path.
             TimeSpan? inactivityTimeout = null;
             if (TextBoxControl_InactivityTimeout.TryGetValue(out int inactivityTimeoutMinutes))
             {
@@ -243,78 +359,73 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             }
             else if (!string.IsNullOrWhiteSpace(TextBoxControl_InactivityTimeout.Value))
             {
-                Warn("The stall limit has to be a whole number of at least one minute, or empty to use the default.");
-                return;
+                message = "The stall limit has to be a whole number of at least one minute, or empty to use the default.";
+                return false;
             }
 
-            if (!Query.IsYOLOTrainingStallOptionsValid(autoResumeCount, inactivityTimeout, out string? stallReason))
+            if (complete && !Query.IsYOLOTrainingStallOptionsValid(autoResumeCount, inactivityTimeout, out string? stallReason))
             {
-                Warn(stallReason!);
-                return;
+                message = stallReason!;
+                return false;
             }
 
             string? datasetDirectory = Value(TextBoxControl_DatasetDirectory.Value);
-            if (datasetDirectory is null)
+            if (complete && datasetDirectory is null)
             {
                 // Every step reads or writes the dataset folder, so it is asked for whichever steps are ticked.
-                Warn("A dataset directory has to be given.");
-                return;
+                message = "A dataset directory has to be given.";
+                return false;
             }
 
             bool train = yOLOTrainingSteps.Contains(YOLOTrainingStep.Train);
 
             bool resume = yOLOCheckpointInformation is not null && CheckBox_ResumeInterruptedRun.IsChecked == true;
-            if (resume && !train)
+            if (complete && resume && !train)
             {
-                Warn("A resume needs the Training step - the training is the step it continues.");
-                return;
+                message = "A resume needs the Training step - the training is the step it continues.";
+                return false;
             }
 
-            if (resume && yOLOTrainingSteps.Contains(YOLOTrainingStep.Dataset))
+            if (complete && resume && yOLOTrainingSteps.Contains(YOLOTrainingStep.Dataset))
             {
-                Warn("A resume never rebuilds the dataset it was trained on.");
-                return;
+                message = "A resume never rebuilds the dataset it was trained on.";
+                return false;
             }
 
             string? startWeightsPath = Value(TextBoxControl_StartWeightsPath.Value);
-            if (startWeightsPath is null && (train || yOLOTrainingSteps.Contains(YOLOTrainingStep.Validate)))
+            if (complete && startWeightsPath is null && (train || yOLOTrainingSteps.Contains(YOLOTrainingStep.Validate)))
             {
-                Warn("Start weights have to be given for training or validation.");
-                return;
+                message = "Start weights have to be given for training or validation.";
+                return false;
             }
 
             string? runName = Value(TextBoxControl_RunName.Value);
             string? projectDirectory = Value(TextBoxControl_ProjectDirectory.Value);
-            if (train && (runName is null || projectDirectory is null))
+            if (complete && train && (runName is null || projectDirectory is null))
             {
-                Warn("A run name and a project directory have to be given for training.");
-                return;
+                message = "A run name and a project directory have to be given for training.";
+                return false;
             }
 
             // A relative directory would otherwise be resolved against this process's current directory, where the
-            // runner would not look for it, so it is refused here rather than silently mis-scoped.
-            if (DirectoryRefusal(datasetDirectory, projectDirectory, train) is string directoryRefusal)
+            // runner would not look for it, so it is refused here rather than silently mis-scoped. A relative path
+            // is a string that could be written back as typed, so only OK refuses it.
+            if (complete && DirectoryRefusal(datasetDirectory, projectDirectory, train) is string directoryRefusal)
             {
-                Warn(directoryRefusal);
-                return;
+                message = directoryRefusal;
+                return false;
             }
 
             if (!Query.TryParseYOLOExclusionBuffer(TextBoxControl_ExclusionBuffer.Value, out double exclusionBuffer, out string? exclusionBufferReason))
             {
-                Warn(exclusionBufferReason!);
-                return;
+                message = exclusionBufferReason!;
+                return false;
             }
 
             if (!Query.TryParseYOLOExclusionBoundingBoxes(TextBox_ExclusionBoundingBoxes.Text, out List<YOLOExclusionBoundingBox>? yOLOExclusionBoundingBoxes, out string? exclusionBoundingBoxesReason))
             {
-                Warn(exclusionBoundingBoxesReason!);
-                return;
-            }
-
-            HashSet<int> countyIds = [];
-            foreach (AdministrativeAreal2DReference administrativeAreal2DReference in administrativeAreal2DReferences)
-            {
-                countyIds.Add(administrativeAreal2DReference.Id);
+                message = exclusionBoundingBoxesReason!;
+                return false;
             }
 
             List<string> weightsPaths = [];
@@ -329,7 +440,8 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             YOLOTrainingScenario yOLOTrainingScenario_Selected = SelectedScenario();
 
             // The scenario is applied to the copy first - it is what decides whether the dataset folder is appended
-            // to - and the controls then overwrite the defaults it set, so what was typed is what runs.
+            // to - and the controls then overwrite the defaults it set, so what was typed is what runs. The same
+            // construction on the export path makes the file what OK would write, minus the gates.
             YOLOTrainingRunOptions yOLOTrainingRunOptions_Result = Create.YOLOTrainingRunOptions(yOLOTrainingScenario_Selected, consoleAppPath, yOLOTrainingRunOptions);
             YOLOTrainingDatasetOptions yOLOTrainingDatasetOptions = yOLOTrainingRunOptions_Result.DatasetOptions ?? new YOLOTrainingDatasetOptions();
             yOLOTrainingRunOptions_Result.DatasetOptions = yOLOTrainingDatasetOptions;
@@ -364,11 +476,99 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             yOLOTrainingDatasetOptions.ExclusionBuffer = exclusionBuffer;
             yOLOTrainingDatasetOptions.ExclusionBoundingBoxes = yOLOExclusionBoundingBoxes ?? [];
 
-            yOLOTrainingRunOptions = yOLOTrainingRunOptions_Result;
-            yOLOTrainingScenario = yOLOTrainingScenario_Selected;
+            options = yOLOTrainingRunOptions_Result;
 
-            DialogResult = true;
-            Close();
+            return true;
+        }
+
+        /// <summary>
+        /// Reads every control into the window's options and checks them - the fact-driven part of OK, which writes the candidate over the window's options and takes the scenario from the selection box. The scenario is never read from a file: it is not in one.
+        /// </summary>
+        /// <param name="message">The reason the controls cannot start a run, or null when they can.</param>
+        /// <returns>True when the options now hold the controls' values and the scenario its selection, and can start a run.</returns>
+        internal bool TryGetOptions(out string? message)
+        {
+            if (!TryReadOptions(true, out YOLOTrainingRunOptions? options, out message) || options is null)
+            {
+                return false;
+            }
+
+            yOLOTrainingRunOptions = options;
+            yOLOTrainingScenario = SelectedScenario();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Fills every control from the options - on opening, and again on an import, so a value the options leave
+        /// out clears its control rather than keeping what was typed before: an empty step list reads as every
+        /// step, exactly as the runner reads it. The scenario combo is deliberately not touched - the scenario is
+        /// not part of the settings file and stays as chosen; the resume offer is the interrupted-run evaluation's
+        /// to make, so the caller runs it after this returns. Internal so a fact can fill a window from a settings
+        /// file the way Import does, without a file dialog.
+        /// </summary>
+        /// <param name="yOLOTrainingRunOptions">The options to show.</param>
+        internal void SetControls(YOLOTrainingRunOptions yOLOTrainingRunOptions)
+        {
+            YOLOTrainingDatasetOptions? yOLOTrainingDatasetOptions = yOLOTrainingRunOptions.DatasetOptions;
+
+            TextBoxControl_DatasetDirectory.Value = yOLOTrainingDatasetOptions?.OutputDirectory;
+            TextBoxControl_StartWeightsPath.Value = yOLOTrainingRunOptions.StartWeightsPath;
+            TextBoxControl_Epochs.Value = yOLOTrainingRunOptions.Epochs.ToString(CultureInfo.InvariantCulture);
+            TextBoxControl_Patience.Value = yOLOTrainingRunOptions.Patience.ToString(CultureInfo.InvariantCulture);
+            TextBoxControl_ImageSize.Value = yOLOTrainingRunOptions.ImageSize.ToString(CultureInfo.InvariantCulture);
+            TextBoxControl_Batch.Value = yOLOTrainingRunOptions.Batch.ToString(CultureInfo.InvariantCulture);
+            TextBoxControl_Seed.Value = yOLOTrainingRunOptions.Seed.ToString(CultureInfo.InvariantCulture);
+            TextBoxControl_Device.Value = yOLOTrainingRunOptions.Device;
+            TextBoxControl_AutoResumeCount.Value = yOLOTrainingRunOptions.AutoResumeCount.ToString(CultureInfo.InvariantCulture);
+            TextBoxControl_InactivityTimeout.Value = yOLOTrainingRunOptions.InactivityTimeout is TimeSpan inactivityTimeout ? ((int)inactivityTimeout.TotalMinutes).ToString(CultureInfo.InvariantCulture) : null;
+            TextBoxControl_RunName.Value = yOLOTrainingRunOptions.RunName;
+            TextBoxControl_ProjectDirectory.Value = yOLOTrainingRunOptions.ProjectDirectory;
+            TextBoxControl_PythonPath.Value = yOLOTrainingRunOptions.PythonPath ?? yOLOTrainingDatasetOptions?.PythonPath;
+            TextBoxControl_WorkingDirectory.Value = yOLOTrainingRunOptions.WorkingDirectory ?? yOLOTrainingDatasetOptions?.WorkingDirectory;
+            TextBoxControl_WeightsPaths.Value = yOLOTrainingDatasetOptions?.WeightsPaths is List<string> weightsPaths ? string.Join("; ", weightsPaths) : null;
+
+            // The exclusion of the pilot test areas (DiGi.GIS.PostgreSQL.UI#39), shown as stored so reopening the
+            // dialog shows what the next build will exclude.
+            TextBoxControl_ExclusionBuffer.Value = (yOLOTrainingDatasetOptions ?? new YOLOTrainingDatasetOptions()).ExclusionBuffer.ToString("R", CultureInfo.InvariantCulture);
+            TextBox_ExclusionBoundingBoxes.Text = yOLOTrainingDatasetOptions?.ExclusionBoundingBoxes.ToSystem_String() ?? string.Empty;
+
+            // The runner reads an empty list as every step, and so does the dialog.
+            List<YOLOTrainingStep>? yOLOTrainingSteps = yOLOTrainingRunOptions.Steps;
+            CheckBox_Dataset.IsChecked = yOLOTrainingSteps is null || yOLOTrainingSteps.Count == 0 || yOLOTrainingSteps.Contains(YOLOTrainingStep.Dataset);
+            CheckBox_LabelCheck.IsChecked = yOLOTrainingSteps is null || yOLOTrainingSteps.Count == 0 || yOLOTrainingSteps.Contains(YOLOTrainingStep.LabelCheck);
+            CheckBox_Train.IsChecked = yOLOTrainingSteps is null || yOLOTrainingSteps.Count == 0 || yOLOTrainingSteps.Contains(YOLOTrainingStep.Train);
+            CheckBox_Validate.IsChecked = yOLOTrainingSteps is null || yOLOTrainingSteps.Count == 0 || yOLOTrainingSteps.Contains(YOLOTrainingStep.Validate);
+            CheckBox_Evaluate.IsChecked = yOLOTrainingSteps is null || yOLOTrainingSteps.Count == 0 || yOLOTrainingSteps.Contains(YOLOTrainingStep.Evaluate);
+
+            // Matched on the identifier rather than on the references themselves: the options carry identifiers,
+            // and the references are read afresh on every run. SelectItems deselects the rest, so a file with no
+            // county list clears whatever was selected before.
+            HashSet<int> countyIds = yOLOTrainingDatasetOptions?.CountyIds ?? [];
+            ListBoxControl_Counties.SelectItems<AdministrativeAreal2DReference>(x => countyIds.Contains(x.Id));
+        }
+
+        /// <summary>
+        /// Reads the settings an exported file holds. Exactly one YOLO training options object is accepted: a
+        /// file of another window's settings carries a different type name and cannot be read as this one, and a
+        /// file holding several objects describes several settings, none of which is this window's. The scenario
+        /// is not part of any of them - it is not written and not read.
+        /// </summary>
+        /// <param name="json">The file content.</param>
+        /// <param name="message">The reason nothing was read, or null when exactly one setting was.</param>
+        /// <returns>The setting the file holds, or null when it holds none.</returns>
+        internal static YOLOTrainingRunOptions? TryReadSettings(string? json, out string? message)
+        {
+            List<YOLOTrainingRunOptions>? yOLOTrainingRunOptionsList = Core.Convert.ToDiGi<YOLOTrainingRunOptions>(json);
+            if (yOLOTrainingRunOptionsList is null || yOLOTrainingRunOptionsList.Count != 1)
+            {
+                message = "The file holds no YOLO training settings - nothing was changed.";
+                return null;
+            }
+
+            message = null;
+
+            return yOLOTrainingRunOptionsList[0];
         }
 
         private static string? Value(string? text)
