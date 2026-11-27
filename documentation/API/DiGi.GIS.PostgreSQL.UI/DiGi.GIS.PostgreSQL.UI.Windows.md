@@ -3250,9 +3250,11 @@ Asks for the scope of one Year Built prediction run and nothing else: the counti
 
 <b>A tray run has one shape - the full six step flow - and it writes.</b> The steps are not offered because they are not a choice here: DiGi-Organization/DiGi.GIS.YOLO.UI#8 made export, detector, detection write, score, history write and column write a single run per county precisely so that no step could be left out of sequence, and it decided that the granular flags stay on the options class and the console app for hand-driven diagnostics while the tray driven flow collapses them. Eight checkboxes offered two hundred and fifty six combinations, of which three were real - and the rest failed late, after the half hour of export and the hour and a half of inference had already been paid for. The OK handler writes all six on, so the run the operator gets is the run the standing recipe describes.
 
-<b>What settles the model is deliberately not here either.</b> The weights, the confidence threshold, the year range and the radiuses all decide what the regressor is handed, and a value that disagrees with what it was trained on is, for the year range and the radiuses, checked against the model's stated trained contract before the run reads a county - narrower is refused, wider is warned (DiGi-Organization/DiGi.GIS.ML#6) - while the weights and the confidence threshold still score without failing. They belong to the deployment and to the options file rather than to a dialog opened before every run. The working directory and the two batch sizes are out for a different reason: none of the three is a choice - see the comment in the OK handler.
+<b>What settles the model is deliberately not here either.</b> The weights, the confidence threshold, the year range and the radiuses all decide what the regressor is handed, and a value that disagrees with what it was trained on is, for the year range and the radiuses, checked against the model's stated trained contract before the run reads a county - narrower is refused, wider is warned (DiGi-Organization/DiGi.GIS.ML#6) - while the weights and the confidence threshold still score without failing. They belong to the deployment and to the options file rather than to a dialog opened before every run. The working directory and the two batch sizes are out for a different reason: none of the three is a choice - see the comment on the candidate in `TryReadOptions`.
 
 The scratch cleanup is the one flag that survives, because its reason is about this run rather than about the sequence: a cancelled county is cleaned, so a run that is meant to be interrupted has to be able to say so beforehand.
+
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#74), so a run repeated after the tray was restarted is not typed again. Importing fills the controls; the step flags and the resume switch OK always writes keep whatever the file carried until OK runs. Nothing runs until OK, and OK validates the imported values like typed ones.
 
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were, and every member the window has no control for carries through untouched.
 
@@ -3321,6 +3323,28 @@ public void InitializeComponent();
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.SetControls(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions)'></a>
+
+## YearBuiltPredictionsOptionsWindow\.SetControls\(YearBuiltPredictionPipelineOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before: options with no scratch directory
+show the default \(as the constructor always showed them\), options with no county list clear the
+selection\. The step flags and the eight members with no control are left alone \- OK writes the run
+shape\. Internal so a fact can fill a window from a settings file the way Import does, without a file
+dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions yearBuiltPredictionPipelineOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.SetControls(DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions).yearBuiltPredictionPipelineOptions'></a>
+
+`yearBuiltPredictionPipelineOptions` [DiGi\.GIS\.YOLO\.UI\.Classes\.YearBuiltPredictionPipelineOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yearbuiltpredictionpipelineoptions 'DiGi\.GIS\.YOLO\.UI\.Classes\.YearBuiltPredictionPipelineOptions')
+
+The options to show\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.SetCoverageFactors(System.Collections.Generic.IReadOnlyDictionary_int,double_)'></a>
 
 ## YearBuiltPredictionsOptionsWindow\.SetCoverageFactors\(IReadOnlyDictionary\<int,double\>\) Method
@@ -3341,6 +3365,93 @@ public void SetCoverageFactors(System.Collections.Generic.IReadOnlyDictionary<in
 `coverageFactors` [System\.Collections\.Generic\.IReadOnlyDictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')
 
 The share of each county part's buildings carrying a predicted year built, keyed by part id, or null when it could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.TryGetOptions(string)'></a>
+
+## YearBuiltPredictionsOptionsWindow\.TryGetOptions\(string\) Method
+
+Reads every control into the window's options and checks them, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\.
+
+The options are written only when every control reads and passes the rules OK has always applied - a concurrency of at least one, at least one county - and OK's run shape comes with them: the six step flags and the resume switch are written on, whatever the file or the previous run carried. A refusal leaves the options as they were. The members the window has no control for keep the values it was opened with.
+
+```csharp
+internal bool TryGetOptions(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.TryGetOptions(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls cannot start a run, or null when they can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options now hold the controls' values and can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.TryReadOptions(bool,DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,string)'></a>
+
+## YearBuiltPredictionsOptionsWindow\.TryReadOptions\(bool, YearBuiltPredictionPipelineOptions, string\) Method
+
+Reads every control into a candidate set of options, writing nothing and showing no message\.
+
+Complete (OK) applies the rules the window has always applied - a concurrency of at least one, at least one county - finishes with those messages, substitutes the default scratch directory for a blank box, and forces the six step flags and the resume switch on: that is the run shape of a tray run. Export reads the same controls without those requirements, so a half-prepared window can be saved: a blank scratch box writes no directory (the window shows the default in it, and OK substitutes it on read-back), no county writes no county list, and the step flags travel as the copy holds them. What is refused on both paths is what could not be written back as typed: a concurrency box that does not hold a whole number. The members with no control - the year range, the radiuses, the confidence, the weights, the batch sizes - carry through the candidate untouched.
+
+```csharp
+internal bool TryReadOptions(bool complete, out DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions? options, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.TryReadOptions(bool,DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: every rule applies and the run shape is forced\. False for an export: an unfinished window is saved as it stands\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.TryReadOptions(bool,DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,string).options'></a>
+
+`options` [DiGi\.GIS\.YOLO\.UI\.Classes\.YearBuiltPredictionPipelineOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yearbuiltpredictionpipelineoptions 'DiGi\.GIS\.YOLO\.UI\.Classes\.YearBuiltPredictionPipelineOptions')
+
+The options the controls describe, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.TryReadOptions(bool,DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the controls read into options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.TryReadSettings(string,string)'></a>
+
+## YearBuiltPredictionsOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one Year Built pipeline options object is accepted: a
+file of another window's settings carries a different type name and cannot be read as this one, and a
+file holding several objects describes several settings, none of which is this window's\.
+
+```csharp
+internal static DiGi.GIS.YOLO.UI.Classes.YearBuiltPredictionPipelineOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.YearBuiltPredictionsOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[DiGi\.GIS\.YOLO\.UI\.Classes\.YearBuiltPredictionPipelineOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.yolo.ui.classes.yearbuiltpredictionpipelineoptions 'DiGi\.GIS\.YOLO\.UI\.Classes\.YearBuiltPredictionPipelineOptions')  
+The setting the file holds, or null when it holds none\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.YOLOTrainingOptionsWindow'></a>
 
