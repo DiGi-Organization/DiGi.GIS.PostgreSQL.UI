@@ -1771,6 +1771,8 @@ Asks which side of the occupancy update runs - the administrative roll-up, the p
 
 No county selected means every county, which is what the task has always meant; with counties selected a clear removes only their buildings' rows, so the rest of the table is left as it stands.
 
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#63), so a run repeated after the tray was restarted is not typed again. Importing only fills the controls: nothing runs until OK, and OK validates the imported values like typed ones.
+
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 
 ```csharp
@@ -1831,6 +1833,113 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLUpdateOccupancyOptions)'></a>
+
+## PostgreSQLUpdateOccupancyOptionsWindow\.SetControls\(PostgreSQLUpdateOccupancyOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before: options with no county list clear the
+selection, which is this window's every\-county state\. Internal so a fact can fill a window from a
+settings file the way Import does, without a file dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLUpdateOccupancyOptions postgreSQLUpdateOccupancyOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLUpdateOccupancyOptions).postgreSQLUpdateOccupancyOptions'></a>
+
+`postgreSQLUpdateOccupancyOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLUpdateOccupancyOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlupdateoccupancyoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLUpdateOccupancyOptions')
+
+The options to show\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.TryGetOptions(string)'></a>
+
+## PostgreSQLUpdateOccupancyOptionsWindow\.TryGetOptions\(string\) Method
+
+Reads every control into the window's options and checks them, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\.
+
+The options are written only when every control reads and at least one side is selected; a refusal leaves them as they were.
+
+```csharp
+internal bool TryGetOptions(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.TryGetOptions(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls cannot start a run, or null when they can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options now hold the controls' values and can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLUpdateOccupancyOptions,string)'></a>
+
+## PostgreSQLUpdateOccupancyOptionsWindow\.TryReadOptions\(bool, PostgreSQLUpdateOccupancyOptions, string\) Method
+
+Reads every control into a candidate set of options, writing nothing and showing no message\.
+
+Complete (OK) requires at least one side to be selected. Export reads the same controls without that requirement - a window with neither side checked is saved as it stands - because a half-prepared window can be finished after the next import. This window holds no free numbers, so an export never fails on a value: what it writes is always what could be written back as typed. No county selected is written as no county list (`null`, which the task reads as every county), never as an empty set, on both paths.
+
+```csharp
+internal bool TryReadOptions(bool complete, out DiGi.GIS.PostgreSQL.Classes.PostgreSQLUpdateOccupancyOptions? options, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLUpdateOccupancyOptions,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: at least one side has to be selected\. False for an export: an unfinished window is saved as it stands\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLUpdateOccupancyOptions,string).options'></a>
+
+`options` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLUpdateOccupancyOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlupdateoccupancyoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLUpdateOccupancyOptions')
+
+The options the controls describe, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLUpdateOccupancyOptions,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the controls read into options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.TryReadSettings(string,string)'></a>
+
+## PostgreSQLUpdateOccupancyOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one occupancy options object is accepted: a
+file of another window's settings carries a different type name and cannot be read as this one, and a
+file holding several objects describes several settings, none of which is this window's\.
+
+```csharp
+internal static DiGi.GIS.PostgreSQL.Classes.PostgreSQLUpdateOccupancyOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLUpdateOccupancyOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlupdateoccupancyoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLUpdateOccupancyOptions')  
+The setting the file holds, or null when it holds none\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUserCreateOptionsWindow'></a>
 
