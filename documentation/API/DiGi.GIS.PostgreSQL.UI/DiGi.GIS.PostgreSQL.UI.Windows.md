@@ -1360,7 +1360,11 @@ Asks for everything that decides what a batch heat demand run costs and stores: 
 
 The counties matter most. An unscoped run is every building in the country - the window never leaves with no county chosen.
 
-The options the window does not show - the engine options, the neighbour radius and the tile size - are carried through as they were. The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
+The options the window does not show - the engine options, the neighbour radius and the tile size - are carried through as they were, in the settings file as in the copy.
+
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#72), so a run repeated after the tray was restarted is not typed again. Importing fills the controls: nothing runs until OK, and OK validates the imported values like typed ones.
+
+The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 
 ```csharp
 public class PostgreSQLBuildingHeatDemandSolveOptionsWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector
@@ -1420,6 +1424,114 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Energy.Classes.PostgreSQLBuildingHeatDemandSolveOptions)'></a>
+
+## PostgreSQLBuildingHeatDemandSolveOptionsWindow\.SetControls\(PostgreSQLBuildingHeatDemandSolveOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before: options with no county list clear the
+selection and options with no ceiling empty the buildings\-per\-part box\. The members this window has no
+control for are left alone\. Internal so a fact can fill a window from a settings file the way Import
+does, without a file dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.PostgreSQL.Energy.Classes.PostgreSQLBuildingHeatDemandSolveOptions postgreSQLBuildingHeatDemandSolveOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Energy.Classes.PostgreSQLBuildingHeatDemandSolveOptions).postgreSQLBuildingHeatDemandSolveOptions'></a>
+
+`postgreSQLBuildingHeatDemandSolveOptions` [DiGi\.GIS\.PostgreSQL\.Energy\.Classes\.PostgreSQLBuildingHeatDemandSolveOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.energy.classes.postgresqlbuildingheatdemandsolveoptions 'DiGi\.GIS\.PostgreSQL\.Energy\.Classes\.PostgreSQLBuildingHeatDemandSolveOptions')
+
+The options to show\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.TryGetOptions(string)'></a>
+
+## PostgreSQLBuildingHeatDemandSolveOptionsWindow\.TryGetOptions\(string\) Method
+
+Reads every control into the window's options and checks them, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\.
+
+The options are written only when every control reads and passes the full set of rules OK has always applied - at least one county, a solar radius of at least zero, a batch size of at least one, a non-negative timeout and parallelism, a buildings-per-part ceiling of at least one when given; a refusal leaves them as they were. The members the window has no control for - the engine options, the neighbour radius, the tile size - keep the values it was opened with.
+
+```csharp
+internal bool TryGetOptions(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.TryGetOptions(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls cannot start a run, or null when they can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options now hold the controls' values and can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Energy.Classes.PostgreSQLBuildingHeatDemandSolveOptions,string)'></a>
+
+## PostgreSQLBuildingHeatDemandSolveOptionsWindow\.TryReadOptions\(bool, PostgreSQLBuildingHeatDemandSolveOptions, string\) Method
+
+Reads every control into a candidate set of options, writing nothing and showing no message\.
+
+Complete (OK) applies every rule the window has always applied, in the order it has always applied them, and finishes with those messages. Export reads the same controls without the range rules, so a half-prepared window can be saved: no county selected is written as no county list, an empty buildings-per-part box as no ceiling, and a negative radius or a batch size below one still exports, to be refused by OK on read-back. What is refused on both paths is what could not be written back as typed: a box that does not hold its number. The candidate is built on a copy of the window's options, so the members with no control - the engine options, the neighbour radius, the tile size - travel in the file exactly as the copy holds them and are never changed by a read.
+
+```csharp
+internal bool TryReadOptions(bool complete, out DiGi.GIS.PostgreSQL.Energy.Classes.PostgreSQLBuildingHeatDemandSolveOptions? options, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Energy.Classes.PostgreSQLBuildingHeatDemandSolveOptions,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: every rule applies\. False for an export: an unfinished window is saved as it stands\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Energy.Classes.PostgreSQLBuildingHeatDemandSolveOptions,string).options'></a>
+
+`options` [DiGi\.GIS\.PostgreSQL\.Energy\.Classes\.PostgreSQLBuildingHeatDemandSolveOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.energy.classes.postgresqlbuildingheatdemandsolveoptions 'DiGi\.GIS\.PostgreSQL\.Energy\.Classes\.PostgreSQLBuildingHeatDemandSolveOptions')
+
+The options the controls describe, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Energy.Classes.PostgreSQLBuildingHeatDemandSolveOptions,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the controls read into options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.TryReadSettings(string,string)'></a>
+
+## PostgreSQLBuildingHeatDemandSolveOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one heat demand options object is accepted: a
+file of another window's settings carries a different type name and cannot be read as this one, and a
+file holding several objects describes several settings, none of which is this window's\.
+
+```csharp
+internal static DiGi.GIS.PostgreSQL.Energy.Classes.PostgreSQLBuildingHeatDemandSolveOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingHeatDemandSolveOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[DiGi\.GIS\.PostgreSQL\.Energy\.Classes\.PostgreSQLBuildingHeatDemandSolveOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.energy.classes.postgresqlbuildingheatdemandsolveoptions 'DiGi\.GIS\.PostgreSQL\.Energy\.Classes\.PostgreSQLBuildingHeatDemandSolveOptions')  
+The setting the file holds, or null when it holds none\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingModelBuildingInformationUpdateOptionsWindow'></a>
 
