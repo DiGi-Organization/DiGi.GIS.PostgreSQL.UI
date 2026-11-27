@@ -779,6 +779,8 @@ Asks for what a solar radiation summary run writes: the county parts, the radius
 
 The radius is the field to read twice. A building can carry several variants - the isolated building (0) and one or more neighbour radii (DiGi.GIS.PostgreSQL#107) - and left empty the variant written last wins, building by building.
 
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#66), so a run repeated after the tray was restarted is not typed again. Importing only fills the controls: nothing runs until OK, and OK validates the imported values like typed ones.
+
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 
 ```csharp
@@ -839,6 +841,113 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions)'></a>
+
+## PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow\.SetControls\(PostgreSQLBuildingDataSolarRadiationUpdateOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before: options with no county list clear the
+selection and options with no radius empty the radius box\. Internal so a fact can fill a window from a
+settings file the way Import does, without a file dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions postgreSQLBuildingDataSolarRadiationUpdateOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions).postgreSQLBuildingDataSolarRadiationUpdateOptions'></a>
+
+`postgreSQLBuildingDataSolarRadiationUpdateOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingdatasolarradiationupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateOptions')
+
+The options to show\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.TryGetOptions(string)'></a>
+
+## PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow\.TryGetOptions\(string\) Method
+
+Reads every control into the window's options and checks them, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\.
+
+The options are written only when every control reads and passes the full set of rules OK has always applied - at least one county, a radius of at least zero when given, a batch size of at least one, a timeout of at least zero; a refusal leaves them as they were.
+
+```csharp
+internal bool TryGetOptions(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.TryGetOptions(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls cannot start a run, or null when they can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options now hold the controls' values and can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions,string)'></a>
+
+## PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow\.TryReadOptions\(bool, PostgreSQLBuildingDataSolarRadiationUpdateOptions, string\) Method
+
+Reads every control into a candidate set of options, writing nothing and showing no message\.
+
+Complete (OK) applies every rule the window has always applied, in the order it has always applied them, and finishes with those messages. Export reads the same controls without the range rules, so a half-prepared window can be saved: no county is written as no county list, an empty radius box as no radius - the latest stored result of any radius is a value of its own - and a radius below zero or a batch size below one still exports, to be refused by OK on read-back. What is refused on both paths is what could not be written back as typed: a radius box that does not hold a finite number, a batch size or timeout that is not a whole number.
+
+```csharp
+internal bool TryReadOptions(bool complete, out DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions? options, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: every rule applies\. False for an export: an unfinished window is saved as it stands\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions,string).options'></a>
+
+`options` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingdatasolarradiationupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateOptions')
+
+The options the controls describe, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the controls read into options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.TryReadSettings(string,string)'></a>
+
+## PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one building data solar summary options object is accepted: a
+file of another window's settings carries a different type name and cannot be read as this one, and a
+file holding several objects describes several settings, none of which is this window's\.
+
+```csharp
+internal static DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingDataSolarRadiationUpdateOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataSolarRadiationUpdateOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingdatasolarradiationupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingDataSolarRadiationUpdateOptions')  
+The setting the file holds, or null when it holds none\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingDataUpdateOptionsWindow'></a>
 
