@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DiGi.GIS.PostgreSQL.UI.Windows"
         xmlns:controls="clr-namespace:DiGi.UI.WPF.Controls;assembly=DiGi.UI.WPF"
         mc:Ignorable="d"
-        Title="Update occupancy" Height="540" Width="560" MinHeight="420" MinWidth="440"
+        Title="Update occupancy" Height="540" Width="560" MinHeight="420" MinWidth="500"
         WindowStartupLocation="CenterScreen"
         WindowStyle="SingleBorderWindow"
         Icon="pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/DiGi.GIS.ico">
@@ -29,6 +29,11 @@
         <Label x:Name="Label_Counties" Grid.Row="3" Content="Counties for the building side - none selected means every county; one entry per piece" ToolTip="A multi-part county is one entry per polygon piece; select them all to cover the county." Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
 
         <controls:ListBoxControl x:Name="ListBoxControl_Counties" Grid.Row="4" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,5,5">
+            <Button x:Name="Button_ImportSettings" Content="Import settings..." Width="110" Height="23" Click="Button_ImportSettings_Click" ToolTip="Fills the window from a settings file written by Export settings. Nothing runs until OK" />
+            <Button x:Name="Button_ExportSettings" Content="Export settings..." Width="110" Height="23" Margin="8,0,0,0" Click="Button_ExportSettings_Click" ToolTip="Writes what the window holds now - the sides, clear-first, the county selection - to a settings file" />
+        </StackPanel>
 
         <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
             <Button x:Name="Button_OK" Content="OK" Width="70" Height="23" Margin="5,0,5,0" IsDefault="True" Click="Button_OK_Click" />
