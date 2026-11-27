@@ -1504,6 +1504,8 @@ Asks for what the urban-context export writes and where: the county parts (one C
 
 The export refuses a run without a folder, so the window proposes [SolarContextDirectory\(string\)](DiGi.GIS.PostgreSQL.UI.md#DiGi.GIS.PostgreSQL.UI.Query.SolarContextDirectory(string) 'DiGi\.GIS\.PostgreSQL\.UI\.Query\.SolarContextDirectory\(string\)') when the options carry none, and creates the folder when it is accepted.
 
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#71), so a run repeated after the tray was restarted is not typed again. Importing fills the controls - the radius list included, in the file's order - and nothing runs until OK, which validates the imported values like typed ones and only then creates the output folder.
+
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 
 ```csharp
@@ -1564,6 +1566,131 @@ public void InitializeComponent();
 ```
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions)'></a>
+
+## PostgreSQLBuildingSolarRadiationContextExportOptionsWindow\.SetControls\(PostgreSQLBuildingSolarRadiationContextExportOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before: options with no county list clear the
+selection, options with no folder show the directory the export proposes, and the radius list is
+rebuilt from the file in its order\. No directory is created here \- only OK does that\. Internal so a
+fact can fill a window from a settings file the way Import does, without a file dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions postgreSQLBuildingSolarRadiationContextExportOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions).postgreSQLBuildingSolarRadiationContextExportOptions'></a>
+
+`postgreSQLBuildingSolarRadiationContextExportOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingsolarradiationcontextexportoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions')
+
+The options to show\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.SetOptions(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions)'></a>
+
+## PostgreSQLBuildingSolarRadiationContextExportOptionsWindow\.SetOptions\(PostgreSQLBuildingSolarRadiationContextExportOptions\) Method
+
+Writes read options into the window's options \- the commit both OK and a fact\-driven read share\.
+
+```csharp
+private void SetOptions(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions postgreSQLBuildingSolarRadiationContextExportOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.SetOptions(DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions).postgreSQLBuildingSolarRadiationContextExportOptions'></a>
+
+`postgreSQLBuildingSolarRadiationContextExportOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingsolarradiationcontextexportoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions')
+
+The options to store\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.TryGetOptions(string)'></a>
+
+## PostgreSQLBuildingSolarRadiationContextExportOptionsWindow\.TryGetOptions\(string\) Method
+
+Reads every control into the window's options and checks them, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\. The filesystem side effect of OK \- creating the output folder \- stays in the handler, outside every fact\.
+
+The options are written only when every control reads and passes the full set of rules OK has always applied - at least one county, at least one radius, a batch size of at least one, a timeout of at least zero, a full output path; a refusal leaves them as they were.
+
+```csharp
+internal bool TryGetOptions(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.TryGetOptions(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls cannot start a run, or null when they can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options now hold the controls' values and can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions,string)'></a>
+
+## PostgreSQLBuildingSolarRadiationContextExportOptionsWindow\.TryReadOptions\(bool, PostgreSQLBuildingSolarRadiationContextExportOptions, string\) Method
+
+Reads every control into a candidate set of options, writing nothing and showing no message\.
+
+Complete (OK) applies every rule the window has always applied, in the order it has always applied them, and finishes with those messages. Export reads the same controls without those requirements, so a half-prepared window can be saved: no county and no radius write nothing rather than being refused, and the output folder is written as typed - trimmed, blank as no folder - while OK keeps requiring a full path. What is refused on both paths is what could not be written back as typed: a batch size or timeout that is not a whole number. The radius list is read from the window's list field in its current order, which is the column order of the files.
+
+```csharp
+internal bool TryReadOptions(bool complete, out DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions? options, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: every rule applies\. False for an export: an unfinished window is saved as it stands\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions,string).options'></a>
+
+`options` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingsolarradiationcontextexportoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions')
+
+The options the controls describe, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the controls read into options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.TryReadSettings(string,string)'></a>
+
+## PostgreSQLBuildingSolarRadiationContextExportOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one urban\-context export options object is accepted: a
+file of another window's settings carries a different type name and cannot be read as this one, and a
+file holding several objects describes several settings, none of which is this window's\.
+
+```csharp
+internal static DiGi.GIS.PostgreSQL.Classes.PostgreSQLBuildingSolarRadiationContextExportOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationContextExportOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlbuildingsolarradiationcontextexportoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLBuildingSolarRadiationContextExportOptions')  
+The setting the file holds, or null when it holds none\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLBuildingSolarRadiationSolveOptionsWindow'></a>
 
