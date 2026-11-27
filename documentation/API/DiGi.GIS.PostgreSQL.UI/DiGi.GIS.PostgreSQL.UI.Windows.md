@@ -1784,6 +1784,8 @@ Interaction logic for PostgreSQLTerrainPointUpdateOptionsWindow\.xaml
 
 Asks for the three settings that decide what a terrain point run costs and covers - the spacing of the sampling grid, whether points already stored are sampled again, and the counties to sample. Every other option of the instance it was given is carried over untouched, which is deliberate: the origin of the grid and the tile size are what let separate runs share their points, and they are not settings to change from a dialog.
 
+The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#65), so a run repeated after the tray was restarted is not typed again. Importing only fills the controls: nothing runs until OK, and OK validates the imported values like typed ones.
+
 The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.
 
 ```csharp
@@ -1851,6 +1853,26 @@ public void InitializeComponent();
 
 Implements [InitializeComponent\(\)](https://learn.microsoft.com/en-us/dotnet/api/system.windows.markup.icomponentconnector.initializecomponent 'System\.Windows\.Markup\.IComponentConnector\.InitializeComponent')
 
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointUpdateOptions)'></a>
+
+## PostgreSQLTerrainPointUpdateOptionsWindow\.SetControls\(PostgreSQLTerrainPointUpdateOptions\) Method
+
+Fills every control from the options \- on opening, and again on an import, so a value the options leave
+out clears its control rather than keeping what was typed before: options with no county list clear the
+selection\. The members this window has no control for are left alone\. Internal so a fact can fill a
+window from a settings file the way Import does, without a file dialog\.
+
+```csharp
+internal void SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointUpdateOptions postgreSQLTerrainPointUpdateOptions);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.SetControls(DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointUpdateOptions).postgreSQLTerrainPointUpdateOptions'></a>
+
+`postgreSQLTerrainPointUpdateOptions` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlterrainpointupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointUpdateOptions')
+
+The options to show\.
+
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.SetTerrainPointDensityResults(System.Collections.Generic.IReadOnlyDictionary_int,DiGi.GIS.PostgreSQL.Classes.TerrainPointDensityResult_)'></a>
 
 ## PostgreSQLTerrainPointUpdateOptionsWindow\.SetTerrainPointDensityResults\(IReadOnlyDictionary\<int,TerrainPointDensityResult\>\) Method
@@ -1869,6 +1891,93 @@ public void SetTerrainPointDensityResults(System.Collections.Generic.IReadOnlyDi
 `terrainPointDensityResults` [System\.Collections\.Generic\.IReadOnlyDictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')[System\.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32 'System\.Int32')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')[DiGi\.GIS\.PostgreSQL\.Classes\.TerrainPointDensityResult](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.terrainpointdensityresult 'DiGi\.GIS\.PostgreSQL\.Classes\.TerrainPointDensityResult')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2 'System\.Collections\.Generic\.IReadOnlyDictionary\`2')
 
 The densities keyed by county part id, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.TryGetOptions(string)'></a>
+
+## PostgreSQLTerrainPointUpdateOptionsWindow\.TryGetOptions\(string\) Method
+
+Reads every control into the window's options and checks them, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\.
+
+The options are written only when every control reads, the grid size is greater than zero and at least one county is selected; a refusal leaves them as they were. The members the window has no control for keep the values it was opened with.
+
+```csharp
+internal bool TryGetOptions(out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.TryGetOptions(string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls cannot start a run, or null when they can\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the options now hold the controls' values and can start a run\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointUpdateOptions,string)'></a>
+
+## PostgreSQLTerrainPointUpdateOptionsWindow\.TryReadOptions\(bool, PostgreSQLTerrainPointUpdateOptions, string\) Method
+
+Reads every control into a candidate set of options, writing nothing and showing no message\.
+
+Complete (OK) requires a grid size greater than zero and at least one county, and finishes with the messages OK has always given. Export reads the same controls without those requirements - no county selected is written as no county list, never as an empty set - so a half-prepared window can be saved; what is still refused is what could not be written back as typed: a grid size box that does not hold a finite number. The candidate is built on a copy of the window's options, so the members with no control (the grid origin, the tile size, the batch and retry settings) travel in the file exactly as the copy holds them and are never changed by a read.
+
+```csharp
+internal bool TryReadOptions(bool complete, out DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointUpdateOptions? options, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointUpdateOptions,string).complete'></a>
+
+`complete` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+True for OK: the grid size range and a county are required\. False for an export: an unfinished window is saved as it stands\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointUpdateOptions,string).options'></a>
+
+`options` [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlterrainpointupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointUpdateOptions')
+
+The options the controls describe, or null when they could not be read\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.TryReadOptions(bool,DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointUpdateOptions,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason the controls could not be read, or null when they could\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+True when the controls read into options\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.TryReadSettings(string,string)'></a>
+
+## PostgreSQLTerrainPointUpdateOptionsWindow\.TryReadSettings\(string, string\) Method
+
+Reads the settings an exported file holds\. Exactly one terrain point options object is accepted: a
+file of another window's settings carries a different type name and cannot be read as this one, and a
+file holding several objects describes several settings, none of which is this window's\.
+
+```csharp
+internal static DiGi.GIS.PostgreSQL.Classes.PostgreSQLTerrainPointUpdateOptions? TryReadSettings(string? json, out string? message);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.TryReadSettings(string,string).json'></a>
+
+`json` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The file content\.
+
+<a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLTerrainPointUpdateOptionsWindow.TryReadSettings(string,string).message'></a>
+
+`message` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The reason nothing was read, or null when exactly one setting was\.
+
+#### Returns
+[DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointUpdateOptions](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlterrainpointupdateoptions 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLTerrainPointUpdateOptions')  
+The setting the file holds, or null when it holds none\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Windows.PostgreSQLUpdateOccupancyOptionsWindow'></a>
 
