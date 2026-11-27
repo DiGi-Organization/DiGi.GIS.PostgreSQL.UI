@@ -2827,11 +2827,13 @@ A task representing the asynchronous operation\. Returns true when every year wa
 
 Represents a task for creating the statistical data collection table in PostgreSQL and populating it from \.sdcf files in a directory selected through the user interface\.
 
+A cancelled folder dialog ends the run as canceled ([DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask')), with nothing created; a directory that does not exist is a refusal, logged with its path, and ends the run as failed (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#77). [SkipDirectoryDialog](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionCreateTableTask.SkipDirectoryDialog 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLStatisticalDataCollectionCreateTableTask\.SkipDirectoryDialog') is the seam a test uses instead of the dialog.
+
 ```csharp
 public class UIPostgreSQLStatisticalDataCollectionCreateTableTask : DiGi.GIS.PostgreSQL.Classes.PostgreSQLStatisticalDataCollectionCreateTableTask, DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject
 ```
 
-Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLStatisticalDataCollectionCreateTableTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlstatisticaldatacollectioncreatetabletask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLStatisticalDataCollectionCreateTableTask') → UIPostgreSQLStatisticalDataCollectionCreateTableTask
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → [DiGi\.Core\.Classes\.BackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.backgroundtask 'DiGi\.Core\.Classes\.BackgroundTask') → [DiGi\.Core\.Classes\.CancelableBackgroundTask](https://learn.microsoft.com/en-us/dotnet/api/digi.core.classes.cancelablebackgroundtask 'DiGi\.Core\.Classes\.CancelableBackgroundTask') → [DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLStatisticalDataCollectionCreateTableTask](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.postgresqlstatisticaldatacollectioncreatetabletask 'DiGi\.GIS\.PostgreSQL\.Classes\.PostgreSQLStatisticalDataCollectionCreateTableTask') → UIPostgreSQLStatisticalDataCollectionCreateTableTask
 
 Implements [IGISPostgreSQLUIObject](DiGi.GIS.PostgreSQL.UI.Interfaces.md#DiGi.GIS.PostgreSQL.UI.Interfaces.IGISPostgreSQLUIObject 'DiGi\.GIS\.PostgreSQL\.UI\.Interfaces\.IGISPostgreSQLUIObject')
 ### Constructors
@@ -2869,21 +2871,57 @@ public UIPostgreSQLStatisticalDataCollectionCreateTableTask(DiGi.GIS.PostgreSQL.
 `statisticalDataCollectionPostgreSQLConverter` [DiGi\.GIS\.PostgreSQL\.Classes\.StatisticalDataCollectionPostgreSQLConverter](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.postgresql.classes.statisticaldatacollectionpostgresqlconverter 'DiGi\.GIS\.PostgreSQL\.Classes\.StatisticalDataCollectionPostgreSQLConverter')
 
 The statistical data collection PostgreSQL converter used to create and populate the table\.
-### Methods
+### Properties
 
-<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionCreateTableTask.ExecuteAsync()'></a>
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionCreateTableTask.SkipDirectoryDialog'></a>
 
-## UIPostgreSQLStatisticalDataCollectionCreateTableTask\.ExecuteAsync\(\) Method
+## UIPostgreSQLStatisticalDataCollectionCreateTableTask\.SkipDirectoryDialog Property
 
-Executes the background task to create the statistical data collection table in PostgreSQL\.
+Gets or sets whether the folder dialog is skipped and the run takes its directory from [SourceDirectory](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionCreateTableTask.SourceDirectory 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLStatisticalDataCollectionCreateTableTask\.SourceDirectory') instead\.
+
+The dialog needs a running WPF application, which a test host has not got; a fact sets this and drives the run through the property (the seam [SkipOptionsDialog](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIOpenBuildingImportTask.SkipOptionsDialog 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIOpenBuildingImportTask\.SkipOptionsDialog') carries for the same reason). A null or empty [SourceDirectory](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionCreateTableTask.SourceDirectory 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLStatisticalDataCollectionCreateTableTask\.SourceDirectory') then stands for a cancelled dialog. Off for every row the tray registers.
 
 ```csharp
-protected override System.Threading.Tasks.Task<bool> ExecuteAsync();
+public bool SkipDirectoryDialog { get; set; }
 ```
+
+#### Property Value
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionCreateTableTask.SourceDirectory'></a>
+
+## UIPostgreSQLStatisticalDataCollectionCreateTableTask\.SourceDirectory Property
+
+Gets or sets the directory of \.sdcf files the run uses when [SkipDirectoryDialog](DiGi.GIS.PostgreSQL.UI.Classes.md#DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionCreateTableTask.SkipDirectoryDialog 'DiGi\.GIS\.PostgreSQL\.UI\.Classes\.UIPostgreSQLStatisticalDataCollectionCreateTableTask\.SkipDirectoryDialog') is set; ignored otherwise\.
+
+```csharp
+public string? SourceDirectory { get; set; }
+```
+
+#### Property Value
+[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+### Methods
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionCreateTableTask.ExecuteAsync(System.Threading.CancellationToken)'></a>
+
+## UIPostgreSQLStatisticalDataCollectionCreateTableTask\.ExecuteAsync\(CancellationToken\) Method
+
+Asks for the directory of \.sdcf files, creates the statistical data collection table and populates it from that directory\.
+
+```csharp
+protected override System.Threading.Tasks.Task<bool> ExecuteAsync(System.Threading.CancellationToken token);
+```
+#### Parameters
+
+<a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionCreateTableTask.ExecuteAsync(System.Threading.CancellationToken).token'></a>
+
+`token` [System\.Threading\.CancellationToken](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken 'System\.Threading\.CancellationToken')
+
+The cancellation token to observe\.
 
 #### Returns
 [System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
-A task representing the asynchronous operation\. Returns true if the table was created successfully; otherwise, false\.
+A task representing the asynchronous operation\. Returns true if the table was created and populated; otherwise, false\.
 
 <a name='DiGi.GIS.PostgreSQL.UI.Classes.UIPostgreSQLStatisticalDataCollectionPopulateTask'></a>
 
