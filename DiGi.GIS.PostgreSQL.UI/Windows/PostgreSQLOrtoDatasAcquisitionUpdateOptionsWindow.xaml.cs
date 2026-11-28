@@ -14,7 +14,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 {
     /// <summary>
     /// Interaction logic for PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow.xaml
-    /// <para>Asks for the county parts an acquisition-date backfill of <c>orto_datas</c> walks, the last year the stored series were fetched up to, and the paging of the walk. Unlike most county-scoped tasks, no selection means nothing rather than every county: the backfill reads every stored series it reaches, about 0.5 MB each, so the scope is always named.</para>
+    /// <para>Asks for the county parts an acquisition-date backfill of <c>orto_datas</c> walks, the last year the stored series were fetched up to, the paging of the walk, and how many parts walk at once (DiGi.GIS.PostgreSQL#177). Unlike most county-scoped tasks, no selection means nothing rather than every county: the backfill reads every stored series it reaches, about 0.5 MB each, so the scope is always named.</para>
     /// <para>The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#70), so a run repeated after the tray was restarted is not typed again. Importing fills the controls; the coverage figures shown beside the parts are a display-only window field and never reach the file. Nothing runs until OK, and OK validates the imported values like typed ones.</para>
     /// <para>The window works on a copy, so a cancelled dialog leaves the settings of an earlier run exactly as they were.</para>
     /// </summary>
@@ -245,7 +245,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
 
         /// <summary>
         /// Reads every control into the window's options and checks them, without closing the window or showing a message - the part of OK a fact can drive, because a message box would hang it.
-        /// <para>The options are written only when every control reads and passes the full set of rules OK has always applied - the last year from 1900 on, a page size of at least one row, a timeout of at least zero, at least one county part; a refusal leaves them as they were.</para>
+        /// <para>The options are written only when every control reads and passes the full set of rules OK has always applied - the last year from 1900 on, a page size of at least one row, a timeout of at least zero, parallel parts zero or greater, at least one county part; a refusal leaves them as they were.</para>
         /// </summary>
         /// <param name="message">The reason the controls cannot start a run, or null when they can.</param>
         /// <returns>True when the options now hold the controls' values and can start a run.</returns>
@@ -257,6 +257,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             }
 
             postgreSQLOrtoDatasAcquisitionUpdateOptions.LastYear = options.LastYear;
+            postgreSQLOrtoDatasAcquisitionUpdateOptions.MaxDegreeOfParallelism = options.MaxDegreeOfParallelism;
             postgreSQLOrtoDatasAcquisitionUpdateOptions.PageSize = options.PageSize;
             postgreSQLOrtoDatasAcquisitionUpdateOptions.CommandTimeout = options.CommandTimeout;
             postgreSQLOrtoDatasAcquisitionUpdateOptions.CountyIds = options.CountyIds;
@@ -280,6 +281,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             bool lastYear_Read = TextBoxControl_LastYear.TryGetValue(out int lastYear);
             bool pageSize_Read = TextBoxControl_PageSize.TryGetValue(out int pageSize);
             bool commandTimeout_Read = TextBoxControl_CommandTimeout.TryGetValue(out int commandTimeout);
+            bool maxDegreeOfParallelism_Read = TextBoxControl_MaxDegreeOfParallelism.TryGetValue(out int maxDegreeOfParallelism);
 
             if (!lastYear_Read || (complete && lastYear < 1900))
             {
@@ -296,6 +298,12 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             if (!commandTimeout_Read || (complete && commandTimeout < 0))
             {
                 message = "Command timeout has to be a whole number of seconds, zero (no timeout) or greater.";
+                return false;
+            }
+
+            if (!maxDegreeOfParallelism_Read || (complete && maxDegreeOfParallelism < 0))
+            {
+                message = "Parallel county parts has to be a whole number, zero or greater.";
                 return false;
             }
 
@@ -323,6 +331,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
             PostgreSQLOrtoDatasAcquisitionUpdateOptions postgreSQLOrtoDatasAcquisitionUpdateOptions_Temp = new(postgreSQLOrtoDatasAcquisitionUpdateOptions)
             {
                 LastYear = lastYear,
+                MaxDegreeOfParallelism = maxDegreeOfParallelism,
                 PageSize = pageSize,
                 CommandTimeout = commandTimeout,
                 CountyIds = countyIds,
@@ -343,6 +352,7 @@ namespace DiGi.GIS.PostgreSQL.UI.Windows
         internal void SetControls(PostgreSQLOrtoDatasAcquisitionUpdateOptions postgreSQLOrtoDatasAcquisitionUpdateOptions)
         {
             TextBoxControl_LastYear.Value = postgreSQLOrtoDatasAcquisitionUpdateOptions.LastYear.ToString(CultureInfo.InvariantCulture);
+            TextBoxControl_MaxDegreeOfParallelism.Value = postgreSQLOrtoDatasAcquisitionUpdateOptions.MaxDegreeOfParallelism.ToString(CultureInfo.CurrentCulture);
             TextBoxControl_PageSize.Value = postgreSQLOrtoDatasAcquisitionUpdateOptions.PageSize.ToString(CultureInfo.InvariantCulture);
             TextBoxControl_CommandTimeout.Value = postgreSQLOrtoDatasAcquisitionUpdateOptions.CommandTimeout.ToString(CultureInfo.InvariantCulture);
 

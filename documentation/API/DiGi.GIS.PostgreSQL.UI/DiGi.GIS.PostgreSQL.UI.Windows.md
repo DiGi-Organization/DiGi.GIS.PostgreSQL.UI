@@ -2210,7 +2210,7 @@ The setting the file holds, or null when it holds none\.
 
 Interaction logic for PostgreSQLOrtoDatasAcquisitionUpdateOptionsWindow\.xaml
 
-Asks for the county parts an acquisition-date backfill of `orto_datas` walks, the last year the stored series were fetched up to, and the paging of the walk. Unlike most county-scoped tasks, no selection means nothing rather than every county: the backfill reads every stored series it reaches, about 0.5 MB each, so the scope is always named.
+Asks for the county parts an acquisition-date backfill of `orto_datas` walks, the last year the stored series were fetched up to, the paging of the walk, and how many parts walk at once (DiGi.GIS.PostgreSQL#177). Unlike most county-scoped tasks, no selection means nothing rather than every county: the backfill reads every stored series it reaches, about 0.5 MB each, so the scope is always named.
 
 The settings can be exported to a JSON file and imported again (DiGi-Organization/DiGi.GIS.PostgreSQL.UI#70), so a run repeated after the tray was restarted is not typed again. Importing fills the controls; the coverage figures shown beside the parts are a display-only window field and never reach the file. Nothing runs until OK, and OK validates the imported values like typed ones.
 
@@ -2326,7 +2326,7 @@ The coverage keyed by county part id, or null when it could not be read\.
 
 Reads every control into the window's options and checks them, without closing the window or showing a message \- the part of OK a fact can drive, because a message box would hang it\.
 
-The options are written only when every control reads and passes the full set of rules OK has always applied - the last year from 1900 on, a page size of at least one row, a timeout of at least zero, at least one county part; a refusal leaves them as they were.
+The options are written only when every control reads and passes the full set of rules OK has always applied - the last year from 1900 on, a page size of at least one row, a timeout of at least zero, parallel parts zero or greater, at least one county part; a refusal leaves them as they were.
 
 ```csharp
 internal bool TryGetOptions(out string? message);

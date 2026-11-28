@@ -6,12 +6,13 @@
         xmlns:local="clr-namespace:DiGi.GIS.PostgreSQL.UI.Windows"
         xmlns:controls="clr-namespace:DiGi.UI.WPF.Controls;assembly=DiGi.UI.WPF"
         mc:Ignorable="d"
-        Title="Backfill OrtoDatas acquisition dates" Height="640" Width="680" MinHeight="500" MinWidth="520"
+        Title="Backfill OrtoDatas acquisition dates" Height="700" Width="680" MinHeight="500" MinWidth="520"
         WindowStartupLocation="CenterScreen"
         WindowStyle="SingleBorderWindow"
         Icon="pack://application:,,,/DiGi.GIS.PostgreSQL.UI;component/Resources/DiGi.GIS.ico">
     <Grid Margin="5,5,5,5">
         <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
             <RowDefinition Height="60" />
             <RowDefinition Height="60" />
             <RowDefinition Height="60" />
@@ -27,15 +28,17 @@
 
         <controls:TextBoxControl x:Name="TextBoxControl_CommandTimeout" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Command timeout [s]" Value="" />
 
-        <Label x:Name="Label_Counties" Grid.Row="3" Content="County parts - select at least one; a multi-part county is one entry per piece" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+        <controls:TextBoxControl x:Name="TextBoxControl_MaxDegreeOfParallelism" Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="Parallel county parts - 0 = half of the processors, 1 = one at a time" ToolTip="How many county parts are walked at once. 0 uses half of the logical processors, 1 walks one part at a time as before. The stored rows do not depend on it; memory grows with the number of parts times the page size." Value="" />
 
-        <controls:ListBoxControl x:Name="ListBoxControl_Counties" Grid.Row="4" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <Label x:Name="Label_Counties" Grid.Row="4" Content="County parts - select at least one; a multi-part county is one entry per piece" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+        <controls:ListBoxControl x:Name="ListBoxControl_Counties" Grid.Row="5" SelectionMode="Extended" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
         <!-- Says whether the coverage beside the county parts has been read yet: without it a part with no figure could be
              one that holds nothing or one whose coverage simply has not arrived. -->
-        <Label x:Name="Label_Coverage" Grid.Row="5" Content="" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+        <Label x:Name="Label_Coverage" Grid.Row="6" Content="" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
 
-        <Grid Grid.Row="6">
+        <Grid Grid.Row="7">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -46,7 +49,7 @@
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,5,5">
                 <Button x:Name="Button_ImportSettings" Content="Import settings..." Width="110" Height="23" Click="Button_ImportSettings_Click" ToolTip="Fills the window from a settings file written by Export settings. Nothing runs until OK" />
-                <Button x:Name="Button_ExportSettings" Content="Export settings..." Width="110" Height="23" Margin="8,0,0,0" Click="Button_ExportSettings_Click" ToolTip="Writes what the window holds now - the last year, page size, timeout, the county parts - to a settings file" />
+                <Button x:Name="Button_ExportSettings" Content="Export settings..." Width="110" Height="23" Margin="8,0,0,0" Click="Button_ExportSettings_Click" ToolTip="Writes what the window holds now - the last year, page size, timeout, parallel parts, the county parts - to a settings file" />
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5">
